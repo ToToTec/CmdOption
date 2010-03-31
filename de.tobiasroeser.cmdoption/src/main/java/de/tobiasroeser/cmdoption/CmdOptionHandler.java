@@ -6,6 +6,13 @@ import java.lang.reflect.AccessibleObject;
  * An Handler is needed to parse an Commandline option and to apply the parser
  * result to the annotated field or method.
  * 
+ * @see AddToCollectionHandler
+ * @see BooleanFieldHandler
+ * @see BooleanOptionHandler
+ * @see PutIntoMapHandler
+ * @see StringFieldHandler
+ * @see StringMethodHandler
+ * 
  */
 public interface CmdOptionHandler {
 

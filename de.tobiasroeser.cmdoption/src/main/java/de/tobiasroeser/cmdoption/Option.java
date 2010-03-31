@@ -21,11 +21,6 @@ public class Option implements Comparable<Option> {
 	private final int maxCount;
 
 	public Option(String longOption, String shortOption, String description,
-			String... args) {
-		this(longOption, shortOption, description, null, null, args, 0, 1);
-	}
-
-	public Option(String longOption, String shortOption, String description,
 			Class<? extends CmdOptionHandler> cmdOptionHandler,
 			AccessibleObject element, String[] args, int minCount, int maxCount) {
 		this.longOption = longOption;
