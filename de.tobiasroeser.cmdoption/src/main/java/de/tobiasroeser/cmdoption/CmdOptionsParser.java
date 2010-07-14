@@ -48,12 +48,19 @@ public class CmdOptionsParser {
 	public static final int EXIT_OK = 0;
 
 	public static class Result {
+
 		private final int code;
 		private final String message;
+		private final Throwable cause;
 
-		public Result(int code, String message) {
+		public Result(int code, String message, Throwable cause) {
 			this.code = code;
 			this.message = message;
+			this.cause = cause;
+		}
+
+		public Result(int code, String message) {
+			this(code, message, null);
 		}
 
 		public Result(int code) {
@@ -62,6 +69,10 @@ public class CmdOptionsParser {
 
 		public Result(String message) {
 			this(1, message);
+		}
+
+		public Result(String message, Throwable cause) {
+			this(1, message, cause);
 		}
 
 		public int code() {
@@ -78,6 +89,10 @@ public class CmdOptionsParser {
 
 		public boolean isOk() {
 			return code == EXIT_OK;
+		}
+
+		public Throwable getCause() {
+			return cause;
 		}
 
 	}
@@ -105,18 +120,19 @@ public class CmdOptionsParser {
 	public <T> Result parseCmdline(List<String> cmdline, T config) {
 		try {
 			final List<Option> options = scanCmdOpions(config.getClass());
-			int ok = internalCheckCmdline(options, cmdline);
+			Parameter parameter = scanCmdParameter(config.getClass());
+			int ok = internalCheckCmdline(options, parameter, cmdline);
 			if (ok == EXIT_OK) {
-				ok = internalParseCmdline(options, cmdline, config);
+				ok = internalParseCmdline(options, parameter, cmdline, config);
 			}
 			return new Result(ok);
 		} catch (Exception e) {
-			return new Result("Could not parse cmdline: " + e);
+			return new Result("Could not parse cmdline: " + e, e);
 		}
 	}
 
 	private <T> int internalCheckCmdline(final List<Option> options,
-			final List<String> cmdline) {
+			final Parameter parameter, final List<String> cmdline) {
 
 		if (handleHelp
 				&& (cmdline.contains("--help") || cmdline.contains("-h"))) {
@@ -129,24 +145,55 @@ public class CmdOptionsParser {
 		}
 
 		ArrayList<String> params = new ArrayList<String>(cmdline);
+		boolean endOfOptions = false;
+		int paramCount = 0;
+
 		paramsLoop: for (int index = 0; index < params.size(); ++index) {
+
+			if (params.get(index).equals("--")) {
+				endOfOptions = true;
+			}
+
 			for (Option option : options) {
-				if (option.match(params.get(index))) {
-					if (params.size() <= index + option.getArgCount()) {
-						int countOfGivenParams = params.size() - index - 1;
-						throw new CmdOptionParseException("Missing arguments: "
-								+ Arrays.asList(option.getArgs()).subList(
-										countOfGivenParams,
-										option.getArgCount()) + " Option "
-								+ option + " requires " + option.getArgCount()
-								+ " arguments, but you gave "
-								+ countOfGivenParams + ".");
+
+				if (!endOfOptions) {
+					// we are at the end of options, then don't try to match any
+					// option
+					if (option.match(params.get(index))) {
+						if (params.size() <= index + option.getArgCount()) {
+							int countOfGivenParams = params.size() - index - 1;
+							throw new CmdOptionParseException(
+									"Missing arguments: "
+											+ Arrays
+													.asList(option.getArgs())
+													.subList(
+															countOfGivenParams,
+															option
+																	.getArgCount())
+											+ " Option " + option
+											+ " requires "
+											+ option.getArgCount()
+											+ " arguments, but you gave "
+											+ countOfGivenParams + ".");
+						}
+						index = index + option.getArgCount();
+						foundOptions.put(option, foundOptions.get(option) + 1);
+						continue paramsLoop;
 					}
-					index = index + option.getArgCount();
-					foundOptions.put(option, foundOptions.get(option) + 1);
+				}
+			}
+
+			// potentially a parameter
+			if (parameter != null) {
+				++paramCount;
+				if (parameter.getMinCount() <= paramCount
+						&& parameter.getMaxCount() == -1
+						|| parameter.getMaxCount() >= paramCount) {
+					// TODO: ok or need to do more
 					continue paramsLoop;
 				}
 			}
+
 			// Unsupported option
 			throw new CmdOptionParseException("Umsupported parameter: "
 					+ params.get(index));
@@ -173,68 +220,122 @@ public class CmdOptionsParser {
 	}
 
 	private <T> int internalParseCmdline(final List<Option> options,
-			final List<String> cmdline, final T config) {
+			final Parameter parameter, final List<String> cmdline,
+			final T config) {
 		final ArrayList<String> params = cmdline instanceof ArrayList<?> ? (ArrayList<String>) cmdline
 				: new ArrayList<String>(cmdline);
 
-		paramsLoop: for (int index = 0; index < params.size(); ++index) {
-			for (Option option : options) {
-				if (option.match(params.get(index))) {
-					String[] args = new String[option.getArgCount()];
-					if (params.size() <= index + option.getArgCount()) {
-						int countOfGivenParams = params.size() - index - 1;
-						throw new CmdOptionParseException("Missing arguments: "
-								+ Arrays.asList(option.getArgs()).subList(
-										countOfGivenParams,
-										option.getArgCount()) + " Option "
-								+ option + " requires " + option.getArgCount()
-								+ " arguments, but you gave "
-								+ countOfGivenParams + ".");
-					}
-					for (int i = 0; i < option.getArgCount(); ++i) {
-						++index;
-						args[i] = params.get(index);
-					}
-					CmdOptionHandler handler = findHandler(option);
-					if (handler == null) {
-						throw new CmdOptionParseException(
-								"Could not found any matching handler for element: "
-										+ option.getElement());
-					}
+		boolean endOfOptions = false;
+		final List<String> parameters = new LinkedList<String>();
 
-					AccessibleObject element = option.getElement();
-					if (handler != null && element != null) {
-						try {
-							handler.applyParams(config, element, args);
-						} catch (Exception e) {
+		paramsLoop: for (int index = 0; index < params.size(); ++index) {
+
+			if (params.get(index).equals("--")) {
+				endOfOptions = true;
+			}
+
+			for (Option option : options) {
+				if (!endOfOptions) {
+					// we are atr the end of options, then don't try to match
+					// any
+					// option
+
+					if (option.match(params.get(index))) {
+						String[] args = new String[option.getArgCount()];
+						if (params.size() <= index + option.getArgCount()) {
+							int countOfGivenParams = params.size() - index - 1;
 							throw new CmdOptionParseException(
-									"Could not apply parameters "
-											+ Arrays.toString(args)
-											+ " to field/method " + element, e);
+									"Missing arguments: "
+											+ Arrays
+													.asList(option.getArgs())
+													.subList(
+															countOfGivenParams,
+															option
+																	.getArgCount())
+											+ " Option " + option
+											+ " requires "
+											+ option.getArgCount()
+											+ " arguments, but you gave "
+											+ countOfGivenParams + ".");
 						}
-					} else {
-						throw new CmdOptionParseException(
-								"No handler registered to handle cmdline argument "
-										+ element);
+						for (int i = 0; i < option.getArgCount(); ++i) {
+							++index;
+							args[i] = params.get(index);
+						}
+						AccessibleObject element = option.getElement();
+						CmdOptionHandler handler = findHandler(element, option
+								.getArgCount(), option.getCmdOptionHandler());
+
+						if (handler == null) {
+							throw new CmdOptionParseException(
+									"Could not found any matching handler for element: "
+											+ option.getElement());
+						}
+
+						if (handler != null && element != null) {
+							try {
+								handler.applyParams(config, element, args);
+							} catch (Exception e) {
+								throw new CmdOptionParseException(
+										"Could not apply parameters "
+												+ Arrays.toString(args)
+												+ " to field/method " + element,
+										e);
+							}
+						} else {
+							throw new CmdOptionParseException(
+									"No handler registered to handle cmdline argument "
+											+ element);
+						}
+						continue paramsLoop;
 					}
-					continue paramsLoop;
 				}
 			}
+
+			// potentially a parameter
+			if (parameter != null) {
+				parameters.add(params.get(index));
+				continue paramsLoop;
+			}
+
 			// Unsupported option
 			throw new CmdOptionParseException("Umsupported parameter: "
 					+ params.get(index));
 		}
 
+		if (!parameters.isEmpty()) {
+			AccessibleObject element = parameter.getElement();
+			CmdOptionHandler handler = findHandler(element, parameters.size(),
+					parameter.getCmdOptionHandler());
+
+			if (handler != null && element != null) {
+				try {
+
+					handler.applyParams(config, element, parameters
+							.toArray(new String[parameters.size()]));
+
+				} catch (Exception e) {
+					throw new CmdOptionParseException(
+							"Could not apply parameters " + parameters
+									+ " to field/method " + element, e);
+				}
+			} else {
+				throw new CmdOptionParseException(
+						"No handler registered to handle cmdline argument "
+								+ element);
+			}
+
+		}
+
 		return EXIT_OK;
 	}
 
-	private CmdOptionHandler findHandler(Option option) {
-
-		Class<? extends CmdOptionHandler> annoHandlerType = option
-				.getCmdOptionHandler();
+	private CmdOptionHandler findHandler(AccessibleObject element,
+			int argCount, Class<? extends CmdOptionHandler> annoHandlerType) {
 
 		CmdOptionHandler handler = null;
-		if (!annoHandlerType.equals(CmdOptionHandler.class)) {
+		if (annoHandlerType != null
+				&& !annoHandlerType.equals(CmdOptionHandler.class)) {
 			if (handlerRegistry.containsKey(annoHandlerType)) {
 				handler = handlerRegistry.get(annoHandlerType);
 			} else {
@@ -247,11 +348,10 @@ public class CmdOptionsParser {
 				handlerRegistry.put(annoHandlerType, handler);
 			}
 		} else {
-			// walk throw registered hander and find one
+			// walk through registered hander and find one
 			// TODO: should we also walk throw self-added ones?
 			for (CmdOptionHandler regHandle : handlerRegistry.values()) {
-				if (regHandle.canHandle(option.getElement(), option
-						.getArgCount())) {
+				if (regHandle.canHandle(element, argCount)) {
 					handler = regHandle;
 					break;
 				}
@@ -324,6 +424,32 @@ public class CmdOptionsParser {
 		}
 
 		return options;
+	}
+
+	private Parameter scanCmdParameter(Class<?> configClass) {
+		Parameter foundParameter = null;
+
+		List<AccessibleObject> elements = new LinkedList<AccessibleObject>();
+		elements.addAll(Arrays.asList(configClass.getFields()));
+		elements.addAll(Arrays.asList(configClass.getMethods()));
+
+		for (AccessibleObject element : elements) {
+			CmdParameter anno = element.getAnnotation(CmdParameter.class);
+			if (anno != null) {
+				if (foundParameter != null) {
+					// we have already a parameter and currently support only
+					// one
+					throw new CmdOptionParseException(
+							"Ambiguous command line parameter configuration. Cannot have more than one @CmdParameter element in one config.");
+				}
+				String description = anno.description();
+				Class<? extends CmdOptionHandler> annoHandlerType = anno
+						.handler();
+				foundParameter = new Parameter(element, description, anno
+						.minCount(), anno.maxCount(), annoHandlerType);
+			}
+		}
+		return foundParameter;
 	}
 
 	public String formatOptions() {
