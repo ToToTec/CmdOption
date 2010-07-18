@@ -9,12 +9,14 @@ public class Parameter {
 	private AccessibleObject element;
 	private Class<? extends CmdOptionHandler> cmdOptionHandler;
 	private final String description;
+	private final String[] args;
 
-	public Parameter(AccessibleObject element, String description,
-			int minCount, int maxCount,
+	public Parameter(AccessibleObject element, String[] args,
+			String description, int minCount, int maxCount,
 			Class<? extends CmdOptionHandler> cmdOptionHandler) {
 		super();
 		this.element = element;
+		this.args = args;
 		this.description = description;
 		this.minCount = minCount;
 		this.maxCount = maxCount;
@@ -24,6 +26,10 @@ public class Parameter {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public String[] getArgs() {
+		return args;
 	}
 
 	public int getMinCount() {

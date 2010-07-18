@@ -120,7 +120,7 @@ public class CmdOptionsParser {
 	public <T> Result parseCmdline(List<String> cmdline, T config) {
 		try {
 			final List<Option> options = scanCmdOpions(config.getClass());
-			Parameter parameter = scanCmdParameter(config.getClass());
+			final Parameter parameter = scanCmdParameter(config.getClass());
 			int ok = internalCheckCmdline(options, parameter, cmdline);
 			if (ok == EXIT_OK) {
 				ok = internalParseCmdline(options, parameter, cmdline, config);
@@ -191,6 +191,15 @@ public class CmdOptionsParser {
 						|| parameter.getMaxCount() >= paramCount) {
 					// TODO: ok or need to do more
 					continue paramsLoop;
+				} else {
+					throw new CmdOptionParseException(
+							"Cardinality of paramater violated. Was given "
+									+ paramCount
+									+ " times but supports "
+									+ parameter.getMinCount()
+									+ ".."
+									+ (parameter.getMaxCount() == -1 ? "*"
+											: parameter.getMaxCount()));
 				}
 			}
 
@@ -305,19 +314,26 @@ public class CmdOptionsParser {
 
 		if (!parameters.isEmpty()) {
 			AccessibleObject element = parameter.getElement();
-			CmdOptionHandler handler = findHandler(element, parameters.size(),
+			int argsCount = parameter.getArgs().length;
+			CmdOptionHandler handler = findHandler(element, argsCount,
 					parameter.getCmdOptionHandler());
 
 			if (handler != null && element != null) {
-				try {
 
-					handler.applyParams(config, element, parameters
-							.toArray(new String[parameters.size()]));
+				for (int i = 0; i < parameters.size(); i += argsCount) {
 
-				} catch (Exception e) {
-					throw new CmdOptionParseException(
-							"Could not apply parameters " + parameters
-									+ " to field/method " + element, e);
+					String[] curArgs = new String[argsCount];
+					for (int j = 0; j < argsCount; ++j) {
+						curArgs[0] = parameters.get(i + j);
+					}
+
+					try {
+						handler.applyParams(config, element, curArgs);
+					} catch (Exception e) {
+						throw new CmdOptionParseException(
+								"Could not apply parameters " + curArgs
+										+ " to field/method " + element, e);
+					}
 				}
 			} else {
 				throw new CmdOptionParseException(
@@ -443,12 +459,14 @@ public class CmdOptionsParser {
 							"Ambiguous command line parameter configuration. Cannot have more than one @CmdParameter element in one config.");
 				}
 				String description = anno.description();
+				String[] args = anno.args();
 				Class<? extends CmdOptionHandler> annoHandlerType = anno
 						.handler();
-				foundParameter = new Parameter(element, description, anno
+				foundParameter = new Parameter(element, args, description, anno
 						.minCount(), anno.maxCount(), annoHandlerType);
 			}
 		}
+
 		return foundParameter;
 	}
 
@@ -475,6 +493,14 @@ public class CmdOptionsParser {
 				firstColSize = Math.max(firstColSize, strings[0].length());
 			}
 		}
+
+		Parameter parameter = scanCmdParameter(type);
+		if (parameter != null && parameter.getDescription() != null
+				&& parameter.getDescription().length() > 0) {
+			optionsToFormat
+					.add(new String[] { "", parameter.getDescription() });
+		}
+
 		firstColSize += 2;
 		String optionsString = "";
 		optionsString += prefix != null ? prefix : "Options:";

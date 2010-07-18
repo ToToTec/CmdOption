@@ -1,5 +1,14 @@
 package de.tobiasroeser.cmdoption;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target( { ElementType.FIELD, ElementType.METHOD })
+@Documented
 public @interface CmdParameter {
 
 	/**
@@ -20,10 +29,15 @@ public @interface CmdParameter {
 	int minCount() default 1;
 
 	/**
-	 * The maximal allowed count this parameter can be specified. Use -1 to specify
-	 * infinity.
+	 * The maximal allowed count this parameter can be specified. Use -1 to
+	 * specify infinity.
 	 */
 	int maxCount() default 1;
+
+	/**
+	 * The arguments (their names) supported by this option.
+	 */
+	String[] args() default {};
 
 	// /**
 	// * The position of this parameter relative to potential other parameters.
