@@ -5,7 +5,7 @@
 	<groupId>de.tobiasroeser</groupId>
 	<artifactId>de.tobiasroeser.cmdoption</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<description>A simple annotation-driven command line parser toolkit for Java 5 applications.</description>
 
 	<build>

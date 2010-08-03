@@ -5,11 +5,11 @@ import de.tobiasroeser.jackage.build.utils.*;
 
 public class Jackbuild implements Build {
 
-	public void configure(Builder builder) {
+	public void configure(final Builder builder) {
 		MavenJarDependency.setDefaultMvnRepo(".m2repo");
 
 		final String name = "de.tobiasroeser.cmdoption";
-		final String version = "0.0.2";
+		final String version = "0.0.3";
 		final String jar = "target/" + name + "-" + version + ".jar";
 
 
@@ -52,6 +52,18 @@ public class Jackbuild implements Build {
 			public void execute(GoalContext context) {
 				final String cp = FileUtils.formatClasspath(jar, testNg.resolve());
 				JavaUtils.exec("java", "-cp", cp, "org.testng.TestNG", "-d", "target/test-output", "-testjar", testjar);
+			}
+		});
+
+		builder.goal("deploy-to-mvn", jar, new Goal() {
+			public void execute(GoalContext context) {
+				final String repo = builder.getProp("DEPLOY_MVN_REPO");
+				if(repo == null) {
+					context.error("Please give remote maven repo url with -D DEPLOY_MVN_REPO");
+				}
+
+				JavaUtils.exec("mvn", "deploy:deploy-file", "-Durl", repo, "-DrepositoryId", "repo", "-Dfile=" + jar, 
+"-DgroupId=de.tobiasoeser", "-DartifactId=cmdoption", "-Dversion=" + version, "-DgeneratePom=true", "-DrepositoryLayout=default");
 			}
 		});
 
