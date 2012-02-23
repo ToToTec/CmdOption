@@ -23,13 +23,14 @@ public @interface CmdOption {
 	String[] names() default {};
 
 	/**
-	 * The description of the option. You can use variable substitutes (e.g.
-	 * ${verbose}) to reference other options (e.g. --verbose).}.
+	 * The description of the option.
 	 */
 	String description() default "";
 
 	/**
-	 * The arguments (their names) supported by this option.
+	 * The arguments (their names) supported by this option. The count of
+	 * arguments is used, to determite the {@link CmdOptionHandler} to use. The
+	 * names are used in messages and the usage display.
 	 */
 	String[] args() default {};
 
@@ -37,11 +38,14 @@ public @interface CmdOption {
 	 * An {@link CmdOptionHandler} to apply the parsed option to the annotated
 	 * field or method. If this is not given, all handler registered for
 	 * auto-detect will by tried in order.
+	 * 
+	 * @see CmdlineParser#registerHandler(CmdOptionHandler)
 	 */
 	Class<? extends CmdOptionHandler> handler() default CmdOptionHandler.class;
 
 	/**
-	 * The minimal needed count this option is required.
+	 * The minimal allowed count this option can be specified. Optional options
+	 * have 0 here, which is the default.
 	 */
 	int minCount() default 0;
 
@@ -51,6 +55,12 @@ public @interface CmdOption {
 	 */
 	int maxCount() default 1;
 
+	/**
+	 * Special marker, that this option is a help request. Typically, such an
+	 * option is used to display a usage information to the user and exit. If
+	 * such an option is parsed, validation will be disabled to allow help
+	 * request even when the command line is incorrect.
+	 */
 	boolean isHelp() default false;
 
 	/**

@@ -1,6 +1,7 @@
 package de.tototec.cmdoption;
 
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -369,6 +370,22 @@ public class CmdlineParser {
 
 		for (AccessibleObject element : elements) {
 			element.setAccessible(true);
+
+			if (element instanceof Field && element.getAnnotation(CmdOptionDelegate.class) != null) {
+				debug("Found delegate object at: {0}", element);
+				try {
+					Object delegate = ((Field) element).get(object);
+					if (delegate != null) {
+						scanOptions(delegate);
+					}
+				} catch (IllegalArgumentException e) {
+					debug("Could not scan delegate object at: {0}", element);
+				} catch (IllegalAccessException e) {
+					debug("Could not scan delegate object at: {0}", element);
+				}
+				continue;
+			}
+
 			CmdOption anno = element.getAnnotation(CmdOption.class);
 			if (anno == null) {
 				continue;
