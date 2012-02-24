@@ -1,5 +1,9 @@
 package de.tototec.cmdoption;
 
+import java.util.Comparator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class CommandHandle {
 
 	private final String[] names;
@@ -29,4 +33,21 @@ public class CommandHandle {
 	public Object getObject() {
 		return object;
 	}
+	
+	public static class CommandHandleComparator implements Comparator<CommandHandle> {
+		public int compare(CommandHandle c1, CommandHandle c2) {
+			// TODO: check for null and zero names
+			return sanitizeString(c1.getNames()[0]).compareTo(sanitizeString(c2.getNames()[0]));
+		}
+
+		public String sanitizeString(String string) {
+			Pattern pattern = Pattern.compile("^[^A-Za-z0-9]*(.*)$");
+			Matcher matcher = pattern.matcher(string);
+			if (matcher.matches()) {
+				return matcher.group(1);
+			}
+			return string;
+		}
+	}
+
 }

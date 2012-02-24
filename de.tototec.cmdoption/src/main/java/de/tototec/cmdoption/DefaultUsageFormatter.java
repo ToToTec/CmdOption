@@ -8,10 +8,14 @@ import java.util.List;
 
 public class DefaultUsageFormatter implements UsageFormatter {
 
-	private boolean withCommandOptions = false;
+	private final boolean withCommandDetails;
 
-	public void setWithCommandOptions(boolean withCommandOptions) {
-		this.withCommandOptions = withCommandOptions;
+	private int lineLength = 80;
+	private int colSpace = 2;
+	private int col1Prefix = 2;
+
+	public DefaultUsageFormatter(boolean withCommandDetails) {
+		this.withCommandDetails = withCommandDetails;
 	}
 
 	public void format(StringBuilder output, String programName, List<OptionHandle> options,
@@ -29,6 +33,10 @@ public class DefaultUsageFormatter implements UsageFormatter {
 				it.remove();
 			}
 		}
+		Collections.sort(sortedOptions, new OptionHandle.OptionHandleComparator());
+
+		ArrayList<CommandHandle> sortedCommands = new ArrayList<CommandHandle>(commands);
+		Collections.sort(sortedCommands, new CommandHandle.CommandHandleComparator());
 
 		// Usage
 		output.append("Usage: ");
@@ -36,76 +44,191 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		if (!options.isEmpty()) {
 			output.append(" [options]");
 		}
-		if (!commands.isEmpty()) {
-			output.append(" [command] [command options]");
-		}
 		if (parameter != null) {
 			output.append(" [parameter]");
 		}
+		if (!commands.isEmpty()) {
+			output.append(" [command]");
+			boolean cmdsHaveOptions = false;
+			boolean cmdsHaveParameter = false;
+			for (CommandHandle cmd : commands) {
+				cmdsHaveOptions |= !cmd.getCmdlineParser().getOptions().isEmpty();
+				cmdsHaveParameter |= cmd.getCmdlineParser().getParameter() != null;
+			}
+			if (cmdsHaveOptions) {
+				output.append(" [command options]");
+			}
+			if (cmdsHaveParameter) {
+				output.append(" [command parameters]");
+			}
+		}
 		output.append("\n");
 
-		// Options
-		if (!options.isEmpty()) {
-			Collections.sort(sortedOptions, new OptionHandle.OptionHandleComparator());
+		formatOptions(output, sortedOptions, "\nOptions:");
 
-			// Create columns: 1. option name + args, 2. description
-			LinkedList<String[]> optionsToFormat = new LinkedList<String[]>();
-			for (OptionHandle option : sortedOptions) {
-				final String optionNames = Util.mkString(option.getNames(), null, ",", null);
-				final String argNames = Util.mkString(option.getArgs(), null, " ", null);
-				optionsToFormat.add(new String[] { optionNames + (argNames.length() == 0 ? "" : (" " + argNames)),
-						option.getDescription() });
-			}
+		formatCommands(output, sortedCommands, "\nCommands:");
 
-			// Calc width of first column
-			int firstColSize = 8;
-			for (String[] strings : optionsToFormat) {
-				if (strings.length > 0) {
-					firstColSize = Math.max(firstColSize, strings[0].length());
-				}
-			}
+		if (withCommandDetails) {
+			for (CommandHandle command : sortedCommands) {
+				ArrayList<OptionHandle> commandOptions = new ArrayList<OptionHandle>(command.getCmdlineParser()
+						.getOptions());
+				Collections.sort(commandOptions, new OptionHandle.OptionHandleComparator());
 
-			firstColSize += 2;
-			output.append("\nOptions:\n");
-			for (String[] strings : optionsToFormat) {
-				output.append(strings[0]);
-				for (int count = firstColSize - strings[0].length(); count > 0; --count) {
-					output.append(" ");
-				}
-				output.append(strings[1]);
-				output.append("\n");
+				formatOptions(output, commandOptions,
+						"\nOptions for command: " + Util.mkString(command.getNames(), null, ", ", null));
+
+				formatParameter(output, command.getCmdlineParser().getParameter(),
+						"\nParameter for command: " + Util.mkString(command.getNames(), null, ", ", null));
 			}
 		}
 
-		// TODO: Commands
-		if (!commands.isEmpty()) {
-			int firstColSize = 8;
-			for (CommandHandle cmd : commands) {
-				firstColSize = Math.max(firstColSize, Util.mkString(cmd.getNames(), null, ",", null).length());
+		// Parameter
+		formatParameter(output, parameter, "\nParameter:");
+	}
+
+	protected void formatParameter(StringBuilder output, OptionHandle parameter, String title) {
+		if (parameter == null) {
+			return;
+		}
+
+		output.append(title).append("\n");
+		mkSpace(output, col1Prefix);
+		output.append(Util.mkString(parameter.getArgs(), null, " ", null));
+		if (parameter.getDescription() != null) {
+			mkSpace(output, colSpace);
+			output.append(parameter.getDescription());
+		}
+		output.append("\n");
+	}
+
+	protected void formatOptions(StringBuilder output, List<OptionHandle> options, String title) {
+		if (options == null || options.isEmpty()) {
+			return;
+		}
+
+		LinkedList<String[]> optionsToFormat = new LinkedList<String[]>();
+		boolean hasOptions = false;
+		for (OptionHandle option : options) {
+			if (option.isHidden()) {
+				continue;
 			}
-			firstColSize += 2;
-			output.append("\nCommands:\n");
-			for (CommandHandle cmd : commands) {
-				String cmdName = Util.mkString(cmd.getNames(), null, ",", null);
-				output.append(cmdName);
-				for (int count = firstColSize - cmdName.length(); count > 0; --count) {
-					output.append(" ");
-				}
-				output.append(cmd.getDescription());
-				output.append("\n");
+			hasOptions = true;
+			final String optionNames = Util.mkString(option.getNames(), null, ",", null);
+			final String argNames = Util.mkString(option.getArgs(), null, " ", null);
+			optionsToFormat.add(new String[] { optionNames + (argNames.length() == 0 ? "" : (" " + argNames)),
+					option.getDescription() });
+		}
+
+		if (!hasOptions) {
+			return;
+		}
+
+		if (title != null) {
+			output.append(title).append("\n");
+		}
+
+		formatTable(output, optionsToFormat, col1Prefix, colSpace, lineLength);
+	}
+
+	protected void formatCommands(StringBuilder output, List<CommandHandle> commands, String title) {
+		if (commands == null || commands.isEmpty()) {
+			return;
+		}
+
+		if (title != null) {
+			output.append(title).append("\n");
+		}
+
+		LinkedList<String[]> commandsToFormat = new LinkedList<String[]>();
+		for (CommandHandle option : commands) {
+			final String commandNames = Util.mkString(option.getNames(), null, ",", null);
+			commandsToFormat.add(new String[] { commandNames, option.getDescription() });
+		}
+
+		formatTable(output, commandsToFormat, col1Prefix, colSpace, lineLength);
+	}
+
+	public static void mkSpace(StringBuilder output, int space) {
+		for (int i = 0; i < space; ++i) {
+			output.append(" ");
+		}
+	}
+
+	public static void formatTable(StringBuilder output, List<String[]> twoColData, int prefix, int space,
+			int maxLineLength) {
+		// Calc first col width
+		int firstColSize = 2;
+		for (String[] col : twoColData) {
+			if (col.length > 0 && col[0] != null) {
+				firstColSize = Math.max(firstColSize, col[0].length());
 			}
 		}
 
-		// TODO: Parameter
-		if (parameter != null) {
-			output.append("\nParameter:\n");
-			output.append(Util.mkString(parameter.getArgs(), null, " ", null));
-			if (parameter.getDescription() != null) {
-				output.append("  ");
-				output.append(parameter.getDescription());
+		boolean secondColInNewLine = ((prefix + space + firstColSize + 10) > maxLineLength);
+
+		// Write output
+		for (String[] col : twoColData) {
+			if (col.length > 0) {
+				// first col
+				mkSpace(output, prefix);
+				int cursor = prefix;
+
+				if (col[0] != null) {
+					output.append(col[0]);
+					cursor += col[0].length();
+				}
+
+				// fill space to next col
+				if (secondColInNewLine) {
+					output.append("\n");
+				} else {
+					mkSpace(output, prefix + firstColSize + space - cursor);
+				}
+
+				// second col
+				if (col[1] != null) {
+					if (secondColInNewLine) {
+						wrap(output, col[1], prefix + space, maxLineLength - prefix - space);
+					} else {
+						wrap(output, col[1], prefix + space + firstColSize, maxLineLength - prefix - space
+								- firstColSize);
+					}
+				}
 			}
 			output.append("\n");
 		}
 
+	}
+
+	public static void wrap(StringBuilder output, String text, int nextLinePrefix, int lineLength) {
+		text = text.trim();
+
+		if (text.length() <= lineLength) {
+			output.append(text);
+		} else {
+
+			int bestWrap = -1;
+
+			if (" ".equals(text.substring(lineLength, lineLength + 1))) {
+				bestWrap = lineLength;
+			} else {
+				bestWrap = text.substring(0, lineLength).lastIndexOf(" ");
+			}
+
+			if (bestWrap == -1) {
+				bestWrap = text.indexOf(" ");
+			}
+
+			if (bestWrap > 0) {
+				output.append(text.substring(0, bestWrap)).append("\n");
+				for (int i = 0; i < nextLinePrefix; ++i) {
+					output.append(" ");
+				}
+				wrap(output, text.substring(bestWrap), nextLinePrefix, lineLength);
+			} else {
+				output.append(text);
+			}
+
+		}
 	}
 }

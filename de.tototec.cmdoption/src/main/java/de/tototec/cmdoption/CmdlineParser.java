@@ -23,17 +23,35 @@ import de.tototec.cmdoption.handler.StringMethodHandler;
 
 public class CmdlineParser {
 
+	/**
+	 * The option handle handling the main parameter(s) of the command line.
+	 */
 	private OptionHandle parameter = null;
+	/**
+	 * List of all recognized option handles.
+	 */
 	private final List<OptionHandle> options = new LinkedList<OptionHandle>();
+	/**
+	 * Map from option name to option handle.
+	 */
 	private final Map<String, OptionHandle> quickOptionMap = new LinkedHashMap<String, OptionHandle>();
+	/**
+	 * List of all recognized command handles.
+	 */
 	private final List<CommandHandle> commands = new LinkedList<CommandHandle>();
+	/**
+	 * Map from command name to command handle.
+	 */
 	private final Map<String, CommandHandle> quickCommandMap = new LinkedHashMap<String, CommandHandle>();
 
-	// The command to use, if no command was given AND no parameters are defined
+	/**
+	 * The command name to use, if no command was given AND no parameters are
+	 * defined.
+	 */
 	private String defaultCommandName = null;
 
 	private final Map<Class<? extends CmdOptionHandler>, CmdOptionHandler> handlerRegistry;
-	private UsageFormatter usageFormatter = new DefaultUsageFormatter();
+	private UsageFormatter usageFormatter = new DefaultUsageFormatter(true);
 	private String programName;
 	private String parsedCommandName;
 
@@ -480,6 +498,18 @@ public class CmdlineParser {
 			programName = parent.programName + " " + programName;
 		}
 		usageFormatter.format(output, programName, options, commands, parameter);
+	}
+
+	public List<OptionHandle> getOptions() {
+		return options;
+	}
+
+	public List<CommandHandle> getCommands() {
+		return commands;
+	}
+
+	public OptionHandle getParameter() {
+		return parameter;
 	}
 
 }
