@@ -41,7 +41,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		// Usage
 		output.append("Usage: ");
 		output.append(programName);
-		if (!options.isEmpty()) {
+		if (!sortedOptions.isEmpty()) {
 			output.append(" [options]");
 		}
 		if (parameter != null) {
