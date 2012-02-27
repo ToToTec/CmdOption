@@ -20,12 +20,6 @@ public class DefaultUsageFormatter implements UsageFormatter {
 
 	public void format(StringBuilder output, String programName, List<OptionHandle> options,
 			List<CommandHandle> commands, OptionHandle parameter) {
-		format(output, programName, options, commands, parameter, null, true, "");
-	}
-
-	public void format(StringBuilder output, String programName, List<OptionHandle> options,
-			List<CommandHandle> commands, OptionHandle parameter, String selectedCommand, boolean withUsage,
-			String prefix) {
 
 		ArrayList<OptionHandle> sortedOptions = new ArrayList<OptionHandle>(options);
 		for (Iterator<OptionHandle> it = sortedOptions.iterator(); it.hasNext();) {

@@ -512,4 +512,12 @@ public class CmdlineParser {
 		return parameter;
 	}
 
+	public String getProgramName() {
+		return programName;
+	}
+
+	public void setProgramName(String programName) {
+		this.programName = programName;
+	}
+
 }
