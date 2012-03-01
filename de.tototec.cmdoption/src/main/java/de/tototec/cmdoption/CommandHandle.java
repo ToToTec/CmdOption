@@ -10,12 +10,14 @@ public class CommandHandle {
 	private final String description;
 	private final CmdlineParser cmdlineParser;
 	private final Object object;
+	private final boolean hidden;
 
-	public CommandHandle(String[] names, String description, CmdlineParser cmdlineParser, Object object) {
+	public CommandHandle(String[] names, String description, CmdlineParser cmdlineParser, Object object, boolean hidden) {
 		this.names = names;
 		this.description = description;
 		this.cmdlineParser = cmdlineParser;
 		this.object = object;
+		this.hidden = hidden;
 	}
 
 	public String[] getNames() {
@@ -33,7 +35,11 @@ public class CommandHandle {
 	public Object getObject() {
 		return object;
 	}
-	
+
+	public boolean isHidden() {
+		return hidden;
+	}
+
 	public static class CommandHandleComparator implements Comparator<CommandHandle> {
 		public int compare(CommandHandle c1, CommandHandle c2) {
 			// TODO: check for null and zero names

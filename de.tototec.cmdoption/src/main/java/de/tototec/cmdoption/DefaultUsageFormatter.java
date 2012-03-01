@@ -30,6 +30,11 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		Collections.sort(sortedOptions, new OptionHandle.OptionHandleComparator());
 
 		ArrayList<CommandHandle> sortedCommands = new ArrayList<CommandHandle>(commands);
+		for (Iterator<CommandHandle> it = sortedCommands.iterator(); it.hasNext();) {
+			if (it.next().isHidden()) {
+				it.remove();
+			}
+		}
 		Collections.sort(sortedCommands, new CommandHandle.CommandHandleComparator());
 
 		// Usage
@@ -41,11 +46,11 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		if (parameter != null) {
 			output.append(" [parameter]");
 		}
-		if (!commands.isEmpty()) {
+		if (!sortedCommands.isEmpty()) {
 			output.append(" [command]");
 			boolean cmdsHaveOptions = false;
 			boolean cmdsHaveParameter = false;
-			for (CommandHandle cmd : commands) {
+			for (CommandHandle cmd : sortedCommands) {
 				cmdsHaveOptions |= !cmd.getCmdlineParser().getOptions().isEmpty();
 				cmdsHaveParameter |= cmd.getCmdlineParser().getParameter() != null;
 			}
@@ -66,6 +71,11 @@ public class DefaultUsageFormatter implements UsageFormatter {
 			for (CommandHandle command : sortedCommands) {
 				ArrayList<OptionHandle> commandOptions = new ArrayList<OptionHandle>(command.getCmdlineParser()
 						.getOptions());
+				for (Iterator<OptionHandle> it = commandOptions.iterator(); it.hasNext();) {
+					if (it.next().isHidden()) {
+						it.remove();
+					}
+				}
 				Collections.sort(commandOptions, new OptionHandle.OptionHandleComparator());
 
 				formatOptions(output, commandOptions,

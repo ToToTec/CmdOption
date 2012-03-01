@@ -14,5 +14,7 @@ public @interface CmdCommand {
 	String[] names();
 
 	String description() default "";
+	
+	boolean hidden() default false;
 
 }

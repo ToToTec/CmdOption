@@ -365,7 +365,8 @@ public class CmdlineParser {
 
 		CmdlineParser subCmdlineParser = new CmdlineParser(this, names[0], object);
 		// TODO: set programm name
-		CommandHandle command = new CommandHandle(names, commandAnno.description(), subCmdlineParser, object);
+		CommandHandle command = new CommandHandle(names, commandAnno.description(), subCmdlineParser, object,
+				commandAnno.hidden());
 
 		for (String name : names) {
 			if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
