@@ -55,7 +55,10 @@ public class CmdlineParser {
 	private String programName;
 	private String parsedCommandName;
 
+	private boolean debugAllowed = true;
 	private boolean debugMode = false;
+	final String DEBUG_PREFIX = "CMDOPTION_DEBUG: ";
+
 	private final CmdlineParser parent;
 
 	protected CmdlineParser(CmdlineParser parent, String commandName, Object commandObject) {
@@ -86,13 +89,18 @@ public class CmdlineParser {
 			parent.debug(msg, args);
 		} else {
 			if (debugMode) {
+
 				if (args == null || args.length == 0) {
-					System.out.println("CMDOPTION: " + msg);
+					System.out.println(DEBUG_PREFIX + msg);
 				} else {
-					System.out.println("CMDOPTION: " + MessageFormat.format(msg, args));
+					System.out.println(DEBUG_PREFIX + MessageFormat.format(msg, args));
 				}
 			}
 		}
+	}
+
+	public void setDebugModeAllowed(boolean debugAllowed) {
+		this.debugAllowed = debugAllowed;
 	}
 
 	public void setUsageFormatter(UsageFormatter usageFormatter) {
@@ -159,9 +167,14 @@ public class CmdlineParser {
 			if (parseOptions && stopOption.equals(param)) {
 				parseOptions = false;
 
-			} else if (param.equals("--CMDOPTION_DEBUG")) {
-				debugMode = true;
-				debug("Enabled debug mode.");
+			} else if (debugAllowed && param.equals("--CMDOPTION_DEBUG")) {
+				if (!debugMode) {
+					debugMode = true;
+					debug("Enabled debug mode");
+					debug("Parameter: " + parameter);
+					debug("Options: " + options);
+					debug("Commands: " + commands);
+				}
 
 			} else if (parseOptions && quickOptionMap.containsKey(param)) {
 				// Found an option
