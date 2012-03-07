@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="0.0.99-SNAPSHOT"
+VERSION="0.1.0"
 
 SRC="cmdoption-src-${VERSION}"
 DIST="cmdoption-dist-${VERSION}"
