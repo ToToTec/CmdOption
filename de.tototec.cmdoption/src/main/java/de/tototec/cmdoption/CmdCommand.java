@@ -11,10 +11,19 @@ import java.lang.annotation.Target;
 @Documented
 public @interface CmdCommand {
 
+	/**
+	 * The name of this command.
+	 */
 	String[] names();
 
+	/**
+	 * the description of this command.
+	 */
 	String description() default "";
-	
+
+	/**
+	 * If <code>true</code>, this command is not shown in the usage output.
+	 */
 	boolean hidden() default false;
 
 }

@@ -9,7 +9,10 @@ import java.lang.annotation.Target;
 import de.tototec.cmdoption.handler.CmdOptionHandler;
 
 /**
- * An Command line option which optionally supports parameters.
+ * An Command line option which optionally supports parameters. It can be used
+ * to annotate fields and methods as options. At most on field or method can be
+ * annotated with an zero names attribute, which means that field or method
+ * represents the main parameter .
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -18,7 +21,8 @@ import de.tototec.cmdoption.handler.CmdOptionHandler;
 public @interface CmdOption {
 
 	/**
-	 * The names of this option.
+	 * The names of this option. If not specified, the annotated field or method
+	 * represents the main parameter. At most on main parameter is allowed.
 	 */
 	String[] names() default {};
 
