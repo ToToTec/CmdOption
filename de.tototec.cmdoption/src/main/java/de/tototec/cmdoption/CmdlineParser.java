@@ -280,7 +280,7 @@ public class CmdlineParser {
 				}
 
 			} else {
-				throw new CmdlineParserException("Unsupported option found: " + param);
+				throw new CmdlineParserException("Unsupported option or parameter found: " + param);
 			}
 		}
 

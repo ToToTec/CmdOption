@@ -13,7 +13,7 @@ public class ParserTest {
 		cp.parse();
 	}
 
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Unsupported option found: --help")
+	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Unsupported option or parameter found: --help")
 	public void test2() {
 		class Config {
 		}
@@ -36,7 +36,7 @@ public class ParserTest {
 		assertEquals(config.help, true);
 	}
 
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Unsupported option found: true")
+	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Unsupported option or parameter found: true")
 	public void test3a() {
 		CmdlineParser cp = new CmdlineParser(new Config3());
 		cp.parse(new String[] { "--help", "true" });
