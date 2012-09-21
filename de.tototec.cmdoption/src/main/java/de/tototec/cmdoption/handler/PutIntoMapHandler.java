@@ -11,21 +11,20 @@ import java.util.Map;
  */
 public class PutIntoMapHandler implements CmdOptionHandler {
 
-	public void applyParams(Object config, AccessibleObject element,
-			String[] args) throws CmdOptionHandlerException {
+	public void applyParams(final Object config, final AccessibleObject element, final String[] args,
+			final String optionName) throws CmdOptionHandlerException {
 		try {
-			Field field = (Field) element;
+			final Field field = (Field) element;
 			@SuppressWarnings("unchecked")
-			Map<String, String> map = (Map<String, String>) field.get(config);
+			final Map<String, String> map = (Map<String, String>) field.get(config);
 			map.put(args[0], args[1]);
-		} catch (Exception e) {
-			throw new CmdOptionHandlerException("Could not apply parameters: "
-					+ Arrays.toString(args) + " to field " + element, e);
+		} catch (final Exception e) {
+			throw new CmdOptionHandlerException("Could not apply parameters: " + Arrays.toString(args) + " to field "
+					+ element, e);
 		}
 	}
 
-	public boolean canHandle(AccessibleObject element, int argCount) {
-		return argCount == 2 && element instanceof Field
-				&& Map.class.isAssignableFrom(((Field) element).getType());
+	public boolean canHandle(final AccessibleObject element, final int argCount) {
+		return argCount == 2 && element instanceof Field && Map.class.isAssignableFrom(((Field) element).getType());
 	}
 }

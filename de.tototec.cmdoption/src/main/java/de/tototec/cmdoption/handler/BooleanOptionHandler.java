@@ -12,40 +12,40 @@ import java.lang.reflect.Method;
  */
 public class BooleanOptionHandler implements CmdOptionHandler {
 
-	public void applyParams(Object config, AccessibleObject element,
-			String[] args) {
+	public void applyParams(final Object config, final AccessibleObject element, final String[] args,
+			final String optionName) {
 		try {
 			if (element instanceof Field) {
-				Field field = (Field) element;
+				final Field field = (Field) element;
 				field.set(config, true);
 			} else {
-				Method method = (Method) element;
+				final Method method = (Method) element;
 				if (method.getParameterTypes().length == 1) {
 					method.invoke(config, true);
 				} else {
 					method.invoke(config);
 				}
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public boolean canHandle(AccessibleObject element, int argCount) {
+	public boolean canHandle(final AccessibleObject element, final int argCount) {
 		if (argCount != 0)
 			return false;
 
 		if (element instanceof Field) {
-			Field field = (Field) element;
-			Class<?> type = field.getType();
+			final Field field = (Field) element;
+			final Class<?> type = field.getType();
 			return boolean.class.equals(type) || Boolean.class.equals(type);
 		} else if (element instanceof Method) {
-			Method method = (Method) element;
+			final Method method = (Method) element;
 			if (method.getParameterTypes().length == 0) {
 				return true;
 			}
 			if (method.getParameterTypes().length == 1) {
-				Class<?> type = method.getParameterTypes()[0];
+				final Class<?> type = method.getParameterTypes()[0];
 				return boolean.class.equals(type) || Boolean.class.equals(type);
 			}
 		}

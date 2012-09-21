@@ -41,8 +41,12 @@ public interface CmdOptionHandler {
 	 *            The element itself (field or method) to apply to.
 	 * @param args
 	 *            The parsed arguments of the option.
+	 * @param optionName
+	 *            The actual name of the currently handled option. This is only
+	 *            required to create good error messages.
 	 * @throws CmdOptionHandlerException
 	 *             When the argument can not be applied to the config object.
 	 */
-	void applyParams(Object config, AccessibleObject element, String[] args) throws CmdOptionHandlerException;
+	void applyParams(Object config, AccessibleObject element, String[] args, String optionName)
+			throws CmdOptionHandlerException;
 }

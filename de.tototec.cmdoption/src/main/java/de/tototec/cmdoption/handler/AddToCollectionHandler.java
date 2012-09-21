@@ -9,23 +9,20 @@ import java.util.Collection;
  */
 public class AddToCollectionHandler implements CmdOptionHandler {
 
-	public void applyParams(Object config, AccessibleObject element,
-			String[] args) {
+	public void applyParams(final Object config, final AccessibleObject element, final String[] args,
+			final String optionName) {
 		try {
-			Field field = (Field) element;
+			final Field field = (Field) element;
 			@SuppressWarnings("unchecked")
-			Collection<String> collection = (Collection<String>) field
-					.get(config);
+			final Collection<String> collection = (Collection<String>) field.get(config);
 			collection.add(args[0]);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public boolean canHandle(AccessibleObject element, int argCount) {
-		return argCount == 1
-				&& element instanceof Field
-				&& Collection.class.isAssignableFrom(((Field) element)
-						.getType());
+	public boolean canHandle(final AccessibleObject element, final int argCount) {
+		return argCount == 1 && element instanceof Field
+				&& Collection.class.isAssignableFrom(((Field) element).getType());
 	}
 }

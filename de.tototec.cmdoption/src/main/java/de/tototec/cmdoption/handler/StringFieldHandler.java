@@ -10,24 +10,24 @@ import java.util.Arrays;
  */
 public class StringFieldHandler implements CmdOptionHandler {
 
-	public boolean canHandle(AccessibleObject element, int argCount) {
+	public boolean canHandle(final AccessibleObject element, final int argCount) {
 		if (element instanceof Field && argCount == 1) {
-			Field field = (Field) element;
+			final Field field = (Field) element;
 			return field.getType().equals(String.class);
 		}
 		return false;
 	}
 
-	public void applyParams(Object config, AccessibleObject element,
-			String[] args) throws CmdOptionHandlerException {
+	public void applyParams(final Object config, final AccessibleObject element, final String[] args,
+			final String optionName) throws CmdOptionHandlerException {
 
 		try {
-			Field field = (Field) element;
+			final Field field = (Field) element;
 			field.set(config, args[0]);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// TODO better message
-			throw new CmdOptionHandlerException("Could not apply parameters: "
-					+ Arrays.toString(args) + " to field " + element, e);
+			throw new CmdOptionHandlerException("Could not apply parameters: " + Arrays.toString(args) + " to field "
+					+ element, e);
 		}
 
 	}

@@ -26,21 +26,22 @@ public class BooleanFieldHandler implements CmdOptionHandler {
 	 * @param falseWords
 	 * @param caseSensitive
 	 */
-	public BooleanFieldHandler(String[] trueWords, String[] falseWords, boolean caseSensitive) {
+	public BooleanFieldHandler(final String[] trueWords, final String[] falseWords, final boolean caseSensitive) {
 		this.trueWords = trueWords;
 		this.falseWords = falseWords;
 		this.caseSensitive = caseSensitive;
 	}
 
-	public boolean canHandle(AccessibleObject element, int argCount) {
+	public boolean canHandle(final AccessibleObject element, final int argCount) {
 		if (element instanceof Field && argCount == 1) {
-			Field field = (Field) element;
+			final Field field = (Field) element;
 			return field.getType().equals(Boolean.class) || field.getType().equals(boolean.class);
 		}
 		return false;
 	}
 
-	public void applyParams(Object config, AccessibleObject element, String[] args) throws CmdOptionHandlerException {
+	public void applyParams(final Object config, final AccessibleObject element, final String[] args,
+			final String optionName) throws CmdOptionHandlerException {
 
 		String arg = args[0];
 		if (!caseSensitive) {
@@ -49,7 +50,7 @@ public class BooleanFieldHandler implements CmdOptionHandler {
 
 		Boolean decission = null;
 
-		for (String word : trueWords) {
+		for (final String word : trueWords) {
 			if (arg.equals(caseSensitive ? word : word.toLowerCase())) {
 				decission = true;
 				break;
@@ -60,7 +61,7 @@ public class BooleanFieldHandler implements CmdOptionHandler {
 			if (falseWords == null || falseWords.length == 0) {
 				decission = false;
 			} else {
-				for (String word : falseWords) {
+				for (final String word : falseWords) {
 					if (arg.equals(caseSensitive ? word : word.toLowerCase())) {
 						decission = false;
 						break;
@@ -74,9 +75,9 @@ public class BooleanFieldHandler implements CmdOptionHandler {
 		}
 
 		try {
-			Field field = (Field) element;
+			final Field field = (Field) element;
 			field.set(config, decission);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new CmdOptionHandlerException("Could not apply argument '" + args[0] + "'.", e);
 		}
 

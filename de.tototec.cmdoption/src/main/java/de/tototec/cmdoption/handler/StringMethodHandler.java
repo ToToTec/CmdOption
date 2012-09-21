@@ -11,12 +11,12 @@ import java.util.Arrays;
  */
 public class StringMethodHandler implements CmdOptionHandler {
 
-	public boolean canHandle(AccessibleObject element, int argCount) {
+	public boolean canHandle(final AccessibleObject element, final int argCount) {
 		if (element instanceof Method) {
-			Method method = (Method) element;
+			final Method method = (Method) element;
 			if (method.getParameterTypes().length == argCount) {
 				boolean areStrings = true;
-				for (Class<?> p : method.getParameterTypes()) {
+				for (final Class<?> p : method.getParameterTypes()) {
 					areStrings &= String.class.isAssignableFrom(p);
 				}
 				return areStrings;
@@ -25,11 +25,12 @@ public class StringMethodHandler implements CmdOptionHandler {
 		return false;
 	}
 
-	public void applyParams(Object config, AccessibleObject element, String[] args) throws CmdOptionHandlerException {
+	public void applyParams(final Object config, final AccessibleObject element, final String[] args,
+			final String optionName) throws CmdOptionHandlerException {
 		try {
-			Method method = (Method) element;
+			final Method method = (Method) element;
 			method.invoke(config, (Object[]) args);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new CmdOptionHandlerException("Could not apply parameters: " + Arrays.toString(args) + " to method "
 					+ element, e);
 		}

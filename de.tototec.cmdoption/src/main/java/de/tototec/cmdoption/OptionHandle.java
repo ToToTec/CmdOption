@@ -78,7 +78,7 @@ class OptionHandle {
 	public boolean isHelp() {
 		return help;
 	}
-	
+
 	public static class OptionHandleComparator implements Comparator<OptionHandle> {
 		public int compare(OptionHandle o1, OptionHandle o2) {
 			// TODO: check for null and zero names

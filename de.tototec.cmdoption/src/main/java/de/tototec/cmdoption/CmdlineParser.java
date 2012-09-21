@@ -23,6 +23,8 @@ import de.tototec.cmdoption.handler.StringMethodHandler;
 
 public class CmdlineParser {
 
+	private I18n i18n = I18nFactory.getI18n(CmdlineParser.class);
+
 	/**
 	 * The option handle handling the main parameter(s) of the command line.
 	 */
@@ -61,7 +63,7 @@ public class CmdlineParser {
 
 	private final CmdlineParser parent;
 
-	protected CmdlineParser(CmdlineParser parent, String commandName, Object commandObject) {
+	protected CmdlineParser(final CmdlineParser parent, final String commandName, final Object commandObject) {
 		this.parent = parent;
 		debugMode = parent.debugMode;
 		programName = commandName;
@@ -69,7 +71,7 @@ public class CmdlineParser {
 		scanOptions(commandObject);
 	}
 
-	public CmdlineParser(Object... objects) {
+	public CmdlineParser(final Object... objects) {
 		parent = null;
 		programName = "<main class>";
 		handlerRegistry = new LinkedHashMap<Class<? extends CmdOptionHandler>, CmdOptionHandler>();
@@ -84,7 +86,7 @@ public class CmdlineParser {
 		registerHandler(new StringMethodHandler());
 	}
 
-	private void debug(String msg, Object... args) {
+	private void debug(final String msg, final Object... args) {
 		if (parent != null) {
 			parent.debug(msg, args);
 		} else {
@@ -99,11 +101,11 @@ public class CmdlineParser {
 		}
 	}
 
-	public void setDebugModeAllowed(boolean debugAllowed) {
+	public void setDebugModeAllowed(final boolean debugAllowed) {
 		this.debugAllowed = debugAllowed;
 	}
 
-	public void setUsageFormatter(UsageFormatter usageFormatter) {
+	public void setUsageFormatter(final UsageFormatter usageFormatter) {
 		this.usageFormatter = usageFormatter;
 	}
 
@@ -113,12 +115,12 @@ public class CmdlineParser {
 	//
 	// }
 
-	public void setDefaultCommandName(String defaultCommandName) {
+	public void setDefaultCommandName(final String defaultCommandName) {
 		this.defaultCommandName = defaultCommandName;
 	}
 
-	public void setDefaultCommandClass(Class<?> defaultCommandClass) {
-		CmdCommand anno = defaultCommandClass.getAnnotation(CmdCommand.class);
+	public void setDefaultCommandClass(final Class<?> defaultCommandClass) {
+		final CmdCommand anno = defaultCommandClass.getAnnotation(CmdCommand.class);
 		if (anno == null) {
 			throw new IllegalArgumentException("Given class is not annotated with @" + CmdCommand.class.getSimpleName());
 		}
@@ -128,13 +130,14 @@ public class CmdlineParser {
 		setDefaultCommandName(anno.names()[0]);
 	}
 
-	public void parse(String... cmdline) {
+	public void parse(final String... cmdline) {
 		parse(false, true, cmdline);
 	}
 
-	public void parse(boolean dryrun, boolean detectHelpAndSkipValidation, String... cmdline) {
+	public void parse(final boolean dryrun, final boolean detectHelpAndSkipValidation, String... cmdline) {
 		if (defaultCommandName != null && !quickCommandMap.containsKey(defaultCommandName)) {
-			throw new CmdlineParserException("Default command '" + defaultCommandName + "' is not a known command.");
+			final String msg = I18n.marktr("Default command \"{0}\" is not a known command.");
+			throw CmdlineParserException.withI18n(msg, defaultCommandName);
 		}
 
 		if (!dryrun) {
@@ -149,10 +152,10 @@ public class CmdlineParser {
 		boolean parseOptions = true;
 		final String stopOption = "--";
 
-		// optionCount counts the occurence for each option handle in the
+		// optionCount counts the occurrence for each option handle in the
 		// cmdline
 		final Map<OptionHandle, Integer> optionCount = new LinkedHashMap<OptionHandle, Integer>();
-		for (OptionHandle option : options) {
+		for (final OptionHandle option : options) {
 			optionCount.put(option, 0);
 		}
 		if (parameter != null) {
@@ -178,47 +181,50 @@ public class CmdlineParser {
 
 			} else if (parseOptions && quickOptionMap.containsKey(param)) {
 				// Found an option
-				OptionHandle optionHandle = quickOptionMap.get(param);
+				final OptionHandle optionHandle = quickOptionMap.get(param);
 				optionCount.put(optionHandle, optionCount.get(optionHandle) + 1);
 				if (optionHandle.isHelp()) {
 					helpDetected = true;
 				}
 
 				if (cmdline.length <= index + optionHandle.getArgsCount()) {
-					int countOfGivenParams = cmdline.length - index - 1;
-					throw new CmdlineParserException("Missing argument(s): "
-							+ Util.mkString(
-									Arrays.asList(optionHandle.getArgs()).subList(countOfGivenParams,
-											optionHandle.getArgsCount()), null, ", ", null) + ". Option '" + param
-							+ "' requires " + optionHandle.getArgsCount() + " arguments, but you gave "
-							+ countOfGivenParams + ".");
+					throw new CmdlineParserException(
+							null,
+							I18n.marktr("Missing arguments(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}."),
+							Util.mkString(
+									Arrays.asList(optionHandle.getArgs()).subList(cmdline.length - index - 1,
+											optionHandle.getArgsCount()), null, ", ", null), param, optionHandle
+											.getArgsCount(), cmdline.length - index - 1);
 				}
 				// slurp next cmdline arguments into option arguments
-				String[] optionArgs = Arrays.copyOfRange(cmdline, index + 1, index + 1 + optionHandle.getArgsCount());
+				final String[] optionArgs = Arrays.copyOfRange(cmdline, index + 1,
+						index + 1 + optionHandle.getArgsCount());
 				index += optionHandle.getArgsCount();
 
-				AccessibleObject element = optionHandle.getElement();
-				CmdOptionHandler handler = findHandler(element, optionHandle.getArgsCount(),
+				final AccessibleObject element = optionHandle.getElement();
+				final CmdOptionHandler handler = findHandler(element, optionHandle.getArgsCount(),
 						optionHandle.getCmdOptionHandlerType());
 
 				if (handler == null) {
-					throw new CmdlineParserException("No suitable handler found for option: " + param + " ("
-							+ optionHandle.getArgsCount() + " argument(s))");
+					throw new CmdlineParserException(null,
+							I18n.marktr("No suitable handler found for option: {0} ({1} argument(s))"), param,
+							optionHandle.getArgsCount());
 				}
 
 				if (!dryrun) {
 					try {
-						handler.applyParams(optionHandle.getObject(), element, optionArgs);
-					} catch (CmdOptionHandlerException e) {
-						throw new CmdlineParserException(e.getMessage(), e);
-					} catch (Exception e) {
-						throw new CmdlineParserException("Could not apply parameters " + Arrays.toString(optionArgs)
-								+ " to field/method " + element, e);
+						handler.applyParams(optionHandle.getObject(), element, optionArgs, param);
+					} catch (final CmdOptionHandlerException e) {
+						throw new CmdlineParserException(e.getMessage(), e, e.getLocalizedMessage());
+					} catch (final Exception e) {
+						throw new CmdlineParserException(e,
+								I18n.marktr("Could not apply parameters {0} to field/method {1}"),
+								Arrays.toString(optionArgs), element);
 					}
 				}
 			} else if (parseOptions && quickCommandMap.containsKey(param)) {
 				// Found a command
-				CommandHandle commandHandle = quickCommandMap.get(param);
+				final CommandHandle commandHandle = quickCommandMap.get(param);
 				if (!dryrun) {
 					parsedCommandName = param;
 				}
@@ -230,9 +236,9 @@ public class CmdlineParser {
 
 			} else if (parameter == null && defaultCommandName != null
 					&& quickCommandMap.containsKey(defaultCommandName)) {
-				// Asume a default command inserted here
+				// Assume a default command inserted here
 				debug("Unsupported option '" + param + "' found, assuming default command: " + defaultCommandName);
-				CommandHandle commandHandle = quickCommandMap.get(defaultCommandName);
+				final CommandHandle commandHandle = quickCommandMap.get(defaultCommandName);
 
 				if (!dryrun) {
 					parsedCommandName = defaultCommandName;
@@ -248,62 +254,74 @@ public class CmdlineParser {
 				optionCount.put(parameter, optionCount.get(parameter) + 1);
 
 				if (cmdline.length <= index + parameter.getArgsCount() - 1) {
-					int countOfGivenParams = cmdline.length - index;
-					throw new CmdlineParserException("Missing arguments: "
-							+ Arrays.asList(parameter.getArgs()).subList(countOfGivenParams, parameter.getArgsCount())
-							+ " Parameter requires " + parameter.getArgsCount() + " arguments, but you gave "
-							+ countOfGivenParams + ".");
+					final int countOfGivenParams = cmdline.length - index;
+					throw CmdlineParserException.withI18n(
+							I18n.marktr("Missing arguments: {0} Parameter requires {1} arguments, but you gave {2}."),
+							Arrays.asList(parameter.getArgs()).subList(countOfGivenParams, parameter.getArgsCount()),
+							parameter.getArgsCount(), countOfGivenParams);
 				}
 				// slurp next cmdline arguments into option arguments
-				String[] optionArgs = Arrays.copyOfRange(cmdline, index, index + parameter.getArgsCount());
+				final String[] optionArgs = Arrays.copyOfRange(cmdline, index, index + parameter.getArgsCount());
 				// -1, because index gets increased by one at end of for-loop
 				index += parameter.getArgsCount() - 1;
 
-				AccessibleObject element = parameter.getElement();
-				CmdOptionHandler handler = findHandler(element, parameter.getArgsCount(),
+				final AccessibleObject element = parameter.getElement();
+				final CmdOptionHandler handler = findHandler(element, parameter.getArgsCount(),
 						parameter.getCmdOptionHandlerType());
 
 				if (handler == null) {
-					throw new CmdlineParserException("No suitable handler found for option: " + param);
+					throw new CmdlineParserException(null, I18n.marktr("No suitable handler found for option: {0}"),
+							param);
 				}
 
 				if (!dryrun) {
 					try {
 						debug("Apply main parameter from parameters: {0}", Util.mkString(optionArgs, null, ", ", null));
-						handler.applyParams(parameter.getObject(), element, optionArgs);
-					} catch (CmdOptionHandlerException e) {
-						throw new CmdlineParserException(e.getMessage(), e);
-					} catch (Exception e) {
-						throw new CmdlineParserException("Could not apply parameters " + Arrays.toString(optionArgs)
-								+ " to field/method " + element, e);
+						handler.applyParams(parameter.getObject(), element, optionArgs, param);
+					} catch (final CmdOptionHandlerException e) {
+						throw new CmdlineParserException(e.getMessage(), e, e.getLocalizedMessage());
+					} catch (final Exception e) {
+						throw new CmdlineParserException(e,
+								I18n.marktr("Could not apply parameters {0} to field/method {1}"),
+								Arrays.toString(optionArgs), element);
 					}
 				}
 
 			} else {
-				throw new CmdlineParserException("Unsupported option or parameter found: " + param);
+				throw new CmdlineParserException(null, I18n.marktr("Unsupported option or parameter found: {0}"), param);
 			}
 		}
 
 		if (!detectHelpAndSkipValidation || !helpDetected) {
 			// Validate optionCount matches allowed
-			for (Entry<OptionHandle, Integer> optionC : optionCount.entrySet()) {
-				OptionHandle option = optionC.getKey();
-				Integer count = optionC.getValue();
+			for (final Entry<OptionHandle, Integer> optionC : optionCount.entrySet()) {
+				final OptionHandle option = optionC.getKey();
+				final Integer count = optionC.getValue();
 				if (count < option.getMinCount() || (option.getMaxCount() > 0 && count > option.getMaxCount())) {
-					final String range;
+					final String rangeMsg;
+					final Object[] rangeArgs;
 					if (option.getMaxCount() < 0) {
-						range = "at least " + option.getMinCount() + " times";
+						rangeMsg = I18n.marktr("at least {0}");
+						rangeArgs = new Object[] { option.getMinCount() };
 					} else {
-						range = "between " + option.getMinCount() + " and " + option.getMaxCount() + " times";
+						rangeMsg = I18n.marktr("between {0} and {1}");
+						rangeArgs = new Object[] { option.getMinCount(), option.getMaxCount() };
 					}
-					final String optionName;
+					final String msg;
+					final Object[] msgArgs;
+					final Object[] msgArgsTr;
 					if (option.getNames() == null || option.getNames().length == 0) {
-						optionName = "Main parameter '" + Util.mkString(option.getArgs(), null, " ", null) + "'";
+						msg = I18n.marktr("Main parameter \"{0}\" was given {1} times, but must be given {2} times");
+						msgArgs = new Object[] { Util.mkString(option.getArgs(), null, " ", null), count,
+								MessageFormat.format(rangeMsg, rangeArgs) };
+						msgArgsTr = new Object[] { Util.mkString(option.getArgs(), null, " ", null), count,
+								i18n.tr(rangeMsg, rangeArgs) };
 					} else {
-						optionName = "Option '" + option.getNames()[0] + "'";
+						msg = I18n.marktr("Option \"{0}\" was given {1} times, but must be given {2} times");
+						msgArgs = new Object[] { option.getNames()[0], count, MessageFormat.format(rangeMsg, rangeArgs) };
+						msgArgsTr = new Object[] { option.getNames()[0], count, i18n.tr(rangeMsg, rangeArgs) };
 					}
-					throw new CmdlineParserException(optionName + " was given " + count + " times, but must be given "
-							+ range);
+					throw new CmdlineParserException(MessageFormat.format(msg, msgArgs), i18n.tr(msg, msgArgsTr));
 				}
 			}
 		}
@@ -324,8 +342,8 @@ public class CmdlineParser {
 		}
 	}
 
-	protected CmdOptionHandler findHandler(AccessibleObject element, int argsCount,
-			Class<? extends CmdOptionHandler> cmdOptionHandlerType) {
+	protected CmdOptionHandler findHandler(final AccessibleObject element, final int argsCount,
+			final Class<? extends CmdOptionHandler> cmdOptionHandlerType) {
 		CmdOptionHandler handler = null;
 		if (cmdOptionHandlerType != null && !cmdOptionHandlerType.equals(CmdOptionHandler.class)) {
 			// requested a specific handler
@@ -334,8 +352,9 @@ public class CmdlineParser {
 			} else {
 				try {
 					handler = cmdOptionHandlerType.newInstance();
-				} catch (Exception e) {
-					throw new CmdlineParserException("Could not create handler: " + cmdOptionHandlerType, e);
+				} catch (final Exception e) {
+					throw new CmdlineParserException(e, I18n.marktr("Could not create handler: {0}"),
+							cmdOptionHandlerType);
 				}
 				// commented out, because self-introduced handler (only in a
 				// specific annotation) should not be made available to all
@@ -344,7 +363,7 @@ public class CmdlineParser {
 			}
 		} else {
 			// walk through registered hander and find one
-			for (CmdOptionHandler regHandle : handlerRegistry.values()) {
+			for (final CmdOptionHandler regHandle : handlerRegistry.values()) {
 				if (regHandle.canHandle(element, argsCount)) {
 					handler = regHandle;
 					break;
@@ -358,8 +377,8 @@ public class CmdlineParser {
 		}
 	}
 
-	public void addObject(Object... objects) {
-		for (Object object : objects) {
+	public void addObject(final Object... objects) {
+		for (final Object object : objects) {
 			if (object.getClass().getAnnotation(CmdCommand.class) != null) {
 				scanCommand(object);
 			} else {
@@ -368,22 +387,23 @@ public class CmdlineParser {
 		}
 	}
 
-	protected void scanCommand(Object object) {
-		CmdCommand commandAnno = object.getClass().getAnnotation(CmdCommand.class);
-		String[] names = commandAnno.names();
+	protected void scanCommand(final Object object) {
+		final CmdCommand commandAnno = object.getClass().getAnnotation(CmdCommand.class);
+		final String[] names = commandAnno.names();
 
 		if (names == null || names.length == 0) {
-			throw new CmdlineParserException("Command found without required name in: " + object);
+			throw CmdlineParserException.withI18n(I18n.marktr("Command found without required name in: {0}"), object);
 		}
 
-		CmdlineParser subCmdlineParser = new CmdlineParser(this, names[0], object);
+		final CmdlineParser subCmdlineParser = new CmdlineParser(this, names[0], object);
 		// TODO: set programm name
-		CommandHandle command = new CommandHandle(names, commandAnno.description(), subCmdlineParser, object,
+		final CommandHandle command = new CommandHandle(names, commandAnno.description(), subCmdlineParser, object,
 				commandAnno.hidden());
 
-		for (String name : names) {
+		for (final String name : names) {
 			if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
-				throw new CmdlineParserException("Duplicate command/option name '" + name + "' found in: " + object);
+				throw CmdlineParserException.withI18n(
+						I18n.marktr("Duplicate command/option name \"{0}\" found in: {1}"), name, object);
 			}
 			quickCommandMap.put(name, command);
 		}
@@ -391,42 +411,42 @@ public class CmdlineParser {
 
 	}
 
-	protected void scanOptions(Object object) {
-		Class<?> class1 = object.getClass();
+	protected void scanOptions(final Object object) {
+		final Class<?> class1 = object.getClass();
 
-		Set<AccessibleObject> elements = new LinkedHashSet<AccessibleObject>();
+		final Set<AccessibleObject> elements = new LinkedHashSet<AccessibleObject>();
 		elements.addAll(Arrays.asList(class1.getDeclaredFields()));
 		elements.addAll(Arrays.asList(class1.getFields()));
 		elements.addAll(Arrays.asList(class1.getDeclaredMethods()));
 		elements.addAll(Arrays.asList(class1.getMethods()));
 
-		for (AccessibleObject element : elements) {
+		for (final AccessibleObject element : elements) {
 			element.setAccessible(true);
 
 			if (element instanceof Field && element.getAnnotation(CmdOptionDelegate.class) != null) {
 				debug("Found delegate object at: {0}", element);
 				try {
-					Object delegate = ((Field) element).get(object);
+					final Object delegate = ((Field) element).get(object);
 					if (delegate != null) {
 						scanOptions(delegate);
 					}
-				} catch (IllegalArgumentException e) {
+				} catch (final IllegalArgumentException e) {
 					debug("Could not scan delegate object at: {0}", element);
-				} catch (IllegalAccessException e) {
+				} catch (final IllegalAccessException e) {
 					debug("Could not scan delegate object at: {0}", element);
 				}
 				continue;
 			}
 
-			CmdOption anno = element.getAnnotation(CmdOption.class);
+			final CmdOption anno = element.getAnnotation(CmdOption.class);
 			if (anno == null) {
 				continue;
 			}
 
-			String[] names = anno.names();
+			final String[] names = anno.names();
 			// The Interface itself means to specified handler
-			Class<? extends CmdOptionHandler> annoHandlerType = anno.handler() == CmdOptionHandler.class ? null : anno
-					.handler();
+			final Class<? extends CmdOptionHandler> annoHandlerType = anno.handler() == CmdOptionHandler.class ? null
+					: anno.handler();
 
 			// No names is not allowed currently
 			// TODO: check if we could use no-name options as parameter semantic
@@ -440,25 +460,26 @@ public class CmdlineParser {
 							+ parameter.getElement() + " Second definition: " + element);
 				}
 				// TODO: should we ignore the help parameter?
-				OptionHandle paramHandle = new OptionHandle(new String[] {}, anno.description(), annoHandlerType,
+				final OptionHandle paramHandle = new OptionHandle(new String[] {}, anno.description(), annoHandlerType,
 						object, element, anno.args(), anno.minCount(), anno.maxCount(), false /*
-																							 * cannot
-																							 * be
-																							 * a
-																							 * help
-																							 * option
-																							 */, anno.hidden());
+						 * cannot
+						 * be
+						 * a
+						 * help
+						 * option
+						 */, anno.hidden());
 
 				if (paramHandle.getArgsCount() <= 0) {
-					throw new CmdlineParserException("Parameter definition must support at least on argument.");
+					throw CmdlineParserException.withI18n(I18n
+							.marktr("Parameter definition must support at least on argument."));
 				}
 				parameter = paramHandle;
 
 			} else {
-				OptionHandle option = new OptionHandle(names, anno.description(), annoHandlerType, object, element,
-						anno.args(), anno.minCount(), anno.maxCount(), anno.isHelp(), anno.hidden());
+				final OptionHandle option = new OptionHandle(names, anno.description(), annoHandlerType, object,
+						element, anno.args(), anno.minCount(), anno.maxCount(), anno.isHelp(), anno.hidden());
 
-				for (String name : names) {
+				for (final String name : names) {
 					if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
 						throw new CmdlineParserException("Duplicate command/option name '" + name + "' found in: "
 								+ element);
@@ -474,21 +495,21 @@ public class CmdlineParser {
 		handlerRegistry.clear();
 	}
 
-	public void unregisterHandler(Class<? extends CmdOptionHandler> type) {
+	public void unregisterHandler(final Class<? extends CmdOptionHandler> type) {
 		if (type != null) {
 			handlerRegistry.remove(type);
 		}
 	}
 
-	public void registerHandler(CmdOptionHandler handler) {
+	public void registerHandler(final CmdOptionHandler handler) {
 		if (handler != null) {
 			debug("Register CmdOptionHandler: {0}", handler);
 			handlerRegistry.put(handler.getClass(), handler);
 		}
 	}
 
-	public void commandUsage(Class<?> command) {
-		for (CommandHandle cmdHandle : commands) {
+	public void commandUsage(final Class<?> command) {
+		for (final CommandHandle cmdHandle : commands) {
 			if (cmdHandle.getObject().getClass().equals(command)) {
 				cmdHandle.getCmdlineParser().usage();
 				return;
@@ -500,12 +521,12 @@ public class CmdlineParser {
 	}
 
 	public void usage() {
-		StringBuilder output = new StringBuilder();
+		final StringBuilder output = new StringBuilder();
 		usage(output);
 		System.out.print(output.toString());
 	}
 
-	public void usage(StringBuilder output) {
+	public void usage(final StringBuilder output) {
 		String programName = this.programName;
 		if (parent != null) {
 			// We are a command
@@ -530,7 +551,7 @@ public class CmdlineParser {
 		return programName;
 	}
 
-	public void setProgramName(String programName) {
+	public void setProgramName(final String programName) {
 		this.programName = programName;
 	}
 
