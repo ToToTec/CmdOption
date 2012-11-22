@@ -137,13 +137,18 @@ public class CmdlineParser {
 	public void parse(final boolean dryrun, final boolean detectHelpAndSkipValidation, String... cmdline) {
 		if (defaultCommandName != null && !quickCommandMap.containsKey(defaultCommandName)) {
 			final String msg = I18n.marktr("Default command \"{0}\" is not a known command.");
-			throw CmdlineParserException.withI18n(msg, defaultCommandName);
+			throw new CmdlineParserException(null, msg, defaultCommandName);
 		}
 
 		if (!dryrun) {
 			// Check without applying anything
 			parse(true, detectHelpAndSkipValidation, cmdline);
 		}
+
+		if (dryrun) {
+			validateOptions();
+		}
+
 		// Avoid null access
 		cmdline = cmdline == null ? new String[] {} : cmdline;
 
@@ -255,7 +260,7 @@ public class CmdlineParser {
 
 				if (cmdline.length <= index + parameter.getArgsCount() - 1) {
 					final int countOfGivenParams = cmdline.length - index;
-					throw CmdlineParserException.withI18n(
+					throw new CmdlineParserException(null,
 							I18n.marktr("Missing arguments: {0} Parameter requires {1} arguments, but you gave {2}."),
 							Arrays.asList(parameter.getArgs()).subList(countOfGivenParams, parameter.getArgsCount()),
 							parameter.getArgsCount(), countOfGivenParams);
@@ -304,8 +309,13 @@ public class CmdlineParser {
 						rangeMsg = I18n.marktr("at least {0}");
 						rangeArgs = new Object[] { option.getMinCount() };
 					} else {
-						rangeMsg = I18n.marktr("between {0} and {1}");
-						rangeArgs = new Object[] { option.getMinCount(), option.getMaxCount() };
+						if (option.getMinCount() == option.getMaxCount()) {
+							rangeMsg = I18n.marktr("exactly {0}");
+							rangeArgs = new Object[] { option.getMinCount() };
+						} else {
+							rangeMsg = I18n.marktr("between {0} and {1}");
+							rangeArgs = new Object[] { option.getMinCount(), option.getMaxCount() };
+						}
 					}
 					final String msg;
 					final Object[] msgArgs;
@@ -322,6 +332,35 @@ public class CmdlineParser {
 						msgArgsTr = new Object[] { option.getNames()[0], count, i18n.tr(rangeMsg, rangeArgs) };
 					}
 					throw new CmdlineParserException(MessageFormat.format(msg, msgArgs), i18n.tr(msg, msgArgsTr));
+				}
+			}
+
+			// Validate required options because of 'required' attribute in
+			// other options
+			for (final Entry<OptionHandle, Integer> optionC : optionCount.entrySet()) {
+				if (optionC.getValue() > 0) {
+					final OptionHandle calledOption = optionC.getKey();
+					for (final String required : calledOption.getRequires()) {
+						// check, of an option was called with that name, if
+						// not, this is an error
+						final OptionHandle reqOptionHandle = quickOptionMap.get(required);
+						if (reqOptionHandle == null) {
+							// required option does not exists, error
+							// TODO: error
+
+
+						} else {
+							final Integer reqOptionCount = optionCount.get(reqOptionHandle);
+							if (reqOptionCount == null || reqOptionCount.intValue() <= 0) {
+								// required option was not called, this is an
+								// error
+								// TODO: error
+								throw new CmdlineParserException(null,
+										I18n.marktr("When using option \"{0}\" also option \"{1}\" must be given."),
+										calledOption.getNames()[0], required);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -392,7 +431,7 @@ public class CmdlineParser {
 		final String[] names = commandAnno.names();
 
 		if (names == null || names.length == 0) {
-			throw CmdlineParserException.withI18n(I18n.marktr("Command found without required name in: {0}"), object);
+			throw new CmdlineParserException(null, I18n.marktr("Command found without required name in: {0}"), object);
 		}
 
 		final CmdlineParser subCmdlineParser = new CmdlineParser(this, names[0], object);
@@ -402,13 +441,29 @@ public class CmdlineParser {
 
 		for (final String name : names) {
 			if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
-				throw CmdlineParserException.withI18n(
+				throw new CmdlineParserException(null,
 						I18n.marktr("Duplicate command/option name \"{0}\" found in: {1}"), name, object);
 			}
 			quickCommandMap.put(name, command);
 		}
 		commands.add(command);
 
+	}
+
+	protected void validateOptions() {
+		for (final OptionHandle optionHandle : options) {
+			for (final String reqOptionName : optionHandle.getRequires()) {
+				if (quickOptionMap.get(reqOptionName) == null) {
+					// required option does not exists
+					final String optionName = optionHandle.getNames() == null ? "<no name>"
+							: optionHandle.getNames()[0];
+
+					throw new CmdlineParserException(null,
+							I18n.marktr("The option \"{0}\" requires the missing option \"{1}\"."), optionName,
+							reqOptionName);
+				}
+			}
+		}
 	}
 
 	protected void scanOptions(final Object object) {
@@ -467,17 +522,19 @@ public class CmdlineParser {
 						 * a
 						 * help
 						 * option
-						 */, anno.hidden());
+						 */, anno.hidden(),
+						 anno.requires());
 
 				if (paramHandle.getArgsCount() <= 0) {
-					throw CmdlineParserException.withI18n(I18n
-							.marktr("Parameter definition must support at least on argument."));
+					throw new CmdlineParserException(null,
+							I18n.marktr("Parameter definition must support at least on argument."));
 				}
 				parameter = paramHandle;
 
 			} else {
 				final OptionHandle option = new OptionHandle(names, anno.description(), annoHandlerType, object,
-						element, anno.args(), anno.minCount(), anno.maxCount(), anno.isHelp(), anno.hidden());
+						element, anno.args(), anno.minCount(), anno.maxCount(), anno.isHelp(), anno.hidden(),
+						anno.requires());
 
 				for (final String name : names) {
 					if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {

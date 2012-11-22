@@ -72,4 +72,10 @@ public @interface CmdOption {
 	 */
 	boolean hidden() default false;
 
+	/**
+	 * If this option is only valid in conjunction with other options, you
+	 * should declare those other options here.
+	 */
+	String[] requires() default {};
+
 }
