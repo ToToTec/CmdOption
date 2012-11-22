@@ -3,7 +3,7 @@ import de.tototec.sbuild.TargetRefs._
 import de.tototec.sbuild.ant._
 import de.tototec.sbuild.ant.tasks._
 
-@version("0.1.0")
+@version("0.1.0.9002")
 @classpath("http://repo1.maven.org/maven2/org/apache/ant/ant/1.8.3/ant-1.8.3.jar")
 class SBuild(implicit project: Project) {
 
@@ -12,7 +12,13 @@ class SBuild(implicit project: Project) {
 
   val version = "SVN"
   val jar = "target/de.tototec.cmdoption-" + version + ".jar"
+
+  SchemeHandler("mvn", new MvnSchemeHandler())
   
+  val testCp = "mvn:org.testng:testng:6.1"
+
+  ExportDependencies("eclipse.classpath", testCp)
+
   Target("phony:all") dependsOn jar
 
   Target("phony:clean") exec {
