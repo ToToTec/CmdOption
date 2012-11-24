@@ -12,7 +12,8 @@ class SBuild(implicit project: Project) {
 
   SchemeHandler("mvn", new MvnSchemeHandler())
 
-  val testCp = "mvn:org.testng:testng:6.4"
+  val testCp = "mvn:org.testng:testng:6.4" ~
+    "mvn:com.beust:jcommander:1.30"
 
   ExportDependencies("eclipse.classpath", testCp)
 
@@ -22,21 +23,41 @@ class SBuild(implicit project: Project) {
 
   val poFiles = Path("src/main/po").listFiles.filter(f => f.getName.endsWith(".po"))
 
-  Target("phony:all") dependsOn jar
+  Target("phony:all") dependsOn jar ~ "test"
 
   Target("phony:clean") exec {
     AntDelete(dir = Path("target"))
   }
 
-  Target("phony:compile") exec { ctx: TargetContext =>
-    IfNotUpToDate(Path("src/main/java"), Path("target"), ctx) {
-      AntMkdir(dir = Path("target/classes"))
+  def compileJava(sources: java.io.File, destDir: java.io.File, ctx: TargetContext) = {
+    IfNotUpToDate(sources, Path("target"), ctx) {
+      AntMkdir(dir = destDir)
       AntJavac(source = "1.5", target = "1.5", encoding = "UTF-8",
         debug = true, fork = true, includeAntRuntime = false,
-        srcDir = AntPath("src/main/java"),
-        destDir = Path("target/classes")
+        srcDir = AntPath(sources),
+        destDir = destDir
       )
     }
+  }
+
+  Target("phony:compile") exec { ctx: TargetContext =>
+    compileJava(Path("src/main/java"), Path("target/classes"), ctx)
+  }
+
+  Target("phony:compileTest") dependsOn testCp exec { ctx: TargetContext =>
+    compileJava(Path("src/test/java"), Path("target/test-classes"), ctx)
+  }
+
+  Target("phony:test") dependsOn "compileTest" ~ testCp ~ jar exec { ctx: TargetContext =>
+    val tests = Seq(
+      "de.tototec.cmdoption.DelegateTest",
+      "de.tototec.cmdoption.ExampleSemVerTest",
+      "de.tototec.cmdoption.ParserTest",
+      "de.tototec.cmdoption.handler.UrlHandlerTest"
+    )
+
+    AntJava(failOnError = true, classpath = AntPath(locations = ctx.fileDependencies ++ Seq(Path("target/test-classes"))),
+      className = "org.testng.TestNG", arguments = Seq("-testclass", tests.mkString(",")))
   }
 
   val msgCatalog = Path("target/po/messages.pot")
@@ -85,7 +106,7 @@ class SBuild(implicit project: Project) {
 
   Target("phony:installToMvn") dependsOn jar exec {
     AntExec(
-      executable = "mvn", 
+      executable = "mvn",
       args = Array("install:install-file", "-DgroupId=de.tototec", "-DartifactId=de.tototec.cmdoption", "-Dversion=" + version, "-Dfile=" + jar, "-DgeneratePom=true", "-Dpackaging=jar"))
   } help "Install jar into Maven repository."
 
