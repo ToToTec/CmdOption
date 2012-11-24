@@ -8,6 +8,8 @@ import java.util.List;
 
 public class DefaultUsageFormatter implements UsageFormatter {
 
+	private final I18n i18n = I18nFactory.getI18n(DefaultUsageFormatter.class);
+
 	private final boolean withCommandDetails;
 
 	private int lineLength = 80;
@@ -42,16 +44,16 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		}
 
 		// Usage
-		output.append("Usage: ");
-		output.append(cmdlineModel.getProgramName() == null ? "program" : cmdlineModel.getProgramName());
+		output.append(i18n.tr("Usage:")).append(" ");
+		output.append(cmdlineModel.getProgramName() == null ? i18n.tr("program") : cmdlineModel.getProgramName());
 		if (!sortedOptions.isEmpty()) {
-			output.append(" [options]");
+			output.append(" ").append(i18n.tr("[options]"));
 		}
 		if (cmdlineModel.getParameter() != null) {
-			output.append(" [parameter]");
+			output.append(" ").append(i18n.tr("[parameter]"));
 		}
 		if (!sortedCommands.isEmpty()) {
-			output.append(" [command]");
+			output.append(" ").append(i18n.tr("[command]"));
 			boolean cmdsHaveOptions = false;
 			boolean cmdsHaveParameter = false;
 			for (final CommandHandle cmd : sortedCommands) {
@@ -59,17 +61,17 @@ public class DefaultUsageFormatter implements UsageFormatter {
 				cmdsHaveParameter |= cmd.getCmdlineParser().getCmdlineModel().getParameter() != null;
 			}
 			if (cmdsHaveOptions) {
-				output.append(" [command options]");
+				output.append(" ").append(i18n.tr("[command options]"));
 			}
 			if (cmdsHaveParameter) {
-				output.append(" [command parameters]");
+				output.append(" ").append(i18n.tr("[command parameters]"));
 			}
 		}
 		output.append("\n");
 
-		formatOptions(output, sortedOptions, "\nOptions:");
+		formatOptions(output, sortedOptions, "\n" + i18n.tr("Options:"));
 
-		formatCommands(output, sortedCommands, "\nCommands:");
+		formatCommands(output, sortedCommands, "\n" + i18n.tr("Commands:"));
 
 		if (withCommandDetails) {
 			for (final CommandHandle command : sortedCommands) {
@@ -82,16 +84,22 @@ public class DefaultUsageFormatter implements UsageFormatter {
 				}
 				Collections.sort(commandOptions, new OptionHandle.OptionHandleComparator());
 
-				formatOptions(output, commandOptions,
-						"\nOptions for command: " + Util.mkString(command.getNames(), null, ", ", null));
+				formatOptions(
+						output,
+						commandOptions,
+						"\n" + i18n.tr("Options for command:") + " "
+								+ Util.mkString(command.getNames(), null, ", ", null));
 
-				formatParameter(output, command.getCmdlineParser().getCmdlineModel().getParameter(),
-						"\nParameter for command: " + Util.mkString(command.getNames(), null, ", ", null));
+				formatParameter(
+						output,
+						command.getCmdlineParser().getCmdlineModel().getParameter(),
+						"\n" + i18n.tr("Parameter for command:") + " "
+								+ Util.mkString(command.getNames(), null, ", ", null));
 			}
 		}
 
 		// Parameter
-		formatParameter(output, cmdlineModel.getParameter(), "\nParameter:");
+		formatParameter(output, cmdlineModel.getParameter(), "\n" + i18n.tr("Parameter:"));
 	}
 
 	protected void formatParameter(final StringBuilder output, final OptionHandle parameter, final String title) {

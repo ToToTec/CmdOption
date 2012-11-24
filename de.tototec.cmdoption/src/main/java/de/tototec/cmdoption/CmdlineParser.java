@@ -544,8 +544,10 @@ public class CmdlineParser {
 				// + element);
 				// No names means this is the ONLY parameter
 				if (parameter != null) {
-					throw new CmdlineParserException("More than one parameter definition found. First definition: "
-							+ parameter.getElement() + " Second definition: " + element);
+					throw new CmdlineParserException(
+							null,
+							I18n.marktr("More than one parameter definition found. First definition: {0} Second definition: {1}"),
+							parameter.getElement(), element);
 				}
 				// TODO: should we ignore the help parameter?
 				final OptionHandle paramHandle = new OptionHandle(new String[] {}, anno.description(), annoHandlerType,
@@ -571,8 +573,8 @@ public class CmdlineParser {
 
 				for (final String name : names) {
 					if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
-						throw new CmdlineParserException("Duplicate command/option name '" + name + "' found in: "
-								+ element);
+						throw new CmdlineParserException(null,
+								I18n.marktr("Duplicate command/option name \"{0}\" found in: {1}"), name, element);
 					}
 					quickOptionMap.put(name, option);
 				}
@@ -619,7 +621,6 @@ public class CmdlineParser {
 	public void usage(final StringBuilder output) {
 		usageFormatter.format(output, getCmdlineModel());
 	}
-
 
 	public CmdlineModel getCmdlineModel() {
 		String programName = this.programName;
