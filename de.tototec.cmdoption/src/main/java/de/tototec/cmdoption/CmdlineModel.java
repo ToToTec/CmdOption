@@ -2,6 +2,7 @@ package de.tototec.cmdoption;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class CmdlineModel {
 
@@ -10,14 +11,16 @@ public class CmdlineModel {
 	private final List<CommandHandle> commands;
 	private final OptionHandle parameter;
 	private String aboutLine;
+	private ResourceBundle resourceBundle;
 
 	public CmdlineModel(final String programName, final List<OptionHandle> options, final List<CommandHandle> commands,
-			final OptionHandle parameter, final String aboutLine) {
+			final OptionHandle parameter, final String aboutLine, final ResourceBundle resourceBundle) {
 		this.programName = programName;
 		this.aboutLine = aboutLine;
 		this.options = new ArrayList<OptionHandle>(options);
 		this.commands = new ArrayList<CommandHandle>(commands);
 		this.parameter = parameter;
+		this.resourceBundle = resourceBundle;
 	}
 
 	public String getProgramName() {
@@ -38,6 +41,10 @@ public class CmdlineModel {
 
 	public String getAboutLine() {
 		return aboutLine;
+	}
+
+	public ResourceBundle getResourceBundle() {
+		return resourceBundle;
 	}
 
 	@Override

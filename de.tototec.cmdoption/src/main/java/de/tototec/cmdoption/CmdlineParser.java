@@ -8,8 +8,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import de.tototec.cmdoption.handler.AddToCollectionHandler;
@@ -63,6 +65,8 @@ public class CmdlineParser {
 	final String DEBUG_PREFIX = "CMDOPTION_DEBUG: ";
 
 	private final CmdlineParser parent;
+
+	private ResourceBundle resourceBundle;
 
 	protected CmdlineParser(final CmdlineParser parent, final String commandName, final Object commandObject) {
 		this.parent = parent;
@@ -628,7 +632,7 @@ public class CmdlineParser {
 			// We are a command
 			programName = parent.programName + " " + programName;
 		}
-		return new CmdlineModel(programName, options, commands, parameter, aboutLine);
+		return new CmdlineModel(programName, options, commands, parameter, aboutLine, resourceBundle);
 	}
 
 	/**
@@ -643,6 +647,14 @@ public class CmdlineParser {
 	 */
 	public void setAboutLine(final String aboutLine) {
 		this.aboutLine = aboutLine;
+	}
+
+	public void setResourceBundle(final String resourceBundleName, final ClassLoader classloader) {
+		this.resourceBundle = ResourceBundle.getBundle(resourceBundleName, Locale.getDefault(), classloader);
+	}
+
+	public void setResourceBundle(final ResourceBundle resourceBundle) {
+		this.resourceBundle = resourceBundle;
 	}
 
 }

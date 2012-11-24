@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 public class DefaultUsageFormatter implements UsageFormatter {
 
@@ -18,6 +20,17 @@ public class DefaultUsageFormatter implements UsageFormatter {
 
 	public DefaultUsageFormatter(final boolean withCommandDetails) {
 		this.withCommandDetails = withCommandDetails;
+	}
+
+	protected String translate(final ResourceBundle resourceBundle, final String string) {
+		if (resourceBundle != null) {
+			try {
+				return resourceBundle.getString(string);
+			} catch (final MissingResourceException e) {
+				// no translation available
+			}
+		}
+		return string;
 	}
 
 	public void format(final StringBuilder output, final CmdlineModel cmdlineModel) {
@@ -40,7 +53,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 
 		// About
 		if (cmdlineModel.getAboutLine() != null && cmdlineModel.getAboutLine().length() > 0) {
-			output.append(cmdlineModel.getAboutLine()).append("\n\n");
+			output.append(translate(cmdlineModel.getResourceBundle(), cmdlineModel.getAboutLine())).append("\n\n");
 		}
 
 		// Usage
@@ -69,9 +82,9 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		}
 		output.append("\n");
 
-		formatOptions(output, sortedOptions, "\n" + i18n.tr("Options:"));
+		formatOptions(output, sortedOptions, "\n" + i18n.tr("Options:"), cmdlineModel.getResourceBundle());
 
-		formatCommands(output, sortedCommands, "\n" + i18n.tr("Commands:"));
+		formatCommands(output, sortedCommands, "\n" + i18n.tr("Commands:"), cmdlineModel.getResourceBundle());
 
 		if (withCommandDetails) {
 			for (final CommandHandle command : sortedCommands) {
@@ -88,21 +101,23 @@ public class DefaultUsageFormatter implements UsageFormatter {
 						output,
 						commandOptions,
 						"\n" + i18n.tr("Options for command:") + " "
-								+ Util.mkString(command.getNames(), null, ", ", null));
+								+ Util.mkString(command.getNames(), null, ", ", null), cmdlineModel.getResourceBundle());
 
 				formatParameter(
 						output,
 						command.getCmdlineParser().getCmdlineModel().getParameter(),
 						"\n" + i18n.tr("Parameter for command:") + " "
-								+ Util.mkString(command.getNames(), null, ", ", null));
+								+ Util.mkString(command.getNames(), null, ", ", null), cmdlineModel.getResourceBundle());
 			}
 		}
 
 		// Parameter
-		formatParameter(output, cmdlineModel.getParameter(), "\n" + i18n.tr("Parameter:"));
+		formatParameter(output, cmdlineModel.getParameter(), "\n" + i18n.tr("Parameter:"),
+				cmdlineModel.getResourceBundle());
 	}
 
-	protected void formatParameter(final StringBuilder output, final OptionHandle parameter, final String title) {
+	protected void formatParameter(final StringBuilder output, final OptionHandle parameter, final String title,
+			final ResourceBundle resourceBundle) {
 		if (parameter == null) {
 			return;
 		}
@@ -112,12 +127,13 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		output.append(Util.mkString(parameter.getArgs(), null, " ", null));
 		if (parameter.getDescription() != null) {
 			mkSpace(output, colSpace);
-			output.append(parameter.getDescription());
+			output.append(translate(resourceBundle, parameter.getDescription()));
 		}
 		output.append("\n");
 	}
 
-	protected void formatOptions(final StringBuilder output, final List<OptionHandle> options, final String title) {
+	protected void formatOptions(final StringBuilder output, final List<OptionHandle> options, final String title,
+			final ResourceBundle resourceBundle) {
 		if (options == null || options.isEmpty()) {
 			return;
 		}
@@ -132,7 +148,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 			final String optionNames = Util.mkString(option.getNames(), null, ",", null);
 			final String argNames = Util.mkString(option.getArgs(), null, " ", null);
 			optionsToFormat.add(new String[] { optionNames + (argNames.length() == 0 ? "" : (" " + argNames)),
-					option.getDescription() });
+					translate(resourceBundle, option.getDescription()) });
 		}
 
 		if (!hasOptions) {
@@ -146,7 +162,8 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		formatTable(output, optionsToFormat, col1Prefix, colSpace, lineLength);
 	}
 
-	protected void formatCommands(final StringBuilder output, final List<CommandHandle> commands, final String title) {
+	protected void formatCommands(final StringBuilder output, final List<CommandHandle> commands, final String title,
+			final ResourceBundle resourceBundle) {
 		if (commands == null || commands.isEmpty()) {
 			return;
 		}
@@ -158,7 +175,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		final LinkedList<String[]> commandsToFormat = new LinkedList<String[]>();
 		for (final CommandHandle option : commands) {
 			final String commandNames = Util.mkString(option.getNames(), null, ",", null);
-			commandsToFormat.add(new String[] { commandNames, option.getDescription() });
+			commandsToFormat.add(new String[] { commandNames, translate(resourceBundle, option.getDescription()) });
 		}
 
 		formatTable(output, commandsToFormat, col1Prefix, colSpace, lineLength);
