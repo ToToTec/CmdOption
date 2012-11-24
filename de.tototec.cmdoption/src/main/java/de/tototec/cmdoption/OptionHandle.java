@@ -20,10 +20,12 @@ class OptionHandle {
 	private final Object object;
 	private final boolean hidden;
 	private String[] requires;
+	private String[] conflictsWith;
 
-	public OptionHandle(final String[] names, final String description, final Class<? extends CmdOptionHandler> cmdOptionHandlerType,
-			final Object object, final AccessibleObject element, final String[] args, final int minCount, final int maxCount, final boolean help,
-			final boolean hidden, final String[] requires) {
+	public OptionHandle(final String[] names, final String description,
+			final Class<? extends CmdOptionHandler> cmdOptionHandlerType, final Object object,
+			final AccessibleObject element, final String[] args, final int minCount, final int maxCount,
+			final boolean help, final boolean hidden, final String[] requires, final String[] conflictsWith) {
 		this.names = names;
 		this.description = description;
 		this.cmdOptionHandlerType = cmdOptionHandlerType;
@@ -35,6 +37,7 @@ class OptionHandle {
 		this.help = help;
 		this.hidden = hidden;
 		this.requires = requires;
+		this.conflictsWith = conflictsWith;
 	}
 
 	public String[] getNames() {
@@ -85,6 +88,10 @@ class OptionHandle {
 		return requires;
 	}
 
+	public String[] getConflictsWith() {
+		return conflictsWith;
+	}
+
 	public static class OptionHandleComparator implements Comparator<OptionHandle> {
 		public int compare(final OptionHandle o1, final OptionHandle o2) {
 			// TODO: check for null and zero names
@@ -103,6 +110,14 @@ class OptionHandle {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(names=" + Util.mkString(getNames(), null, ", ", null) + ")";
+		return getClass().getSimpleName() + //
+				"(names=" + Util.mkString(getNames(), null, ",", null) + //
+				",args=" + Util.mkString(getArgs(), null, ",", null) + //
+				",minCount=" + getMinCount() + //
+				",maxCount=" + getMaxCount() + //
+				",description=" + getDescription() + //
+				",requires=" + Util.mkString(getRequires(), null, ",", null) + //
+				",conflictsWith=" + Util.mkString(getConflictsWith(), null, ",", null) + //
+				")";
 	}
 }

@@ -78,4 +78,10 @@ public @interface CmdOption {
 	 */
 	String[] requires() default {};
 
+	/**
+	 * If this option can not be used in conjunction with an specific other
+	 * option, you should declare those conflicting options here.
+	 */
+	String[] conflictsWith() default {};
+
 }

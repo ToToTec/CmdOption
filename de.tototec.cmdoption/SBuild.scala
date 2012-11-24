@@ -10,7 +10,7 @@ class SBuild(implicit project: Project) {
   // some helper
   implicit def stringToPath(string: String) = Path(string)
 
-  val version = "SVN"
+  val version = "0.2.0-SNAPSHOT"
   val jar = "target/de.tototec.cmdoption-" + version + ".jar"
 
   SchemeHandler("mvn", new MvnSchemeHandler())
@@ -86,5 +86,11 @@ class SBuild(implicit project: Project) {
   }
 
   propFileTargets.foreach { t => jarTarget dependsOn t }
+
+  Target("phony:installToMvn") dependsOn jar exec {
+    AntExec(
+      executable = "mvn", 
+      args = Array("install:install-file", "-DgroupId=de.tototec", "-DartifactId=de.tototec.cmdoption", "-Dversion=" + version, "-Dfile=" + jar, "-DgeneratePom=true", "-Dpackaging=jar"))
+  }
 
 }

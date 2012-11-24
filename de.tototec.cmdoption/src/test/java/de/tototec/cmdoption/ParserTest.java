@@ -120,7 +120,7 @@ public class ParserTest {
 		public boolean reqA;
 	}
 
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "^The option \"--opt\" requires the missing option \"--reqB\".$")
+	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "^The option \"--opt\" requires the unknown/missing option \"--reqB\".$")
 	public void test5() {
 		final Config5 config = new Config5();
 		final CmdlineParser cp = new CmdlineParser(config);
@@ -130,7 +130,7 @@ public class ParserTest {
 		cp.parse(new String[] { "--opt", "--reqA" });
 	}
 
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "^The option \"--opt\" requires the missing option \"--reqB\".$")
+	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "^The option \"--opt\" requires the unknown/missing option \"--reqB\".$")
 	public void test5a() {
 		final Config5 config = new Config5();
 		final CmdlineParser cp = new CmdlineParser(config);

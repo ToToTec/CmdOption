@@ -180,8 +180,8 @@ public class CmdlineParser {
 					debugMode = true;
 					debug("Enabled debug mode");
 					debug("Parameter: " + parameter);
-					debug("Options: " + options);
-					debug("Commands: " + commands);
+					debug("Options: " + Util.mkString(options, "\n  ", ",\n  ", null));
+					debug("Commands: " + Util.mkString(commands, "\n  ", ",\n  ", null));
 				}
 
 			} else if (parseOptions && quickOptionMap.containsKey(param)) {
@@ -348,16 +348,33 @@ public class CmdlineParser {
 							// required option does not exists, error
 							// TODO: error
 
-
 						} else {
 							final Integer reqOptionCount = optionCount.get(reqOptionHandle);
 							if (reqOptionCount == null || reqOptionCount.intValue() <= 0) {
 								// required option was not called, this is an
 								// error
-								// TODO: error
 								throw new CmdlineParserException(null,
 										I18n.marktr("When using option \"{0}\" also option \"{1}\" must be given."),
 										calledOption.getNames()[0], required);
+							}
+						}
+					}
+					for (final String conflict : calledOption.getConflictsWith()) {
+						// check, of an option was called with that name, if
+						// not, this is an error
+						final OptionHandle conflictOptionHandle = quickOptionMap.get(conflict);
+						if (conflictOptionHandle == null) {
+							// conflicting option does not exists, error
+							// TODO: error
+
+						} else {
+							final Integer conflictOptionCount = optionCount.get(conflictOptionHandle);
+							if (conflictOptionCount != null && conflictOptionCount.intValue() > 0) {
+								// conflicting option was called, this is an
+								// conflict
+								throw new CmdlineParserException(null,
+										I18n.marktr("Options \"{0}\" and \"{1}\" cannot be used at the same time."),
+										calledOption.getNames()[0], conflict);
 							}
 						}
 					}
@@ -459,8 +476,23 @@ public class CmdlineParser {
 							: optionHandle.getNames()[0];
 
 					throw new CmdlineParserException(null,
-							I18n.marktr("The option \"{0}\" requires the missing option \"{1}\"."), optionName,
+							I18n.marktr("The option \"{0}\" requires the unknown/missing option \"{1}\"."), optionName,
 							reqOptionName);
+				}
+			}
+			for (final String conflictOptionName : optionHandle.getConflictsWith()) {
+				final String optionName = optionHandle.getNames() == null ? "<no name>" : optionHandle.getNames()[0];
+				if (Arrays.asList(optionHandle.getNames()).contains(conflictOptionName)) {
+					throw new CmdlineParserException(null,
+							I18n.marktr("Option \"{0}\" is configured to conflicts with itself."), optionName);
+				}
+				if (quickOptionMap.get(conflictOptionName) == null) {
+					// required option does not exists
+
+					throw new CmdlineParserException(null,
+							I18n.marktr("The option \"{0}\" conflicts with a unknown/missing option \"{1}\"."),
+							optionName, conflictOptionName);
+
 				}
 			}
 		}
@@ -523,7 +555,7 @@ public class CmdlineParser {
 						 * help
 						 * option
 						 */, anno.hidden(),
-						 anno.requires());
+						 anno.requires(), anno.conflictsWith());
 
 				if (paramHandle.getArgsCount() <= 0) {
 					throw new CmdlineParserException(null,
@@ -534,7 +566,7 @@ public class CmdlineParser {
 			} else {
 				final OptionHandle option = new OptionHandle(names, anno.description(), annoHandlerType, object,
 						element, anno.args(), anno.minCount(), anno.maxCount(), anno.isHelp(), anno.hidden(),
-						anno.requires());
+						anno.requires(), anno.conflictsWith());
 
 				for (final String name : names) {
 					if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
