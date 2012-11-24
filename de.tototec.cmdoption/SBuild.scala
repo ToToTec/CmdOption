@@ -80,7 +80,7 @@ class SBuild(implicit project: Project) {
   }
 
   val propFileTargets = poFiles.map { poFile =>
-    val propFile = Path("target/classes/de/tototec/cmdoption", "Message_" + """\.po$""".r.replaceFirstIn(poFile.getName, ".properties"))
+    val propFile = Path("target/classes/de/tototec/cmdoption", "Messages_" + """\.po$""".r.replaceFirstIn(poFile.getName, ".properties"))
     Target(propFile) dependsOn (msgCatalog ~ poFile) exec {
       AntMkdir(dir = propFile.getParentFile)
       AntExec(

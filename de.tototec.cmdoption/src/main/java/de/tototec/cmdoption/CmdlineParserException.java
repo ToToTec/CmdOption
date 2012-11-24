@@ -30,10 +30,6 @@ public class CmdlineParserException extends RuntimeException {
 				.getI18n(CmdlineParserException.class).tr(message, params));
 	}
 
-	//	public static CmdlineParserException withI18n(final String message, final Object... params) {
-	//		return withI18n(null, message, params);
-	//	}
-
 	@Override
 	public String getLocalizedMessage() {
 		return localizedMessage;
