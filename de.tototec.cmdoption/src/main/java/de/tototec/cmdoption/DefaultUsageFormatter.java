@@ -14,45 +14,49 @@ public class DefaultUsageFormatter implements UsageFormatter {
 	private int colSpace = 2;
 	private int col1Prefix = 2;
 
-	public DefaultUsageFormatter(boolean withCommandDetails) {
+	public DefaultUsageFormatter(final boolean withCommandDetails) {
 		this.withCommandDetails = withCommandDetails;
 	}
 
-	public void format(StringBuilder output, String programName, List<OptionHandle> options,
-			List<CommandHandle> commands, OptionHandle parameter) {
+	public void format(final StringBuilder output, final CmdlineModel cmdlineModel) {
 
-		ArrayList<OptionHandle> sortedOptions = new ArrayList<OptionHandle>(options);
-		for (Iterator<OptionHandle> it = sortedOptions.iterator(); it.hasNext();) {
+		final ArrayList<OptionHandle> sortedOptions = new ArrayList<OptionHandle>(cmdlineModel.getOptions());
+		for (final Iterator<OptionHandle> it = sortedOptions.iterator(); it.hasNext();) {
 			if (it.next().isHidden()) {
 				it.remove();
 			}
 		}
 		Collections.sort(sortedOptions, new OptionHandle.OptionHandleComparator());
 
-		ArrayList<CommandHandle> sortedCommands = new ArrayList<CommandHandle>(commands);
-		for (Iterator<CommandHandle> it = sortedCommands.iterator(); it.hasNext();) {
+		final ArrayList<CommandHandle> sortedCommands = new ArrayList<CommandHandle>(cmdlineModel.getCommands());
+		for (final Iterator<CommandHandle> it = sortedCommands.iterator(); it.hasNext();) {
 			if (it.next().isHidden()) {
 				it.remove();
 			}
 		}
 		Collections.sort(sortedCommands, new CommandHandle.CommandHandleComparator());
 
+		// About
+		if (cmdlineModel.getAboutLine() != null && cmdlineModel.getAboutLine().length() > 0) {
+			output.append(cmdlineModel.getAboutLine()).append("\n\n");
+		}
+
 		// Usage
 		output.append("Usage: ");
-		output.append(programName);
+		output.append(cmdlineModel.getProgramName() == null ? "program" : cmdlineModel.getProgramName());
 		if (!sortedOptions.isEmpty()) {
 			output.append(" [options]");
 		}
-		if (parameter != null) {
+		if (cmdlineModel.getParameter() != null) {
 			output.append(" [parameter]");
 		}
 		if (!sortedCommands.isEmpty()) {
 			output.append(" [command]");
 			boolean cmdsHaveOptions = false;
 			boolean cmdsHaveParameter = false;
-			for (CommandHandle cmd : sortedCommands) {
-				cmdsHaveOptions |= !cmd.getCmdlineParser().getOptions().isEmpty();
-				cmdsHaveParameter |= cmd.getCmdlineParser().getParameter() != null;
+			for (final CommandHandle cmd : sortedCommands) {
+				cmdsHaveOptions |= !cmd.getCmdlineParser().getCmdlineModel().getOptions().isEmpty();
+				cmdsHaveParameter |= cmd.getCmdlineParser().getCmdlineModel().getParameter() != null;
 			}
 			if (cmdsHaveOptions) {
 				output.append(" [command options]");
@@ -68,10 +72,10 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		formatCommands(output, sortedCommands, "\nCommands:");
 
 		if (withCommandDetails) {
-			for (CommandHandle command : sortedCommands) {
-				ArrayList<OptionHandle> commandOptions = new ArrayList<OptionHandle>(command.getCmdlineParser()
-						.getOptions());
-				for (Iterator<OptionHandle> it = commandOptions.iterator(); it.hasNext();) {
+			for (final CommandHandle command : sortedCommands) {
+				final ArrayList<OptionHandle> commandOptions = new ArrayList<OptionHandle>(command.getCmdlineParser()
+						.getCmdlineModel().getOptions());
+				for (final Iterator<OptionHandle> it = commandOptions.iterator(); it.hasNext();) {
 					if (it.next().isHidden()) {
 						it.remove();
 					}
@@ -81,16 +85,16 @@ public class DefaultUsageFormatter implements UsageFormatter {
 				formatOptions(output, commandOptions,
 						"\nOptions for command: " + Util.mkString(command.getNames(), null, ", ", null));
 
-				formatParameter(output, command.getCmdlineParser().getParameter(),
+				formatParameter(output, command.getCmdlineParser().getCmdlineModel().getParameter(),
 						"\nParameter for command: " + Util.mkString(command.getNames(), null, ", ", null));
 			}
 		}
 
 		// Parameter
-		formatParameter(output, parameter, "\nParameter:");
+		formatParameter(output, cmdlineModel.getParameter(), "\nParameter:");
 	}
 
-	protected void formatParameter(StringBuilder output, OptionHandle parameter, String title) {
+	protected void formatParameter(final StringBuilder output, final OptionHandle parameter, final String title) {
 		if (parameter == null) {
 			return;
 		}
@@ -105,14 +109,14 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		output.append("\n");
 	}
 
-	protected void formatOptions(StringBuilder output, List<OptionHandle> options, String title) {
+	protected void formatOptions(final StringBuilder output, final List<OptionHandle> options, final String title) {
 		if (options == null || options.isEmpty()) {
 			return;
 		}
 
-		LinkedList<String[]> optionsToFormat = new LinkedList<String[]>();
+		final LinkedList<String[]> optionsToFormat = new LinkedList<String[]>();
 		boolean hasOptions = false;
-		for (OptionHandle option : options) {
+		for (final OptionHandle option : options) {
 			if (option.isHidden()) {
 				continue;
 			}
@@ -134,7 +138,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		formatTable(output, optionsToFormat, col1Prefix, colSpace, lineLength);
 	}
 
-	protected void formatCommands(StringBuilder output, List<CommandHandle> commands, String title) {
+	protected void formatCommands(final StringBuilder output, final List<CommandHandle> commands, final String title) {
 		if (commands == null || commands.isEmpty()) {
 			return;
 		}
@@ -143,8 +147,8 @@ public class DefaultUsageFormatter implements UsageFormatter {
 			output.append(title).append("\n");
 		}
 
-		LinkedList<String[]> commandsToFormat = new LinkedList<String[]>();
-		for (CommandHandle option : commands) {
+		final LinkedList<String[]> commandsToFormat = new LinkedList<String[]>();
+		for (final CommandHandle option : commands) {
 			final String commandNames = Util.mkString(option.getNames(), null, ",", null);
 			commandsToFormat.add(new String[] { commandNames, option.getDescription() });
 		}
@@ -152,26 +156,26 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		formatTable(output, commandsToFormat, col1Prefix, colSpace, lineLength);
 	}
 
-	public static void mkSpace(StringBuilder output, int space) {
+	public static void mkSpace(final StringBuilder output, final int space) {
 		for (int i = 0; i < space; ++i) {
 			output.append(" ");
 		}
 	}
 
-	public static void formatTable(StringBuilder output, List<String[]> twoColData, int prefix, int space,
-			int maxLineLength) {
+	public static void formatTable(final StringBuilder output, final List<String[]> twoColData, final int prefix,
+			final int space, final int maxLineLength) {
 		// Calc first col width
 		int firstColSize = 2;
-		for (String[] col : twoColData) {
+		for (final String[] col : twoColData) {
 			if (col.length > 0 && col[0] != null) {
 				firstColSize = Math.max(firstColSize, col[0].length());
 			}
 		}
 
-		boolean secondColInNewLine = ((prefix + space + firstColSize + 10) > maxLineLength);
+		final boolean secondColInNewLine = ((prefix + space + firstColSize + 10) > maxLineLength);
 
 		// Write output
-		for (String[] col : twoColData) {
+		for (final String[] col : twoColData) {
 			if (col.length > 0) {
 				// first col
 				mkSpace(output, prefix);
@@ -204,7 +208,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 
 	}
 
-	public static void wrap(StringBuilder output, String text, int nextLinePrefix, int lineLength) {
+	public static void wrap(final StringBuilder output, String text, final int nextLinePrefix, final int lineLength) {
 		text = text.trim();
 
 		if (text.length() <= lineLength) {

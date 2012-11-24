@@ -12,7 +12,7 @@ public class CommandHandle {
 	private final Object object;
 	private final boolean hidden;
 
-	public CommandHandle(String[] names, String description, CmdlineParser cmdlineParser, Object object, boolean hidden) {
+	public CommandHandle(final String[] names, final String description, final CmdlineParser cmdlineParser, final Object object, final boolean hidden) {
 		this.names = names;
 		this.description = description;
 		this.cmdlineParser = cmdlineParser;
@@ -32,6 +32,10 @@ public class CommandHandle {
 		return cmdlineParser;
 	}
 
+	public CmdlineModel getCommandCmdlineModel() {
+		return cmdlineParser.getCmdlineModel();
+	}
+
 	public Object getObject() {
 		return object;
 	}
@@ -41,14 +45,14 @@ public class CommandHandle {
 	}
 
 	public static class CommandHandleComparator implements Comparator<CommandHandle> {
-		public int compare(CommandHandle c1, CommandHandle c2) {
+		public int compare(final CommandHandle c1, final CommandHandle c2) {
 			// TODO: check for null and zero names
 			return sanitizeString(c1.getNames()[0]).compareTo(sanitizeString(c2.getNames()[0]));
 		}
 
-		public String sanitizeString(String string) {
-			Pattern pattern = Pattern.compile("^[^A-Za-z0-9]*(.*)$");
-			Matcher matcher = pattern.matcher(string);
+		public String sanitizeString(final String string) {
+			final Pattern pattern = Pattern.compile("^[^A-Za-z0-9]*(.*)$");
+			final Matcher matcher = pattern.matcher(string);
 			if (matcher.matches()) {
 				return matcher.group(1);
 			}

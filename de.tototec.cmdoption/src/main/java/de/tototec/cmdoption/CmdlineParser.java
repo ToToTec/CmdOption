@@ -56,6 +56,7 @@ public class CmdlineParser {
 	private UsageFormatter usageFormatter = new DefaultUsageFormatter(true);
 	private String programName;
 	private String parsedCommandName;
+	private String aboutLine;
 
 	private boolean debugAllowed = true;
 	private boolean debugMode = false;
@@ -616,32 +617,31 @@ public class CmdlineParser {
 	}
 
 	public void usage(final StringBuilder output) {
+		usageFormatter.format(output, getCmdlineModel());
+	}
+
+
+	public CmdlineModel getCmdlineModel() {
 		String programName = this.programName;
 		if (parent != null) {
 			// We are a command
 			programName = parent.programName + " " + programName;
 		}
-		usageFormatter.format(output, programName, options, commands, parameter);
+		return new CmdlineModel(programName, options, commands, parameter, aboutLine);
 	}
 
-	public List<OptionHandle> getOptions() {
-		return options;
-	}
-
-	public List<CommandHandle> getCommands() {
-		return commands;
-	}
-
-	public OptionHandle getParameter() {
-		return parameter;
-	}
-
-	public String getProgramName() {
-		return programName;
-	}
-
+	/**
+	 * Set the name of the program is usually called on the command line.
+	 */
 	public void setProgramName(final String programName) {
 		this.programName = programName;
+	}
+
+	/**
+	 * An additional text displayed at the top of the usage/help display.
+	 */
+	public void setAboutLine(final String aboutLine) {
+		this.aboutLine = aboutLine;
 	}
 
 }

@@ -4,11 +4,8 @@ import de.tototec.sbuild.ant._
 import de.tototec.sbuild.ant.tasks._
 
 @version("0.2.0")
-@classpath("http://repo1.maven.org/maven2/org/apache/ant/ant/1.8.3/ant-1.8.3.jar")
+@classpath("http://repo1.maven.org/maven2/org/apache/ant/ant/1.8.4/ant-1.8.4.jar")
 class SBuild(implicit project: Project) {
-
-  // some helper
-  implicit def stringToPath(string: String) = Path(string)
 
   val version = "0.2.0-SNAPSHOT"
   val jar = "target/de.tototec.cmdoption-" + version + ".jar"
@@ -19,7 +16,7 @@ class SBuild(implicit project: Project) {
 
   ExportDependencies("eclipse.classpath", testCp)
 
-  val javaFiles = (Path("src/main/java/de/tototec/cmdoption").listFiles ++
+  val javaFilesWithMessages = (Path("src/main/java/de/tototec/cmdoption").listFiles ++
     Path("src/main/java/de/tototec/cmdoption/handler").listFiles).
     filter(_.getName.endsWith(".java"))
 
@@ -28,23 +25,23 @@ class SBuild(implicit project: Project) {
   Target("phony:all") dependsOn jar
 
   Target("phony:clean") exec {
-    AntDelete(dir = "target")
+    AntDelete(dir = Path("target"))
   }
 
   Target("phony:compile") exec { ctx: TargetContext =>
-    IfNotUpToDate("src/main/java", "target", ctx) {
-      AntMkdir(dir = "target/classes")
+    IfNotUpToDate(Path("src/main/java"), Path("target"), ctx) {
+      AntMkdir(dir = Path("target/classes"))
       AntJavac(source = "1.5", target = "1.5", encoding = "UTF-8",
         debug = true, fork = true, includeAntRuntime = false,
         srcDir = AntPath("src/main/java"),
-        destDir = "target/classes"
+        destDir = Path("target/classes")
       )
     }
   }
 
   val msgCatalog = Path("target/po/messages.pot")
 
-  Target(msgCatalog) dependsOn javaFiles.map { TargetRef(_) }.toSeq exec { ctx: TargetContext =>
+  Target(msgCatalog) dependsOn javaFilesWithMessages.map { TargetRef(_) }.toSeq exec { ctx: TargetContext =>
     AntMkdir(dir = ctx.targetFile.get.getParentFile)
 
     import java.io.File
@@ -81,7 +78,7 @@ class SBuild(implicit project: Project) {
   } help "Updates translation files (.po) with newest messages."
 
   val jarTarget = Target(jar) dependsOn ("compile") exec {
-    AntJar(baseDir = "target/classes", destFile = jar)
+    AntJar(baseDir = Path("target/classes"), destFile = Path(jar))
   }
 
   propFileTargets.foreach { t => jarTarget dependsOn t }
