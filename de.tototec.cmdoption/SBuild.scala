@@ -57,7 +57,7 @@ class SBuild(implicit project: Project) {
     )
 
     AntJava(failOnError = true, classpath = AntPath(locations = ctx.fileDependencies ++ Seq(Path("target/test-classes"))),
-      className = "org.testng.TestNG", arguments = Seq("-testclass", tests.mkString(",")))
+      className = "org.testng.TestNG", arguments = Seq("-testclass", tests.mkString(","), "-d", "target/test-output"))
   }
 
   val msgCatalog = Path("target/po/messages.pot")
