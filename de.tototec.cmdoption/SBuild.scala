@@ -9,6 +9,7 @@ class SBuild(implicit project: Project) {
 
   val version = "0.2.0-SNAPSHOT"
   val jar = "target/de.tototec.cmdoption-" + version + ".jar"
+  val sourcesJar = jar.substring(0, jar.length - 4) + "-sources.jar"
 
   SchemeHandler("mvn", new MvnSchemeHandler())
 
@@ -17,13 +18,13 @@ class SBuild(implicit project: Project) {
 
   ExportDependencies("eclipse.classpath", testCp)
 
-  val javaFilesWithMessages = (Path("src/main/java/de/tototec/cmdoption").listFiles ++
+  val javaFiles = (Path("src/main/java/de/tototec/cmdoption").listFiles ++
     Path("src/main/java/de/tototec/cmdoption/handler").listFiles).
     filter(_.getName.endsWith(".java"))
 
   val poFiles = Path("src/main/po").listFiles.filter(f => f.getName.endsWith(".po"))
 
-  Target("phony:all") dependsOn jar ~ "test"
+  Target("phony:all") dependsOn jar ~  sourcesJar ~ "test"
 
   Target("phony:clean") exec {
     AntDelete(dir = Path("target"))
@@ -34,6 +35,7 @@ class SBuild(implicit project: Project) {
       AntMkdir(dir = destDir)
       AntJavac(source = "1.5", target = "1.5", encoding = "UTF-8",
         debug = true, fork = true, includeAntRuntime = false,
+        classpath = AntPath(locations = ctx.fileDependencies),
         srcDir = AntPath(sources),
         destDir = destDir
       )
@@ -41,11 +43,11 @@ class SBuild(implicit project: Project) {
   }
 
   Target("phony:compile") exec { ctx: TargetContext =>
-    compileJava(Path("src/main/java"), Path("target/classes"), ctx)
+    compileJava(sources = Path("src/main/java"), destDir = Path("target/classes"), ctx = ctx)
   }
 
-  Target("phony:compileTest") dependsOn testCp exec { ctx: TargetContext =>
-    compileJava(Path("src/test/java"), Path("target/test-classes"), ctx)
+  Target("phony:compileTest") dependsOn testCp ~ jar exec { ctx: TargetContext =>
+    compileJava(sources = Path("src/test/java"), destDir = Path("target/test-classes"), ctx = ctx)
   }
 
   Target("phony:test") dependsOn "compileTest" ~ testCp ~ jar exec { ctx: TargetContext =>
@@ -62,7 +64,7 @@ class SBuild(implicit project: Project) {
 
   val msgCatalog = Path("target/po/messages.pot")
 
-  Target(msgCatalog) dependsOn javaFilesWithMessages.map { TargetRef(_) }.toSeq exec { ctx: TargetContext =>
+  Target(msgCatalog) dependsOn javaFiles.map { TargetRef(_) }.toSeq exec { ctx: TargetContext =>
     AntMkdir(dir = ctx.targetFile.get.getParentFile)
 
     import java.io.File
@@ -99,7 +101,7 @@ class SBuild(implicit project: Project) {
   } help "Updates translation files (.po) with newest messages."
 
   val jarTarget = Target(jar) dependsOn ("compile") exec {
-    AntJar(baseDir = Path("target/classes"), destFile = Path(jar))
+    AntJar(baseDir = Path("target/classes"), destFile = Path(jar), fileSet = AntFileSet(file = Path("LICENSE.txt")))
   }
 
   propFileTargets.foreach { t => jarTarget dependsOn t }
@@ -109,5 +111,15 @@ class SBuild(implicit project: Project) {
       executable = "mvn",
       args = Array("install:install-file", "-DgroupId=de.tototec", "-DartifactId=de.tototec.cmdoption", "-Dversion=" + version, "-Dfile=" + jar, "-DgeneratePom=true", "-Dpackaging=jar"))
   } help "Install jar into Maven repository."
+
+  Target(sourcesJar) exec { ctx: TargetContext =>
+    IfNotUpToDate(Path("src/main/"), Path("target"), ctx) {
+      AntJar(destFile = ctx.targetFile.get, fileSets = Seq(
+        AntFileSet(dir = Path("src/main/java")),
+        AntFileSet(dir = Path("src/main/po")),
+        AntFileSet(file = Path("LICENSE.txt"))
+      ))
+    }
+  }
 
 }

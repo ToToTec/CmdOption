@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -650,7 +651,12 @@ public class CmdlineParser {
 	}
 
 	public void setResourceBundle(final String resourceBundleName, final ClassLoader classloader) {
-		this.resourceBundle = ResourceBundle.getBundle(resourceBundleName, Locale.getDefault(), classloader);
+		try {
+			this.resourceBundle = ResourceBundle.getBundle(resourceBundleName, Locale.getDefault(), classloader);
+		} catch (final MissingResourceException e) {
+			// no resource bundle found
+			this.resourceBundle = null;
+		}
 	}
 
 	public void setResourceBundle(final ResourceBundle resourceBundle) {
