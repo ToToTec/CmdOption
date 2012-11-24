@@ -1,11 +1,12 @@
 # German translation for CmdOption
+# Tobias Roeser, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: CmdOption\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-11-24 17:15+0100\n"
-"PO-Revision-Date: 2012-11-24 17:16+0100\n"
-"Last-Translator: Tobias Roeser\n"
+"PO-Revision-Date: 2012-11-24 22:15+0100\n"
+"Last-Translator: Tobias Roeser <tobias.roeser@tototec.de>\n"
 "Language-Team: German <>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -151,7 +152,7 @@ msgstr "Parameterdefinition muss mindestens ein Argument enthalten."
 
 #: de/tototec/cmdoption/DefaultUsageFormatter.java:47
 msgid "Usage:"
-msgstr "Benutzung:"
+msgstr "Aufruf:"
 
 #: de/tototec/cmdoption/DefaultUsageFormatter.java:48
 msgid "program"
@@ -196,4 +197,5 @@ msgstr "Parameter für Befehl:"
 #: de/tototec/cmdoption/DefaultUsageFormatter.java:102
 msgid "Parameter:"
 msgstr "Parameter:"
+
 
