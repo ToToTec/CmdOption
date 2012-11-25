@@ -16,6 +16,13 @@ class SBuild(implicit project: Project) {
   val srcDistZip = "target/" + srcDist + ".zip"
   val binDistZip = "target/" + binDist + ".zip"
 
+  val binDistFiles = Seq(
+      "de.tototec.cmdoption/target/de.tototec.cmdoption-" + CmdOption.version + ".jar",
+      "de.tototec.cmdoption/target/de.tototec.cmdoption-" + CmdOption.version + "-sources.jar",
+      "de.tototec.cmdoption/target/de.tototec.cmdoption-" + CmdOption.version + "-javadoc.jar",
+      srcDistZip,
+      "LICENSE.txt"
+  )
 
   Target("phony:clean") dependsOn "de.tototec.cmdoption::clean" exec {
     AntDelete(dir = Path("target"))
@@ -32,14 +39,8 @@ class SBuild(implicit project: Project) {
     AntZip(destFile = ctx.targetFile.get, baseDir = Path("target"), includes = srcDist + "/**")
   }
 
-  val releasedFiles = Seq(
-      "de.tototec.cmdoption/target/de.tototec.cmdoption-" + CmdOption.version + ".jar",
-      "de.tototec.cmdoption/target/de.tototec.cmdoption-" + CmdOption.version + "-sources.jar",
-      srcDistZip
-  )
-
-  Target(binDistZip) dependsOn releasedFiles.map{ n => TargetRef(n) } exec { ctx: TargetContext =>
-    AntZip(destFile = ctx.targetFile.get, fileSets = releasedFiles.map { file =>
+  Target(binDistZip) dependsOn binDistFiles.map{ n => TargetRef(n) } exec { ctx: TargetContext =>
+    AntZip(destFile = ctx.targetFile.get, fileSets = binDistFiles.map { file =>
       new org.apache.tools.ant.types.ZipFileSet(AntFileSet(file = Path(file))) {
         setPrefix(binDist)
       }}

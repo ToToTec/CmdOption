@@ -12,6 +12,7 @@ class SBuild(implicit project: Project) {
 
   val jar = "target/de.tototec.cmdoption-" + version + ".jar"
   val sourcesJar = jar.substring(0, jar.length - 4) + "-sources.jar"
+  val javadocJar = jar.substring(0, jar.length - 4) + "-javadoc.jar"
 
   SchemeHandler("mvn", new MvnSchemeHandler())
 
@@ -61,7 +62,7 @@ class SBuild(implicit project: Project) {
     )
 
     AntJava(failOnError = true, classpath = AntPath(locations = ctx.fileDependencies ++ Seq(Path("target/test-classes"))),
-      className = "org.testng.TestNG", arguments = Seq("-testclass", tests.mkString(","), "-d", "target/test-output"))
+      className = "org.testng.TestNG", arguments = Seq("-testclass", tests.mkString(","), "-d", Path("target/test-output").getPath))
   }
 
   val msgCatalog = Path("target/po/messages.pot")
@@ -121,6 +122,22 @@ class SBuild(implicit project: Project) {
         AntFileSet(dir = Path("src/main/po")),
         AntFileSet(file = Path("LICENSE.txt"))
       ))
+    }
+  }
+
+  Target(javadocJar) exec { ctx: TargetContext =>
+    IfNotUpToDate(Path("src/main/java"), Path("target"), ctx) {
+
+      val docDir = Path("target/javadoc")
+      AntMkdir(dir = docDir)
+
+      new org.apache.tools.ant.taskdefs.Javadoc() {
+        setProject(AntProject())
+        setSourcepath(AntPath(location = Path("src/main/java")))
+        setDestdir(docDir)
+      }.execute
+
+      AntJar(destFile = ctx.targetFile.get, baseDir = docDir)
     }
   }
 
