@@ -33,6 +33,14 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		return string;
 	}
 
+	protected String[] translate(final ResourceBundle resourceBundle, final String[] strings) {
+		final String[] translated = new String[strings.length];
+		for (int i = 0; i < strings.length; ++i) {
+			translated[i] = translate(resourceBundle, strings[i]);
+		}
+		return translated;
+	}
+
 	public void format(final StringBuilder output, final CmdlineModel cmdlineModel) {
 
 		final ArrayList<OptionHandle> sortedOptions = new ArrayList<OptionHandle>(cmdlineModel.getOptions());
@@ -124,7 +132,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 
 		output.append(title).append("\n");
 		mkSpace(output, col1Prefix);
-		output.append(Util.mkString(parameter.getArgs(), null, " ", null));
+		output.append(Util.mkString(translate(resourceBundle, parameter.getArgs()), null, " ", null));
 		if (parameter.getDescription() != null) {
 			mkSpace(output, colSpace);
 			output.append(translate(resourceBundle, parameter.getDescription()));
@@ -146,7 +154,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 			}
 			hasOptions = true;
 			final String optionNames = Util.mkString(option.getNames(), null, ",", null);
-			final String argNames = Util.mkString(option.getArgs(), null, " ", null);
+			final String argNames = Util.mkString(translate(resourceBundle, option.getArgs()), null, " ", null);
 			optionsToFormat.add(new String[] { optionNames + (argNames.length() == 0 ? "" : (" " + argNames)),
 					translate(resourceBundle, option.getDescription()) });
 		}
