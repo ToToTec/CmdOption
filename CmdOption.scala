@@ -1,5 +1,5 @@
 object CmdOption {
 
-  val version = "0.2.1-SNAPSHOT"
+  val version = "0.2.1"
 
 }

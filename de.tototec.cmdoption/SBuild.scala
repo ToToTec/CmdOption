@@ -6,7 +6,7 @@ import de.tototec.sbuild.ant.tasks._
 @version("0.2.0")
 @include("../CmdOption.scala")
 @classpath("http://repo1.maven.org/maven2/org/apache/ant/ant/1.8.4/ant-1.8.4.jar")
-class SBuild(implicit project: Project) {
+class SBuild(implicit _project: Project) {
 
   val version = CmdOption.version
 
