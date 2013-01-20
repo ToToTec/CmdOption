@@ -3,7 +3,10 @@ package de.tototec.cmdoption;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import org.testng.annotations.Test;
 
 public class TranslationTutorialMain {
 
@@ -24,7 +27,8 @@ public class TranslationTutorialMain {
 	public static void main(final String[] args) {
 		final Config config = new Config();
 		final CmdlineParser cp = new CmdlineParser(config);
-		cp.setResourceBundle(TranslationTutorialMain.class.getPackage().getName() + ".Messages",
+		cp.setDebugMode(true);
+		cp.setResourceBundle(TranslationTutorialMain.class.getName() + "_Messages",
 				TranslationTutorialMain.class.getClassLoader());
 		cp.setProgramName("myprogram");
 		cp.setAboutLine("Example names processor v1.0");
@@ -38,9 +42,31 @@ public class TranslationTutorialMain {
 
 		if (config.help) {
 			cp.usage();
-			System.exit(0);
+			return;
 		}
 
 		// ...
+	}
+
+	@Test
+	public void testDefaultLocale() {
+		final Locale defaultLocale = Locale.getDefault();
+		try {
+			Locale.setDefault(Locale.ROOT);
+			TranslationTutorialMain.main(new String[] { "--help" });
+		} finally {
+			Locale.setDefault(defaultLocale);
+		}
+	}
+
+	@Test
+	public void testGermanLocale() {
+		final Locale defaultLocale = Locale.getDefault();
+		try {
+			Locale.setDefault(Locale.GERMANY);
+			TranslationTutorialMain.main(new String[] { "--help" });
+		} finally {
+			Locale.setDefault(defaultLocale);
+		}
 	}
 }

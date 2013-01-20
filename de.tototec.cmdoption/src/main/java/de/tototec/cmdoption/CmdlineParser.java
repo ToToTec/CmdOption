@@ -107,6 +107,10 @@ public class CmdlineParser {
 		}
 	}
 
+	public void setDebugMode(final boolean debugMode) {
+		this.debugMode = debugMode;
+	}
+
 	public void setDebugModeAllowed(final boolean debugAllowed) {
 		this.debugAllowed = debugAllowed;
 	}
@@ -188,6 +192,8 @@ public class CmdlineParser {
 					debug("Parameter: " + parameter);
 					debug("Options: " + Util.mkString(options, "\n  ", ",\n  ", null));
 					debug("Commands: " + Util.mkString(commands, "\n  ", ",\n  ", null));
+					debug("ResourceBundle: {0}, Locale: {1}", resourceBundle, resourceBundle == null ? null
+							: resourceBundle.getLocale());
 				}
 
 			} else if (parseOptions && quickOptionMap.containsKey(param)) {
@@ -653,7 +659,11 @@ public class CmdlineParser {
 	public void setResourceBundle(final String resourceBundleName, final ClassLoader classloader) {
 		try {
 			this.resourceBundle = ResourceBundle.getBundle(resourceBundleName, Locale.getDefault(), classloader);
+			debug("Loaded a ResourceBundle with name \"{0}\" using classloader \"{1}\". Locale: {2}",
+					resourceBundleName, classloader, resourceBundle.getLocale());
 		} catch (final MissingResourceException e) {
+			debug("Could not load a ResourceBundle with name \"{0}\" using classloader \"{1}\" for locale {2}",
+					resourceBundleName, classloader, Locale.getDefault());
 			// no resource bundle found
 			this.resourceBundle = null;
 		}

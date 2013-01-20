@@ -58,11 +58,15 @@ class SBuild(implicit _project: Project) {
       "de.tototec.cmdoption.DelegateTest",
       "de.tototec.cmdoption.ExampleSemVerTest",
       "de.tototec.cmdoption.ParserTest",
+      "de.tototec.cmdoption.TranslationTutorialMain",
       "de.tototec.cmdoption.handler.UrlHandlerTest"
     )
 
-    AntJava(failOnError = true, classpath = AntPath(locations = ctx.fileDependencies ++ Seq(Path("target/test-classes"))),
-      className = "org.testng.TestNG", arguments = Seq("-testclass", tests.mkString(","), "-d", Path("target/test-output").getPath))
+    AntJava(
+      failOnError = true, 
+      classpath = AntPath(locations = ctx.fileDependencies ++ Seq(Path("target/test-classes"), Path("src/test/resources"))),
+      className = "org.testng.TestNG", 
+      arguments = Seq("-testclass", tests.mkString(","), "-d", Path("target/test-output").getPath))
   }
 
   val msgCatalog = Path("target/po/messages.pot")
