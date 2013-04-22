@@ -2,6 +2,9 @@ package de.tototec.cmdoption;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -230,7 +233,15 @@ public class CmdlineParser {
 
 				if (!dryrun) {
 					try {
+						final boolean origAccessibleFlag = element.isAccessible();
+						if (!origAccessibleFlag) {
+							element.setAccessible(true);
+						}
 						handler.applyParams(optionHandle.getObject(), element, optionArgs, param);
+						if (!origAccessibleFlag) {
+							// do not leave doors open
+							element.setAccessible(origAccessibleFlag);
+						}
 					} catch (final CmdOptionHandlerException e) {
 						throw new CmdlineParserException(e.getMessage(), e, e.getLocalizedMessage());
 					} catch (final Exception e) {
@@ -294,7 +305,15 @@ public class CmdlineParser {
 				if (!dryrun) {
 					try {
 						debug("Apply main parameter from parameters: {0}", Util.mkString(optionArgs, null, ", ", null));
+						final boolean origAccessibleFlag = element.isAccessible();
+						if (!origAccessibleFlag) {
+							element.setAccessible(true);
+						}
 						handler.applyParams(parameter.getObject(), element, optionArgs, param);
+						if (!origAccessibleFlag) {
+							// do not leave doors open
+							element.setAccessible(origAccessibleFlag);
+						}
 					} catch (final CmdOptionHandlerException e) {
 						throw new CmdlineParserException(e.getMessage(), e, e.getLocalizedMessage());
 					} catch (final Exception e) {
@@ -510,22 +529,127 @@ public class CmdlineParser {
 		}
 	}
 
+	protected boolean isVisible(final Class<?> baseClass, final Member element) {
+		if (baseClass == null || element == null)
+			return false;
+
+		final int modifiers = element.getModifiers();
+
+		if (Modifier.isPublic(modifiers))
+			return true;
+
+		if (Modifier.isProtected(modifiers))
+			return true;
+
+		if (!Modifier.isPrivate(modifiers) && baseClass.getPackage().equals(element.getDeclaringClass().getPackage()))
+			return true;
+
+		return false;
+	}
+
+	protected boolean isPublicOrProtected(final Method method) {
+		final int modifiers = method.getModifiers();
+		return Modifier.isPublic(modifiers) || Modifier.isProtected(modifiers);
+	}
+
+	protected boolean isPackagePrivate(final Method method) {
+		final int modifiers = method.getModifiers();
+		return !Modifier.isPublic(modifiers) && !Modifier.isProtected(modifiers) && !Modifier.isPrivate(modifiers);
+	}
+
+	protected boolean isPrivate(final Method method) {
+		final int modifiers = method.getModifiers();
+		return Modifier.isPrivate(modifiers);
+	}
+
+	protected boolean containsMethod(final Iterable<Method> methods, final Method method) {
+		return findMethod(methods, method) != null;
+	}
+
+	protected Method findMethod(final Iterable<Method> methods, final Method method) {
+		for (final Method existsingMethod : methods) {
+			if (existsingMethod.getName() == method.getName()) {
+				final Class<?>[] existingTypes = existsingMethod.getParameterTypes();
+				final Class<?>[] newTypes = method.getParameterTypes();
+				if (existingTypes.length == newTypes.length) {
+					boolean same = true;
+					for (int i = 0; i < existingTypes.length; ++i) {
+						same &= existingTypes[i].equals(newTypes[i]);
+					}
+					if (same)
+						return existsingMethod;
+				}
+			}
+		}
+		return null;
+	}
+
 	protected void scanOptions(final Object object) {
 		final Class<?> class1 = object.getClass();
 
+		final List<Field> fields = new LinkedList<Field>();
+		final List<Method> privateMethods = new LinkedList<Method>();
+
+		final List<Method> otherPackageNonPrivateMethods = new LinkedList<Method>();
+
+		final List<Method> currentPackageNonPrivateMethods = new LinkedList<Method>();
+
+		Class<?> parentClass = class1;
+		while (parentClass != null && !parentClass.equals(Object.class)) {
+			// We cannot override fields in child classes, so we simple collect
+			// all fields we found
+			fields.addAll(Arrays.asList(parentClass.getDeclaredFields()));
+
+			// for methods, we need to respect overridden methods when
+			// inspecting the parent classes
+			for (final Method method : parentClass.getDeclaredMethods()) {
+				if (isPrivate(method)) {
+					privateMethods.add(method);
+				} else if (isPublicOrProtected(method)) {
+					if (!containsMethod(otherPackageNonPrivateMethods, method)
+							&& !containsMethod(currentPackageNonPrivateMethods, method)) {
+						currentPackageNonPrivateMethods.add(method);
+					}
+				} else if (isPackagePrivate(method)) {
+					// if (!containsMethod(publicOrProtectedMethods, method)) {
+					// method not overloaded
+					if (isPackagePrivate(method)) {
+						if (!containsMethod(currentPackageNonPrivateMethods, method)) {
+							currentPackageNonPrivateMethods.add(method);
+						}
+					}
+				}
+			}
+
+			final Package pack = parentClass.getPackage();
+			parentClass = parentClass.getSuperclass();
+			if (!pack.equals(parentClass.getPackage())) {
+				otherPackageNonPrivateMethods.addAll(currentPackageNonPrivateMethods);
+				currentPackageNonPrivateMethods.clear();
+			}
+		}
+
+		// inspect elements
 		final Set<AccessibleObject> elements = new LinkedHashSet<AccessibleObject>();
-		elements.addAll(Arrays.asList(class1.getDeclaredFields()));
-		elements.addAll(Arrays.asList(class1.getFields()));
-		elements.addAll(Arrays.asList(class1.getDeclaredMethods()));
-		elements.addAll(Arrays.asList(class1.getMethods()));
+		elements.addAll(fields);
+		elements.addAll(privateMethods);
+		elements.addAll(otherPackageNonPrivateMethods);
+		elements.addAll(currentPackageNonPrivateMethods);
 
 		for (final AccessibleObject element : elements) {
-			element.setAccessible(true);
 
 			if (element instanceof Field && element.getAnnotation(CmdOptionDelegate.class) != null) {
 				debug("Found delegate object at: {0}", element);
 				try {
+					final boolean origAccessibleFlag = element.isAccessible();
+					if (!origAccessibleFlag) {
+						element.setAccessible(true);
+					}
 					final Object delegate = ((Field) element).get(object);
+					if (!origAccessibleFlag) {
+						// do not leave doors open
+						element.setAccessible(origAccessibleFlag);
+					}
 					if (delegate != null) {
 						scanOptions(delegate);
 					}
