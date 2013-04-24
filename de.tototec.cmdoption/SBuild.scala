@@ -14,8 +14,12 @@ class SBuild(implicit _project: Project) {
   val sourcesJar = jar.substring(0, jar.length - 4) + "-sources.jar"
   val javadocJar = jar.substring(0, jar.length - 4) + "-javadoc.jar"
 
-  val testCp = "mvn:org.testng:testng:6.4" ~
-    "mvn:com.beust:jcommander:1.30"
+  val testCp =
+    "mvn:org.testng:testng:6.4" ~
+    "mvn:com.beust:jcommander:1.30" ~
+    "mvn:org.scalatest:scalatest_2.10:1.9.1" ~
+    "mvn:org.scala-lang:scala-library:2.10.1" ~
+    "mvn:org.scala-lang:scala-actors:2.10.1"
 
   ExportDependencies("eclipse.classpath", testCp)
 
@@ -44,21 +48,13 @@ class SBuild(implicit _project: Project) {
     )
   }
 
-  Target("phony:test") dependsOn "compileTest" ~ testCp ~ jar exec { ctx: TargetContext =>
-    val tests = Seq(
-      "de.tototec.cmdoption.DelegateTest",
-      "de.tototec.cmdoption.ExampleSemVerTest",
-      "de.tototec.cmdoption.FieldInheritanceTest",
-      "de.tototec.cmdoption.ParserTest",
-      "de.tototec.cmdoption.TranslationTutorialMain",
-      "de.tototec.cmdoption.handler.UrlHandlerTest"
-    )
-
+  Target("phony:test") dependsOn "compileTest" ~ testCp ~ jar exec {
     AntJava(
       failOnError = true,
-      classpath = AntPath(locations = ctx.fileDependencies ++ Seq(Path("target/test-classes"), Path("src/test/resources"))),
-      className = "org.testng.TestNG",
-      arguments = Seq("-testclass", tests.mkString(","), "-d", Path("target/test-output").getPath))
+      classpath = AntPath(locations = testCp.files ++ jar.files ++ Seq(Path("target/test-classes"), Path("src/test/resources"))),
+      className = "org.scalatest.tools.Runner",
+      arguments = Seq("-oF", "-b", Path("src/test/resources/TestNGSuite.xml").getPath)
+    )
   }
 
   val msgCatalog = Path("target/po/messages.pot")
