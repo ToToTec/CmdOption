@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="TestNGSuite" verbose="1">
+	<test name="Tests">
+		<packages>
+			<package name="de.tototec.cmdoption" />
+			<package name="de.tototec.cmdoption.handler" />
+		</packages>
+	</test>
+</suite>
