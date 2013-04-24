@@ -50,7 +50,7 @@ class SBuild(implicit _project: Project) {
 
   Target("phony:test") dependsOn "compileTest" ~ testCp ~ jar exec {
     AntJava(
-      failOnError = true,
+      failOnError = true, dir = Path("target"), fork = true,
       classpath = AntPath(locations = testCp.files ++ jar.files ++ Seq(Path("target/test-classes"), Path("src/test/resources"))),
       className = "org.scalatest.tools.Runner",
       arguments = Seq("-oF", "-b", Path("src/test/resources/TestNGSuite.xml").getPath)
