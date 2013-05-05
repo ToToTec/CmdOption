@@ -1,0 +1,42 @@
+CmdOption 0.3.0
+
+* Added support for inherited fields and methods.
+* Added new BooleanHandler, which replaces BooleanFieldHandler, but also
+  handles methods.
+* Changed SBuild-driven test runner to scalatest, for better commandline 
+  output.
+
+CmdOption 0.2.1 - 2013-01-19:
+
+* Parameter names of options (args) can be translated.
+
+CmdOption 0.2.0 - 2012-11-25:
+
+* Localizated output of error and validation messages.
+* Localization support for user provided configuration.
+* Added new attribute requires to @CmdOption annotation.
+* Added new attribute conflictsWith to @CmdOption annotation.
+* Added user provided "AboutLine" to generated formatted usage output.
+* New handler for parsing URLs.
+* Extended OptionHandler API. The applyParams method has now an additionally
+  parameter containing the name of the parsed option.
+* Changed UsageFormatter API.
+* Migrated build system to SBuild.
+* Updated documentation.
+
+CmdOption 0.1.0 - 2012-03-07:
+
+* CmdOption is now located in package de.tototec.cmdoption. The previous
+  package was de.tobiasroeser.cmdoption.
+* No hardcoded option format - In cmdoption-0.0.4 and before you could give
+  one long parameter (inplicitly starting with a "--") and a short option
+  (starting with one "-"). Since version 0.1.0 you are no longer limited in
+  format and count, just use the names argument of CmdOption annotation.
+  Remember, to include the hyphen(s) in the name, as those are no longer
+  implicit.
+* The Parser class is now CmdlineParser - The old one CmdOptionParser no longer
+  exists.
+* Support for commands - When CmdOption detects a command, all subsequent
+  arguments are parsed into that command exclusivly.
+* External UsageFormatter - You have the full control over the appearance of
+  the usage/help.
