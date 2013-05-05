@@ -60,7 +60,7 @@ public class ExampleSemVerTest extends Assert {
 	}
 
 	@Test
-	public void testCheck() {
+	public void testParseExampleSemVer() {
 		final Config config = new Config();
 		final CmdlineParser cmdlineParser = new CmdlineParser(config);
 		cmdlineParser.setProgramName("semver");

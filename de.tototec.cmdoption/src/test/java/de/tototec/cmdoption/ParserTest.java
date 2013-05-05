@@ -6,7 +6,7 @@ import static org.testng.Assert.*;
 public class ParserTest {
 
 	@Test
-	public void test1() {
+	public void testParseEmptyConfig() {
 		class Config {
 		}
 		final CmdlineParser cp = new CmdlineParser(new Config());
@@ -14,7 +14,7 @@ public class ParserTest {
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Unsupported option or parameter found: --help")
-	public void test2() {
+	public void testParseHelpFail() {
 		class Config {
 		}
 		final CmdlineParser cp = new CmdlineParser(new Config());
@@ -28,7 +28,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void test3() {
+	public void testParseHelp() {
 		final Config3 config = new Config3();
 		assertEquals(config.help, false);
 		final CmdlineParser cp = new CmdlineParser(config);
@@ -37,13 +37,13 @@ public class ParserTest {
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Unsupported option or parameter found: true")
-	public void test3a() {
+	public void testOptionWithOrphanArgFail() {
 		final CmdlineParser cp = new CmdlineParser(new Config3());
 		cp.parse(new String[] { "--help", "true" });
 	}
 
 	@Test
-	public void test3b() {
+	public void testPrintUsageContainsSomeCharacters() {
 		final CmdlineParser cp = new CmdlineParser(new Config3());
 		final StringBuilder sb = new StringBuilder();
 		cp.usage(sb);
@@ -52,7 +52,7 @@ public class ParserTest {
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Option \"--help\" was given 2 times, but must be given between 0 and 1 times")
-	public void test3c() {
+	public void testParseOptionalHelpTwiceFail() {
 		final CmdlineParser cp = new CmdlineParser(new Config3());
 		cp.parse(new String[] { "--help", "--help" });
 	}
@@ -63,13 +63,13 @@ public class ParserTest {
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Option \"--help\" was given 2 times, but must be given exactly 1 times")
-	public void test3d() {
+	public void testParseRequiredHelpTwiceFail() {
 		final CmdlineParser cp = new CmdlineParser(new Config3d());
 		cp.parse(new String[] { "--help", "--help" });
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Option \"--help\" was given 0 times, but must be given exactly 1 times")
-	public void test3e() {
+	public void testParseRequiredHelpMissingFail() {
 		final CmdlineParser cp = new CmdlineParser(new Config3d());
 		cp.parse(new String[] {});
 	}
@@ -80,7 +80,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void test4() {
+	public void testChangedHelpFieldAfterParse() {
 		final Config4 config = new Config4();
 		assertEquals(config.help, false);
 		final CmdlineParser cp = new CmdlineParser(config);
@@ -89,13 +89,13 @@ public class ParserTest {
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class)
-	public void test4a() {
+	public void testParseOneArgOptionWithoutArgFail() {
 		final CmdlineParser cp = new CmdlineParser(new Config4());
 		cp.parse(new String[] { "--help" });
 	}
 
 	@Test
-	public void test4b() {
+	public void testPrintUsageAndParseHelp() {
 		final Config4 config = new Config4();
 		final CmdlineParser cp = new CmdlineParser(config);
 		final StringBuilder sb = new StringBuilder();
@@ -107,7 +107,7 @@ public class ParserTest {
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Could not parse argument '--help' as boolean parameter.")
-	public void test4c() {
+	public void testParseHelpTwiceFail() {
 		final CmdlineParser cp = new CmdlineParser(new Config4());
 		cp.parse(new String[] { "--help", "--help" });
 	}
@@ -121,7 +121,7 @@ public class ParserTest {
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "^The option \"--opt\" requires the unknown/missing option \"--reqB\".$")
-	public void test5() {
+	public void testParseTwoOptionWhichRequiresTwoOtherButOneIsMissingFail() {
 		final Config5 config = new Config5();
 		final CmdlineParser cp = new CmdlineParser(config);
 		final StringBuilder sb = new StringBuilder();
@@ -131,7 +131,7 @@ public class ParserTest {
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "^The option \"--opt\" requires the unknown/missing option \"--reqB\".$")
-	public void test5a() {
+	public void testParseOneOptionWhichRequiresTwoOthersButOneIsMissingFail() {
 		final Config5 config = new Config5();
 		final CmdlineParser cp = new CmdlineParser(config);
 		final StringBuilder sb = new StringBuilder();
@@ -149,7 +149,7 @@ public class ParserTest {
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "^When using option \"--opt\" also option \"--reqA\" must be given.$")
-	public void test6() {
+	public void testParseOptionWhichRequiresAnotherOneFail() {
 		final Config6 config = new Config6();
 		final CmdlineParser cp = new CmdlineParser(config);
 		final StringBuilder sb = new StringBuilder();

@@ -16,22 +16,22 @@ public class DelegateTest {
 	}
 
 	@Test
-	public void test1() {
-		ConfigA config = new ConfigA();
+	public void testParseOption() {
+		final ConfigA config = new ConfigA();
 		Assert.assertFalse(config.a);
 
-		CmdlineParser cp = new CmdlineParser(config);
+		final CmdlineParser cp = new CmdlineParser(config);
 		cp.parse("-a");
 
 		Assert.assertTrue(config.a);
 	}
 
 	@Test
-	public void test2() {
-		ConfigB config = new ConfigB();
+	public void testParseDelegateOption() {
+		final ConfigB config = new ConfigB();
 		Assert.assertFalse(config.a.a);
 
-		CmdlineParser cp = new CmdlineParser(config);
+		final CmdlineParser cp = new CmdlineParser(config);
 		cp.parse("-a");
 
 		Assert.assertTrue(config.a.a);
