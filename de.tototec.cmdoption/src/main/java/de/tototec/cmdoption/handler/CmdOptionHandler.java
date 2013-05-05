@@ -7,7 +7,7 @@ import java.lang.reflect.AccessibleObject;
  * result to the annotated field or method.
  * 
  * @see AddToCollectionHandler
- * @see BooleanFieldHandler
+ * @see BooleanHandler
  * @see BooleanOptionHandler
  * @see PutIntoMapHandler
  * @see StringFieldHandler

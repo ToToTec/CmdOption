@@ -2,21 +2,20 @@ package de.tototec.cmdoption.handler;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Apply an one-arg option to a {@link Boolean} (or <code>boolean</code>) field.
  * Evaluated the argument to <code>true</code> if it is "true", "on" or "1".
  * 
- * @deprecated {@link BooleanHandler} does the same and also supports methods.
  */
-@Deprecated
-public class BooleanFieldHandler implements CmdOptionHandler {
+public class BooleanHandler implements CmdOptionHandler {
 
 	private final String[] trueWords;
 	private final String[] falseWords;
 	private final boolean caseSensitive;
 
-	public BooleanFieldHandler() {
+	public BooleanHandler() {
 		this(new String[] { "on", "true", "1" }, new String[] { "off", "false", "0" }, false);
 	}
 
@@ -28,7 +27,7 @@ public class BooleanFieldHandler implements CmdOptionHandler {
 	 * @param falseWords
 	 * @param caseSensitive
 	 */
-	public BooleanFieldHandler(final String[] trueWords, final String[] falseWords, final boolean caseSensitive) {
+	public BooleanHandler(final String[] trueWords, final String[] falseWords, final boolean caseSensitive) {
 		this.trueWords = trueWords;
 		this.falseWords = falseWords;
 		this.caseSensitive = caseSensitive;
@@ -38,6 +37,12 @@ public class BooleanFieldHandler implements CmdOptionHandler {
 		if (element instanceof Field && argCount == 1) {
 			final Field field = (Field) element;
 			return field.getType().equals(Boolean.class) || field.getType().equals(boolean.class);
+		} else if (element instanceof Method && argCount == 1) {
+			final Method method = (Method) element;
+			if (method.getParameterTypes().length == 1) {
+				final Class<?> type = method.getParameterTypes()[0];
+				return boolean.class.equals(type) || Boolean.class.equals(type);
+			}
 		}
 		return false;
 	}
@@ -77,8 +82,13 @@ public class BooleanFieldHandler implements CmdOptionHandler {
 		}
 
 		try {
-			final Field field = (Field) element;
-			field.set(config, decission);
+			if (element instanceof Field) {
+				final Field field = (Field) element;
+				field.set(config, decission);
+			} else {
+				final Method method = (Method) element;
+				method.invoke(config, decission.booleanValue());
+			}
 		} catch (final Exception e) {
 			throw new CmdOptionHandlerException("Could not apply argument '" + args[0] + "'.", e);
 		}

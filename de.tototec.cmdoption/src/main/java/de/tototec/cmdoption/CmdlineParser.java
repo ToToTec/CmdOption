@@ -19,7 +19,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import de.tototec.cmdoption.handler.AddToCollectionHandler;
-import de.tototec.cmdoption.handler.BooleanFieldHandler;
+import de.tototec.cmdoption.handler.BooleanHandler;
 import de.tototec.cmdoption.handler.BooleanOptionHandler;
 import de.tototec.cmdoption.handler.CmdOptionHandler;
 import de.tototec.cmdoption.handler.CmdOptionHandlerException;
@@ -88,7 +88,7 @@ public class CmdlineParser {
 		addObject(objects);
 
 		registerHandler(new BooleanOptionHandler());
-		registerHandler(new BooleanFieldHandler());
+		registerHandler(new BooleanHandler());
 		registerHandler(new StringFieldHandler());
 		registerHandler(new PutIntoMapHandler());
 		registerHandler(new AddToCollectionHandler());
