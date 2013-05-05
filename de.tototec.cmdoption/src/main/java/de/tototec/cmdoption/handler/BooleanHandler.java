@@ -5,9 +5,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * Apply an one-arg option to a {@link Boolean} (or <code>boolean</code>) field.
- * Evaluated the argument to <code>true</code> if it is "true", "on" or "1".
+ * Apply an one-arg option to a {@link Boolean} (or <code>boolean</code>) field
+ * or method.
  * 
+ * Evaluates the argument to <code>true</code> if it is "true", "on" or "1".
+ * 
+ * @since 0.3.0
  */
 public class BooleanHandler implements CmdOptionHandler {
 

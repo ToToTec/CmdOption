@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
  * Evaluated the argument to <code>true</code> if it is "true", "on" or "1".
  * 
  * @deprecated {@link BooleanHandler} does the same and also supports methods.
+ *             Deprecated since 0.3.0.
  */
 @Deprecated
 public class BooleanFieldHandler implements CmdOptionHandler {
