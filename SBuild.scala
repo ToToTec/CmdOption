@@ -28,7 +28,7 @@ class SBuild(implicit project: Project) {
     AntDelete(dir = Path("target"))
   }
 
-  Target("phony:all") dependsOn "de.tototec.cmdoption::all" ~ srcDistZip ~ binDistZip
+  Target("phony:all") dependsOn "de.tototec.cmdoption::all" ~ srcDistZip ~ binDistZip ~ "prepareMvnStaging"
 
   // depend on all source files
   Target(srcDistZip) exec { ctx: TargetContext =>

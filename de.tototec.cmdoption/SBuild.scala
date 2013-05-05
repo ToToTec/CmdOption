@@ -48,16 +48,16 @@ class SBuild(implicit _project: Project) {
     )
   }
 
-  Target("phony:test") dependsOn "compileTest" ~ testCp ~ jar exec {
+  Target("phony:test") dependsOn "compileTest" ~ testCp ~ jar ~ "scan:src/test/resources" ~ "src/test/resources/TestNGSuite.xml" exec {
     AntJava(
       failOnError = true, dir = Path("target"), fork = true,
       classpath = AntPath(locations = testCp.files ++ jar.files ++ Seq(Path("target/test-classes"), Path("src/test/resources"))),
       className = "org.scalatest.tools.Runner",
-      arguments = Seq("-oF", "-b", Path("src/test/resources/TestNGSuite.xml").getPath)
+      arguments = Seq("-oF", "-b", "src/test/resources/TestNGSuite.xml".files.head.getPath)
     )
   }
 
-  val msgCatalog = Path("target/po/messages.pot")
+  val msgCatalog = "target/po/messages.pot"
 
   Target(msgCatalog) dependsOn "scan:src/main/java" exec { ctx: TargetContext =>
     AntMkdir(dir = ctx.targetFile.get.getParentFile)
@@ -78,12 +78,12 @@ class SBuild(implicit _project: Project) {
 
   val propFileTargets = poFiles.map { poFile =>
     val propFile = Path("target/classes/de/tototec/cmdoption", "Messages_" + """\.po$""".r.replaceFirstIn(poFile.getName, ".properties"))
-    Target(propFile) dependsOn (msgCatalog ~ poFile) exec {
+    Target(propFile) dependsOn msgCatalog ~ poFile exec {
       AntMkdir(dir = propFile.getParentFile)
       AntExec(
         failOnError = true,
         executable = "msgmerge",
-        args = Array("--output-file", propFile.getPath, "--properties-output", poFile.getPath, msgCatalog.getPath)
+        args = Array("--output-file", propFile.getPath, "--properties-output", poFile.getPath(), msgCatalog.files.head.getPath())
       )
     }
   }
@@ -91,12 +91,17 @@ class SBuild(implicit _project: Project) {
   Target("phony:msgmerge") dependsOn msgCatalog exec {
     poFiles.foreach { poFile =>
       AntExec(failOnError = true, executable = "msgmerge",
-        args = Array("--update", poFile.getPath, msgCatalog.getPath))
+        args = Array("--update", poFile.getPath, msgCatalog.files.head.getPath()))
     }
   } help "Updates translation files (.po) with newest messages."
 
-  val jarTarget = Target(jar) dependsOn ("compile") exec {
-    AntJar(baseDir = Path("target/classes"), destFile = Path(jar), fileSet = AntFileSet(file = Path("LICENSE.txt")))
+  val jarTarget = Target(jar) dependsOn "compile" ~ "LICENSE.txt" ~ "ChangeLog.txt" exec {
+    AntJar(baseDir = Path("target/classes"), destFile = Path(jar),
+      fileSets = Seq(
+        AntFileSet(file = "LICENSE.txt".files.head),
+        AntFileSet(file = "ChangeLog.txt".files.head)
+      )
+    )
   }
 
   propFileTargets.foreach { t => jarTarget dependsOn t }
@@ -107,30 +112,26 @@ class SBuild(implicit _project: Project) {
       args = Array("install:install-file", "-DgroupId=de.tototec", "-DartifactId=de.tototec.cmdoption", "-Dversion=" + version, "-Dfile=" + jar, "-DgeneratePom=true", "-Dpackaging=jar"))
   } help "Install jar into Maven repository."
 
-  Target(sourcesJar) exec { ctx: TargetContext =>
-    IfNotUpToDate(Path("src/main/"), Path("target"), ctx) {
-      AntJar(destFile = ctx.targetFile.get, fileSets = Seq(
-        AntFileSet(dir = Path("src/main/java")),
-        AntFileSet(dir = Path("src/main/po")),
-        AntFileSet(file = Path("LICENSE.txt"))
-      ))
-    }
+  Target(sourcesJar) dependsOn "scan:src/main/java" ~ "scan:src/main/po" ~ "LICENSE.txt" ~ "ChangeLog.txt" exec { ctx: TargetContext =>
+    AntJar(destFile = ctx.targetFile.get, fileSets = Seq(
+      AntFileSet(dir = Path("src/main/java")),
+      AntFileSet(dir = Path("src/main/po")),
+      AntFileSet(file ="LICENSE.txt".files.head),
+      AntFileSet(file = "ChangeLog.txt".files.head)
+    ))
   }
 
-  Target(javadocJar) exec { ctx: TargetContext =>
-    IfNotUpToDate(Path("src/main/java"), Path("target"), ctx) {
+  Target(javadocJar).cacheable dependsOn "scan:src/main/java" exec { ctx: TargetContext =>
+    val docDir = Path("target/javadoc")
+    AntMkdir(dir = docDir)
 
-      val docDir = Path("target/javadoc")
-      AntMkdir(dir = docDir)
+    new org.apache.tools.ant.taskdefs.Javadoc() {
+      setProject(AntProject())
+      setSourcepath(AntPath(location = Path("src/main/java")))
+      setDestdir(docDir)
+    }.execute
 
-      new org.apache.tools.ant.taskdefs.Javadoc() {
-        setProject(AntProject())
-        setSourcepath(AntPath(location = Path("src/main/java")))
-        setDestdir(docDir)
-      }.execute
-
-      AntJar(destFile = ctx.targetFile.get, baseDir = docDir)
-    }
+    AntJar(destFile = ctx.targetFile.get, baseDir = docDir)
   }
 
 }
