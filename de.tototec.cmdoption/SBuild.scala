@@ -16,7 +16,7 @@ class SBuild(implicit _project: Project) {
 
   val testCp =
     "mvn:org.testng:testng:6.4" ~
-    "mvn:com.beust:jcommander:1.30" ~
+    "mvn:com.beust:jcommander:1.30" ~ // transitive required by testng
     "mvn:org.scalatest:scalatest_2.10:1.9.1" ~
     "mvn:org.scala-lang:scala-library:2.10.1" ~
     "mvn:org.scala-lang:scala-actors:2.10.1"
