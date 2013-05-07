@@ -1,10 +1,11 @@
-CmdOption 0.3.0 - SVN trunk:
+CmdOption 0.3.0 - 2013-05-07:
 
 * Added support for inherited fields and methods.
 * Added new BooleanHandler, which replaces BooleanFieldHandler, but also
   handles methods.
 * Changed SBuild-driven test runner to scalatest, for better commandline 
   output.
+* Added more unit tests.
 * Added Changelog.
 
 CmdOption 0.2.1 - 2013-01-19:
