@@ -95,7 +95,11 @@ class SBuild(implicit _project: Project) {
     }
   } help "Updates translation files (.po) with newest messages."
 
-  val jarTarget = Target(jar) dependsOn "compile" ~ "LICENSE.txt" ~ "ChangeLog.txt" exec {
+  val classes = "scan:target/classes"
+  Target(classes) dependsOn "compile"
+  propFileTargets.foreach { t => Target(classes) dependsOn t }
+
+  Target(jar) dependsOn classes ~ "LICENSE.txt" ~ "ChangeLog.txt" exec {
     AntJar(baseDir = Path("target/classes"), destFile = Path(jar),
       fileSets = Seq(
         AntFileSet(file = "LICENSE.txt".files.head),
@@ -103,8 +107,6 @@ class SBuild(implicit _project: Project) {
       )
     )
   }
-
-  propFileTargets.foreach { t => jarTarget dependsOn t }
 
   Target("phony:installToMvn") dependsOn jar exec {
     AntExec(
