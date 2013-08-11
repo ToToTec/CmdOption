@@ -199,6 +199,7 @@ public class CmdlineParser {
 					debug("Commands: " + Util.mkString(commands, "\n  ", ",\n  ", null));
 					debug("ResourceBundle: {0}, Locale: {1}", resourceBundle, resourceBundle == null ? null
 							: resourceBundle.getLocale());
+					debug("CmdOptionHandlers: " + Util.mkString(handlerRegistry.entrySet(), "\n  ", "\n  ", null));
 				}
 
 			} else if (parseOptions && quickOptionMap.containsKey(param)) {
@@ -206,6 +207,7 @@ public class CmdlineParser {
 				final OptionHandle optionHandle = quickOptionMap.get(param);
 				optionCount.put(optionHandle, optionCount.get(optionHandle) + 1);
 				if (optionHandle.isHelp()) {
+					debug("Detected a help request though: " + param);
 					helpDetected = true;
 				}
 
