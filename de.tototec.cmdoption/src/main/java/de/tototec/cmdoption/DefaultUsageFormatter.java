@@ -14,12 +14,17 @@ public class DefaultUsageFormatter implements UsageFormatter {
 
 	private final boolean withCommandDetails;
 
-	private int lineLength = 80;
+	private int lineLength;
 	private int colSpace = 2;
 	private int col1Prefix = 2;
 
 	public DefaultUsageFormatter(final boolean withCommandDetails) {
+		this(withCommandDetails, 80);
+	}
+
+	public DefaultUsageFormatter(final boolean withCommandDetails, final int lineLength) {
 		this.withCommandDetails = withCommandDetails;
+		this.lineLength = lineLength;
 	}
 
 	protected String translate(final ResourceBundle resourceBundle, final String string) {
