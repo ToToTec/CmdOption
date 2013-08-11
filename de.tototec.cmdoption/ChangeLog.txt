@@ -1,3 +1,8 @@
+CmdOption 0.3.0.9000:
+
+* Added new IntegerHandler which supports Integer and int fields and methods.
+* Added the line length as new constructor parameter of DefaultUsageFormatter.
+
 CmdOption 0.3.0 - 2013-05-07:
 
 * Added support for inherited fields and methods.
