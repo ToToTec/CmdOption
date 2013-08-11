@@ -23,6 +23,7 @@ import de.tototec.cmdoption.handler.BooleanHandler;
 import de.tototec.cmdoption.handler.BooleanOptionHandler;
 import de.tototec.cmdoption.handler.CmdOptionHandler;
 import de.tototec.cmdoption.handler.CmdOptionHandlerException;
+import de.tototec.cmdoption.handler.IntegerHandler;
 import de.tototec.cmdoption.handler.PutIntoMapHandler;
 import de.tototec.cmdoption.handler.StringFieldHandler;
 import de.tototec.cmdoption.handler.StringMethodHandler;
@@ -93,6 +94,7 @@ public class CmdlineParser {
 		registerHandler(new PutIntoMapHandler());
 		registerHandler(new AddToCollectionHandler());
 		registerHandler(new StringMethodHandler());
+		registerHandler(new IntegerHandler());
 	}
 
 	private void debug(final String msg, final Object... args) {

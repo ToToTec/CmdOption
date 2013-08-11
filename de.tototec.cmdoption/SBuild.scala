@@ -16,16 +16,16 @@ class SBuild(implicit _project: Project) {
 
   val testCp =
     "mvn:org.testng:testng:6.4" ~
-    "mvn:com.beust:jcommander:1.30" ~ // transitive required by testng
-    "mvn:org.scalatest:scalatest_2.10:1.9.1" ~
-    "mvn:org.scala-lang:scala-library:2.10.1" ~
-    "mvn:org.scala-lang:scala-actors:2.10.1"
+      "mvn:com.beust:jcommander:1.30" ~ // transitive required by testng
+      "mvn:org.scalatest:scalatest_2.10:1.9.1" ~
+      "mvn:org.scala-lang:scala-library:2.10.2" ~
+      "mvn:org.scala-lang:scala-actors:2.10.2"
 
   ExportDependencies("eclipse.classpath", testCp)
 
   val poFiles = Path("src/main/po").listFiles.filter(f => f.getName.endsWith(".po"))
 
-  Target("phony:all") dependsOn jar ~  sourcesJar ~ "test"
+  Target("phony:all") dependsOn jar ~ sourcesJar ~ "test"
 
   Target("phony:clean").evictCache exec {
     AntDelete(dir = Path("target"))
@@ -116,7 +116,7 @@ class SBuild(implicit _project: Project) {
     AntJar(destFile = ctx.targetFile.get, fileSets = Seq(
       AntFileSet(dir = Path("src/main/java")),
       AntFileSet(dir = Path("src/main/po")),
-      AntFileSet(file ="LICENSE.txt".files.head),
+      AntFileSet(file = "LICENSE.txt".files.head),
       AntFileSet(file = "ChangeLog.txt".files.head)
     ))
   }
