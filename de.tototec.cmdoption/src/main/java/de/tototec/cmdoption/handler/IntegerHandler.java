@@ -4,6 +4,8 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import de.tototec.cmdoption.I18n;
+
 /**
  * Apply an one-arg option to a {@link Integer} (or <code>int</code>) field or
  * method.
@@ -38,7 +40,7 @@ public class IntegerHandler implements CmdOptionHandler {
 			final String arg = args[0];
 			parsedValue = Integer.parseInt(arg);
 		} catch (final NumberFormatException e) {
-			throw new CmdOptionHandlerException("Could not read integer value '" + args[0] + "'.", e);
+			throw new CmdOptionHandlerException(e, I18n.marktr("Could not read integer value \"{0}\"."), args[0]);
 		}
 
 		try {
@@ -50,7 +52,7 @@ public class IntegerHandler implements CmdOptionHandler {
 				method.invoke(config, parsedValue);
 			}
 		} catch (final Exception e) {
-			throw new CmdOptionHandlerException("Could not apply argument '" + args[0] + "'.", e);
+			throw new CmdOptionHandlerException(e, I18n.marktr("Could not apply argument \"{0}\"."), args[0]);
 		}
 
 	}

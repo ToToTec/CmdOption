@@ -32,7 +32,7 @@ public class CmdlineParserException extends RuntimeException {
 
 	@Override
 	public String getLocalizedMessage() {
-		return localizedMessage;
+		return localizedMessage == null ? getMessage() : localizedMessage;
 	}
 
 }

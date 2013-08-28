@@ -1,12 +1,12 @@
 # German translation for CmdOption
-# Tobias Roeser, 2012.
+# Tobias Roeser, 2012, 2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: CmdOption\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-24 17:15+0100\n"
-"PO-Revision-Date: 2012-11-24 22:15+0100\n"
-"Last-Translator: Tobias Roeser <tobias.roeser@tototec.de>\n"
+"POT-Creation-Date: 2013-08-27 23:16+0200\n"
+"PO-Revision-Date: 2013-08-28 13:42+0200\n"
+"Last-Translator: Tobias Roeser\n"
 "Language-Team: German <>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -15,12 +15,12 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: de/tototec/cmdoption/CmdlineParser.java:140
+#: de/tototec/cmdoption/CmdlineParser.java:154
 #, java-format
 msgid "Default command \"{0}\" is not a known command."
 msgstr "Defaultbefehl \"{0}\" is kein bekannter Befehl."
 
-#: de/tototec/cmdoption/CmdlineParser.java:199
+#: de/tototec/cmdoption/CmdlineParser.java:217
 #, java-format
 msgid ""
 "Missing arguments(s): {0}. Option \"{1}\" requires {2} arguments, but you "
@@ -29,20 +29,20 @@ msgstr ""
 "Fehlende Argumente: {0}. Option \"{1}\" benötigt {2} Argumente, es wurden "
 "aber {3} angegeben."
 
-#: de/tototec/cmdoption/CmdlineParser.java:216
+#: de/tototec/cmdoption/CmdlineParser.java:234
 #, java-format
 msgid "No suitable handler found for option: {0} ({1} argument(s))"
 msgstr ""
 "Es konnte kein Prozessor für die Option \"{0}\" (mit {1} Argument(en)) "
 "gefunden werden."
 
-#: de/tototec/cmdoption/CmdlineParser.java:227
-#: de/tototec/cmdoption/CmdlineParser.java:291
+#: de/tototec/cmdoption/CmdlineParser.java:253
+#: de/tototec/cmdoption/CmdlineParser.java:325
 #, java-format
 msgid "Could not apply parameters {0} to field/method {1}"
 msgstr "Parameter {0} konnte nicht auf Feld/Methode {1} angewendet werden."
 
-#: de/tototec/cmdoption/CmdlineParser.java:265
+#: de/tototec/cmdoption/CmdlineParser.java:291
 #, java-format
 msgid ""
 "Missing arguments: {0} Parameter requires {1} arguments, but you gave {2}."
@@ -50,94 +50,94 @@ msgstr ""
 "Fehlende Argumente: {0} Parameter benötigt {1} argumente, aber es wurden {2} "
 "angegeben."
 
-#: de/tototec/cmdoption/CmdlineParser.java:279
+#: de/tototec/cmdoption/CmdlineParser.java:305
 #, java-format
 msgid "No suitable handler found for option: {0}"
 msgstr "Kein passender Handler gefunden für Option: {0}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:297
+#: de/tototec/cmdoption/CmdlineParser.java:331
 #, java-format
 msgid "Unsupported option or parameter found: {0}"
 msgstr "Nicht unterstützen Parameter gefunden: {0}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:310
+#: de/tototec/cmdoption/CmdlineParser.java:344
 #, java-format
 msgid "at least {0}"
 msgstr "mindestens {0}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:314
+#: de/tototec/cmdoption/CmdlineParser.java:348
 #, java-format
 msgid "exactly {0}"
 msgstr "genau {0}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:317
+#: de/tototec/cmdoption/CmdlineParser.java:351
 #, java-format
 msgid "between {0} and {1}"
 msgstr "zwischen {0} und {1}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:325
+#: de/tototec/cmdoption/CmdlineParser.java:359
 #, java-format
 msgid "Main parameter \"{0}\" was given {1} times, but must be given {2} times"
 msgstr ""
 "Hauptparameter \"{0}\" wurde {1} mal angegeben, er muss aber {2} mal "
 "angegeben werden"
 
-#: de/tototec/cmdoption/CmdlineParser.java:331
+#: de/tototec/cmdoption/CmdlineParser.java:365
 #, java-format
 msgid "Option \"{0}\" was given {1} times, but must be given {2} times"
 msgstr ""
 "Option \"{0}\" wurde {1} mal angegeben, sie muss aber {2} mal angegeben "
 "werden"
 
-#: de/tototec/cmdoption/CmdlineParser.java:358
+#: de/tototec/cmdoption/CmdlineParser.java:392
 #, java-format
 msgid "When using option \"{0}\" also option \"{1}\" must be given."
 msgstr ""
 "Wenn die Option \"{0}\" verwendet wird, muss auch Option \"{1}\" angegeben "
 "werden."
 
-#: de/tototec/cmdoption/CmdlineParser.java:377
+#: de/tototec/cmdoption/CmdlineParser.java:411
 #, java-format
 msgid "Options \"{0}\" and \"{1}\" cannot be used at the same time."
 msgstr ""
 "Die Optionen \"{0}\" und \"{1}\" können nicht gleichzeitig angegeben werden."
 
-#: de/tototec/cmdoption/CmdlineParser.java:413
+#: de/tototec/cmdoption/CmdlineParser.java:447
 #, java-format
 msgid "Could not create handler: {0}"
 msgstr "Konnte den Handler ich erzeugen: {0}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:452
+#: de/tototec/cmdoption/CmdlineParser.java:486
 #, java-format
 msgid "Command found without required name in: {0}"
 msgstr "Kommando ohne einen benötigten Name gefunden: {0}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:463
-#: de/tototec/cmdoption/CmdlineParser.java:577
+#: de/tototec/cmdoption/CmdlineParser.java:497
+#: de/tototec/cmdoption/CmdlineParser.java:716
 #, java-format
 msgid "Duplicate command/option name \"{0}\" found in: {1}"
 msgstr "Doppelter Kommando-/Optionsname \"{0}\" gefunden in: {1}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:480
+#: de/tototec/cmdoption/CmdlineParser.java:514
 #, java-format
 msgid "The option \"{0}\" requires the unknown/missing option \"{1}\"."
 msgstr "The Option \"{0}\" benötigt die unbekannte/fehlende Option \"{1}\"."
 
-#: de/tototec/cmdoption/CmdlineParser.java:488
+#: de/tototec/cmdoption/CmdlineParser.java:522
 #, java-format
 msgid "Option \"{0}\" is configured to conflicts with itself."
 msgstr ""
 "Option \"{0}\" wurde so konfiguriert, dass sie zu sich selbst in Konflikt "
 "steht."
 
-#: de/tototec/cmdoption/CmdlineParser.java:494
+#: de/tototec/cmdoption/CmdlineParser.java:528
 #, java-format
 msgid "The option \"{0}\" conflicts with a unknown/missing option \"{1}\"."
 msgstr ""
 "The Option \"{0}\" steht in Konflikt zu einer unbekannten/fehlenden Option "
 "\"{1}\"."
 
-#: de/tototec/cmdoption/CmdlineParser.java:549
+#: de/tototec/cmdoption/CmdlineParser.java:688
 #, java-format
 msgid ""
 "More than one parameter definition found. First definition: {0} Second "
@@ -146,56 +146,65 @@ msgstr ""
 "Mehr als eine Parameterdefinition gefunden. Erste Stelle: {0} Zweite Stelle: "
 "{1}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:565
+#: de/tototec/cmdoption/CmdlineParser.java:704
 msgid "Parameter definition must support at least on argument."
 msgstr "Parameterdefinition muss mindestens ein Argument enthalten."
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:47
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:73
 msgid "Usage:"
 msgstr "Aufruf:"
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:48
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:74
 msgid "program"
 msgstr "programm"
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:50
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:76
 msgid "[options]"
 msgstr "[Optionen]"
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:53
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:79
 msgid "[parameter]"
 msgstr "[Parameter]"
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:56
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:82
 msgid "[command]"
 msgstr "[Befehl]"
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:64
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:90
 msgid "[command options]"
 msgstr "[Befehlsoptionen]"
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:67
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:93
 msgid "[command parameters]"
 msgstr "[Befehlsparameter]"
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:72
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:98
 msgid "Options:"
 msgstr "Optionen:"
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:74
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:100
 msgid "Commands:"
 msgstr "Befehle:"
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:90
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:116
 msgid "Options for command:"
 msgstr "Optionen für Befehl:"
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:96
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:122
 msgid "Parameter for command:"
 msgstr "Parameter für Befehl:"
 
-#: de/tototec/cmdoption/DefaultUsageFormatter.java:102
+#: de/tototec/cmdoption/DefaultUsageFormatter.java:128
 msgid "Parameter:"
 msgstr "Parameter:"
 
+#: de/tototec/cmdoption/handler/IntegerHandler.java:43
+#, java-format
+msgid "Could not read integer value \"{0}\"."
+msgstr "Konnte den Integer-Wert \"{0}\" nicht lesen."
+
+#: de/tototec/cmdoption/handler/IntegerHandler.java:55
+#, java-format
+msgid "Could not apply argument \"{0}\"."
+msgstr "Parameter {0} konnte nicht angewendet werden."
 
