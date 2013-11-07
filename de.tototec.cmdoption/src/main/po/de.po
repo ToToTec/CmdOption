@@ -58,7 +58,7 @@ msgstr "Kein passender Handler gefunden für Option: {0}"
 #: de/tototec/cmdoption/CmdlineParser.java:331
 #, java-format
 msgid "Unsupported option or parameter found: {0}"
-msgstr "Nicht unterstützen Parameter gefunden: {0}"
+msgstr "Nicht unterstützten Parameter gefunden: {0}"
 
 #: de/tototec/cmdoption/CmdlineParser.java:344
 #, java-format
