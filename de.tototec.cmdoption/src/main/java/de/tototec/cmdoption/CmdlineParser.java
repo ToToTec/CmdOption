@@ -28,6 +28,26 @@ import de.tototec.cmdoption.handler.PutIntoMapHandler;
 import de.tototec.cmdoption.handler.StringFieldHandler;
 import de.tototec.cmdoption.handler.StringMethodHandler;
 
+/**
+ * CmdOption main entry point to configure the parser, parse the command line
+ * and provide help.
+ * 
+ * The central method to parse a command line is {@link #parse(String...)}.
+ * 
+ * The command line will be parsed and validated based on configuration objects
+ * which are annotated with CmdOption-specific annotations, which are:
+ * <ul>
+ * <li>{@link CmdOption}
+ * <li>{@link CmdCommand}
+ * <li>{@link CmdOptionDelegate}
+ * </ul>
+ * 
+ * Each parsed option will be directly applied to the corresponding method or
+ * field. The configuration objects are typically provided as constructor
+ * arguments, but it is also possible to use the {@link #addObject(Object...)}
+ * method to add additional configuration objects.
+ * 
+ */
 public class CmdlineParser {
 
 	private I18n i18n = I18nFactory.getI18n(CmdlineParser.class);
@@ -112,10 +132,17 @@ public class CmdlineParser {
 		}
 	}
 
+	/**
+	 * Programmatically enable or disable the debug mode.
+	 */
 	public void setDebugMode(final boolean debugMode) {
 		this.debugMode = debugMode;
 	}
 
+	/**
+	 * Allow or disallow the recognition of a request of the debug mode via the
+	 * special command line option --CMDOPTION_DEBUG.
+	 */
 	public void setDebugModeAllowed(final boolean debugAllowed) {
 		this.debugAllowed = debugAllowed;
 	}
@@ -149,6 +176,17 @@ public class CmdlineParser {
 		parse(false, true, cmdline);
 	}
 
+	private void printDebugState() {
+		if (debugMode) {
+			debug("Parameter: " + parameter);
+			debug("Options: " + Util.mkString(options, "\n  ", ",\n  ", null));
+			debug("Commands: " + Util.mkString(commands, "\n  ", ",\n  ", null));
+			debug("ResourceBundle: {0}, Locale: {1}", resourceBundle,
+					resourceBundle == null ? null : resourceBundle.getLocale());
+			debug("CmdOptionHandlers: " + Util.mkString(handlerRegistry.entrySet(), "\n  ", "\n  ", null));
+		}
+	}
+
 	public void parse(final boolean dryrun, final boolean detectHelpAndSkipValidation, String... cmdline) {
 		if (defaultCommandName != null && !quickCommandMap.containsKey(defaultCommandName)) {
 			final String msg = I18n.marktr("Default command \"{0}\" is not a known command.");
@@ -156,6 +194,7 @@ public class CmdlineParser {
 		}
 
 		if (!dryrun) {
+			debug("Parsing...");
 			// Check without applying anything
 			parse(true, detectHelpAndSkipValidation, cmdline);
 		}
@@ -194,12 +233,7 @@ public class CmdlineParser {
 				if (!debugMode) {
 					debugMode = true;
 					debug("Enabled debug mode");
-					debug("Parameter: " + parameter);
-					debug("Options: " + Util.mkString(options, "\n  ", ",\n  ", null));
-					debug("Commands: " + Util.mkString(commands, "\n  ", ",\n  ", null));
-					debug("ResourceBundle: {0}, Locale: {1}", resourceBundle, resourceBundle == null ? null
-							: resourceBundle.getLocale());
-					debug("CmdOptionHandlers: " + Util.mkString(handlerRegistry.entrySet(), "\n  ", "\n  ", null));
+					printDebugState();
 				}
 
 			} else if (parseOptions && quickOptionMap.containsKey(param)) {
@@ -468,6 +502,12 @@ public class CmdlineParser {
 		}
 	}
 
+	/**
+	 * Add an additional configuration object containing CmdOption-specific
+	 * annotations to the configuration.
+	 * 
+	 * @param objects
+	 */
 	public void addObject(final Object... objects) {
 		for (final Object object : objects) {
 			if (object.getClass().getAnnotation(CmdCommand.class) != null) {

@@ -13,8 +13,12 @@ public class CmdlineModel {
 	private String aboutLine;
 	private ResourceBundle resourceBundle;
 
-	public CmdlineModel(final String programName, final List<OptionHandle> options, final List<CommandHandle> commands,
-			final OptionHandle parameter, final String aboutLine, final ResourceBundle resourceBundle) {
+	public CmdlineModel(final String programName,
+			final List<OptionHandle> options,
+			final List<CommandHandle> commands,
+			final OptionHandle parameter,
+			final String aboutLine,
+			final ResourceBundle resourceBundle) {
 		this.programName = programName;
 		this.aboutLine = aboutLine;
 		this.options = new ArrayList<OptionHandle>(options);
