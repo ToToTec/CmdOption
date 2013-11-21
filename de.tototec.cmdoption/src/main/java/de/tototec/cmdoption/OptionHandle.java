@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import de.tototec.cmdoption.handler.CmdOptionHandler;
 
-class OptionHandle {
+public class OptionHandle {
 
 	private final String[] names;
 	private final String description;
@@ -22,10 +22,19 @@ class OptionHandle {
 	private String[] requires;
 	private String[] conflictsWith;
 
-	public OptionHandle(final String[] names, final String description,
-			final Class<? extends CmdOptionHandler> cmdOptionHandlerType, final Object object,
-			final AccessibleObject element, final String[] args, final int minCount, final int maxCount,
-			final boolean help, final boolean hidden, final String[] requires, final String[] conflictsWith) {
+	public OptionHandle(
+			final String[] names,
+			final String description,
+			final Class<? extends CmdOptionHandler> cmdOptionHandlerType,
+			final Object object,
+			final AccessibleObject element,
+			final String[] args,
+			final int minCount,
+			final int maxCount,
+			final boolean help,
+			final boolean hidden,
+			final String[] requires,
+			final String[] conflictsWith) {
 		this.names = names;
 		this.description = description;
 		this.cmdOptionHandlerType = cmdOptionHandlerType;
@@ -110,14 +119,16 @@ class OptionHandle {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + //
-				"(names=" + Util.mkString(getNames(), null, ",", null) + //
-				",args=" + Util.mkString(getArgs(), null, ",", null) + //
-				",minCount=" + getMinCount() + //
-				",maxCount=" + getMaxCount() + //
-				",description=" + getDescription() + //
-				",requires=" + Util.mkString(getRequires(), null, ",", null) + //
-				",conflictsWith=" + Util.mkString(getConflictsWith(), null, ",", null) + //
+		return getClass().getSimpleName() +
+				"(names=" + Util.mkString(getNames(), null, ",", null) +
+				",args=" + Util.mkString(getArgs(), null, ",", null) +
+				",minCount=" + getMinCount() +
+				",maxCount=" + getMaxCount() +
+				",description=" + getDescription() +
+				",requires=" + Util.mkString(getRequires(), null, ",", null) +
+				",conflictsWith=" + Util.mkString(getConflictsWith(), null, ",", null) +
+				",isHidden=" + isHidden() +
+				",isHelp=" + isHelp() +
 				")";
 	}
 }
