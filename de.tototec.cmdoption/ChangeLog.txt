@@ -1,6 +1,8 @@
-CmdOption trunk:
+CmdOption 0.3.2 - 2013-11-27:
 
 * Improved debug output.
+* Fixed a visibility bug and made class OptionHandle public.
+* Added some JavaDoc.
 
 CmdOption 0.3.1 - 2013-08-11:
 
