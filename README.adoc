@@ -7,7 +7,7 @@ Current version is {currentversion}.
 
 == Overview
 
-CmdOption is a simple annotation-driven command line parser toolkit for Java 5 applications. Everything you need is (at least one) simple configuration object. Each field and method annotated with an @CmdOption@ annotation will be processed. Based on this config, CmdOption is able to parse any commandline, guaranteeing the declared specification. The result is directly stored in the given config object. When errors occur, CmdOption gives a meaningful error message. Generated output and validation/error messages can be localized.
+CmdOption is a simple annotation-driven command line parser toolkit for Java 5 applications. Everything you need is (at least one) simple configuration object. Each field and method annotated with an `@CmdOption` annotation will be processed. Based on this config, CmdOption is able to parse any commandline, guaranteeing the declared specification. The result is directly stored in the given config object. When errors occur, CmdOption gives a meaningful error message. Generated output and validation/error messages can be localized.
 
 == Download
 
@@ -17,7 +17,7 @@ CmdOption is also available form http://search.maven.org/#search%7Cgav%7C1%7Cg%3
 
 Maven users can use the following dependency declaration:
 
-[source,xml,subst="attributes"]
+[source,xml,subs="attributes"]
 ----
 <dependency>
     <groupId>de.tototec</groupId>
@@ -28,7 +28,7 @@ Maven users can use the following dependency declaration:
 
 http://sbuild.tototec.de[SBuild] users can use the following dependency:
 
-[source,scala,subst="attributes"]
+[source,scala,subs="attributes"]
 ----
 "mvn:de.tototec:de.tototec.cmdoption:{currentversion}"
 ----
@@ -95,7 +95,7 @@ If a `@CmdOption` annotation without any names attribute is found, this option i
 
 CmdOption also supports the notion of *commands*. At most one command can be selected and supports itself options and main parameters. The `@CmdCommand` annotation can be used for classes. 
 
-Examples for tools that have command-style command line interfaces: http://git-scm.com/[git] , http://subversion.apache.org/[subversion], http://neil.brown.name/blog/mdadm[mdadm], http://www.gentoo.org/[emerge/portage], http://sbuild.org/[SBuild], http://cmvn.tototec.de/[cmvn], ...
+Examples for tools that have command-style command line interfaces: http://git-scm.com/[git], http://subversion.apache.org/[subversion], http://neil.brown.name/blog/mdadm[mdadm], http://www.gentoo.org/[emerge/portage], http://sbuild.org/[SBuild], http://cmvn.tototec.de/[cmvn], ...
 
 Attributes of the `@CmdCommand` annotation:
 
