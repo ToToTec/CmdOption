@@ -1,0 +1,362 @@
+= CmdOption - Command line parsing has never been easier
+:toc:
+:toc-placement: preamble
+:currentversion: 0.3.2
+
+Current version is {currentversion}.
+
+== Overview
+
+CmdOption is a simple annotation-driven command line parser toolkit for Java 5 applications. Everything you need is (at least one) simple configuration object. Each field and method annotated with an @CmdOption@ annotation will be processed. Based on this config, CmdOption is able to parse any commandline, guaranteeing the declared specification. The result is directly stored in the given config object. When errors occur, CmdOption gives a meaningful error message. Generated output and validation/error messages can be localized.
+
+== Download
+
+Download the latest version *CmdOption {currentversion}* from http://cmdoption.tototec.de/cmdoption/projects/cmdoption/files[*cmdoption.tototec.de*].
+
+CmdOption is also available form http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22de.tototec%22%20AND%20a%3A%22de.tototec.cmdoption%22[Maven central repository].
+
+Maven users can use the following dependency declaration:
+
+[source,xml,subst="attributes"]
+----
+<dependency>
+    <groupId>de.tototec</groupId>
+    <artifactId>de.tototec.cmdoption</artifactId>
+    <version>{currentversion}</version>
+</dependency>
+----
+
+http://sbuild.tototec.de[SBuild] users can use the following dependency:
+
+[source,scala,subst="attributes"]
+----
+"mvn:de.tototec:de.tototec.cmdoption:{currentversion}"
+----
+
+== Example
+
+A simple config class could look like this:
+
+[source,java]
+----
+public class Config {
+  @CmdOption(names = {"--verbose", "-v"}, description = "Be more verbose")
+  private boolean verbose;
+
+  @CmdOption(names = {"--options", "-o"}, args = {"name", "value"}, maxCount = -1, description = "Additional options when processing names")
+  private final Map<String, String> options = new LinkedHashMap<String, String>();
+
+  @CmdOption(args = {"file"}, description = "Names to process", minCount = 1, maxCount = -1)
+  private final List<String> names = new LinkedList<String>();
+}
+----
+
+_For a more complete example see also link:#Example-A-translation-via-Properties-file[the translation example] and also visit the link:Examples.adoc[Examples page]._
+
+The commandline based on the config object above can contain:
+
+* an optional `--verbose` or `-v` option
+* any count of additional option pairs via `--options` or `-o`
+* at least on paramter
+
+Parsing the command line is as easy as the following three lines:
+
+[source,java]
+----
+Config config = new Config();
+CmdlineParser cp = new CmdlineParser(config);
+cp.parse(new String[] {"-v", "name1", "name2"});
+
+assert config.verbose;
+assert config.names.length() == 2;
+assert config.options.isEmpty();
+----
+
+== Options and Parameters
+
+The `@CmdOption` annotation can be used to declare fields and methods as options.
+
+Attributes of the `@CmdOption` annotation:
+
+* *names* : `String[]` - The names of this option.
+* *description* : `String` - The description of the option.
+* *args* : `String` - The arguments (their names) supported by this option. The count of arguments is used, to determite the option handler to use. The names are used in (validation) messages and the usage display.
+* *minCount* : `int` - The minimal allowed count this option can be specified. Optional options have 0 here, which is the default.
+* *maxCount* : `int` - The maximal allowed count this option can be specified. Use -1 to specify infinity. Default is 1.
+* *handler* : `Class` - A class implementing the `CmdOptionHandler` interface to apply the parsed option to the annotated field or method. If this is not given, all handler registered for auto-detect will by tried in order.
+* *isHelp* : `boolean` - Special marker, that this option is a help request. Typically, such an option is used to display a usage information to the user and exit. If such an option is parsed, validation will be disabled to allow help request even when the command line is incorrect.
+* *hidden* : `boolean` - If `true`, do not show this option in the usage.
+* *requires* : `String[]` - If this option is only valid in conjunction with other options, those required options should be declared here. _(Since 0.2.0)_
+* *conflictsWith* : `String[]` - If this option can not be used in conjunction with an specific other option, those conflicting options should be declared here. _(Since 0.2.0)_
+
+If a `@CmdOption` annotation without any names attribute is found, this option is treated as *main parameter(s)* of the command line interface. At most one field or method can be annotated as such. The main parameter option gets all command line arguments that are not parsed into any other option or command.
+
+== Commands
+
+CmdOption also supports the notion of *commands*. At most one command can be selected and supports itself options and main parameters. The `@CmdCommand` annotation can be used for classes. 
+
+Examples for tools that have command-style command line interfaces: http://git-scm.com/[git] , http://subversion.apache.org/[subversion], http://neil.brown.name/blog/mdadm[mdadm], http://www.gentoo.org/[emerge/portage], http://sbuild.org/[SBuild], http://cmvn.tototec.de/[cmvn], ...
+
+Attributes of the `@CmdCommand` annotation:
+
+* *names*: `String[]` - The names of this command.
+* *description*: `String` - The description of the command.
+* *hidden*: `boolean` - If `true`, do not show this command in the usage.
+
+When a command is parsed, all succeeding arguments are parsed into that command (its options, and parameter). It is possible, to have options with the same name in different commands or in a command and the main program. The position of that option decides, which handler is invoked: before the command it is treated as a main options, after the command, its treated as an option of that command. If the main program support main parameters and also has commands, than the main parameters must be given before the command starts.
+
+You can access the parsed command through the methods `getParsedCommandName()` or `getParsedCommandObject()` of class `CmdlineParser`. 
+
+It is possible, to define a *default command*, that is implicitly assumed when the user does not use a command explicitly. When the commandline parser detects an else unknown option or parameter it will try to parse the rest of the command line as if the default command was issued. You can set the default commend with `setDefaultCommandName()` or `setDefaultCommandClass()` of class `CmdlineParser`.
+
+== Composition
+
+The command line parser supports more that one config object. Each object annotated with `@CmdCommand` is treated as command, all other can contain options for the main program.
+
+To use the same class (or even object) for common or shared options, e.g. to add a `--verbose` option to all commands, you can annotate the relevant field with `@CmdOptionDelegate`.
+
+== Localization
+
+There are two source of messages, that needs localization. Those from CmdOption itself like error and validation messages, and those, provided by the user of the CmdOption toolkit.
+
+=== Localized CmdOption output
+
+CmdOption itself supports localized output. The JVM default locale (country, language, variant) is used. 
+
+Currently, CmdOption comes with the following languages:
+
+* English
+* German
+
+If you want to translate CmdOption into another language, we apreciate your contribution! See link:HowToProvideTranslations.adoc for details.
+
+=== Localized options and descriptions
+
+CmdOption also supports the translation of the user-provided strings. Those strings are:
+
+* The AboutLine
+* The option descriptions
+* The command descriptions
+
+If you provide a `ResourceBundle`, CmdOption will use that bundle to translate your messages. The JVM default locale is used.
+
+You can either create the `ResourceBundle` yourself and set it into the CmdlineParser, or you can tell the CmdlineParser the name for the message catalog and the classloader, that should be used to access the message catalog.
+
+==== Example: A translation via Properties file
+
+.File: org/example/Main.java
+[source,java]
+----
+package org.example;
+
+import java.util.*;
+import de.tototec.cmdoption.*;
+
+public class Main {
+
+  public static class Config {
+    @CmdOption(names = {"--help", "-h"}, description = "Show this help.", isHelp = true)
+    public boolean help;
+
+    @CmdOption(names = {"--verbose", "-v"}, description = "Be more verbose.")
+    private boolean verbose;
+
+    @CmdOption(names = {"--options", "-o"}, args = {"name", "value"}, maxCount = -1,
+      description = "Additional options when processing names.")
+    private final Map<String, String> options = new LinkedHashMap<String, String>();
+
+    @CmdOption(args = {"file"}, description = "Names to process.", minCount = 1, maxCount = -1)
+    private final List<String> names = new LinkedList<String>();
+  }
+
+  public static void main(String[] args) {
+    Config config = new Config();
+    CmdlineParser cp = new CmdlineParser(config);
+    cp.setResourceBundle(Main.class.getPackage().getName() + ".Messages", Main.class.getClassLoader());
+    cp.setProgramName("myprogram");
+    cp.setAboutLine("Example names processor v1.0");
+
+    try {
+      cp.parse(args);
+    } catch (CmdlineParserException e) {
+      System.err.println("Error: " + e.getLocalizedMessage() + "\nRun myprogram --help for help.");
+      System.exit(1);
+    }
+
+    if (config.help) {
+      cp.usage();
+      System.exit(0);
+    }
+
+    // ...
+  }
+}
+----
+
+We will use a properties files to provide the translations into German.
+
+.File: org/example/Messages_de.properties
+[source,properties]
+----
+Show\ this\ help.=Zeigt diese Hilfe an.
+Be\ more\ verbose.=Sei ausf\u00fchrlicher.
+Additional\ options\ when\ processing\ names=Zus\u00e4tzliche Optionen bei der Namensverarbeitung.
+Names\ to\ process=Zu verarbeitende Namen.
+Example\ names\ processor\ v1.0=Beispiel Namensprozessor v1.0
+name=Name
+value=Wert
+----
+
+.Output of the program without any locale:
+----
+% LC_ALL=C java -jar myprogram --help
+Example names processor v1.0
+
+Usage: myprogram [options] [parameter]
+
+Options:
+  --help,-h                Show this help.
+  --options,-o name value  Additional options when processing names.
+  --verbose,-v             Be more verbose.
+
+Parameter:
+  file  Names to process.
+</pre>
+
+Output of the program in a German environment:
+<pre>
+% java -jar myprogram --help
+Beispiel Namensprozessor v1.0
+
+Aufruf: myprogram [Optionen] [Parameter]
+
+Optionen:
+  --help,-h                Zeigt diese Hilfe an.
+  --options,-o Name Wert   Zusätzliche Optionen bei der Namensverarbeitung.
+  --verbose,-v             Sei ausführlicher.
+
+Parameter:
+  file  Zu verarbeitende Namen.
+----
+
+== CmdOptionHandler
+
+CmdOption supports field and method access. The set of supported types and method signatures is not hardcoded, but determined by the registered CmdOptionHandlers. CmdOptions comes with some ready-to-use CmdOptionsHandlers. By default, a well-choosen set of CmdOptionsHandlers is already registered, making a good start for most usage scenarios.  To customize the behavoir of CmdOption, one has some options:
+
+* Write and register additional CmdOptionHandlers
+* if necessary, unregister all handlers before registering
+* Explicitly select a specific CmdOptionHandler in the `@CmdOption`-Annotation
+
+=== Registering an additional CmdOptionHandler
+
+[source,java]
+----
+CmdlineParser cp = new CmdlineParser(config);
+cp.registerHandler(new MyOptionHandler());
+----
+
+The order of registered handlers is important. The first handler, that will match a declared field or method, will be used to parse it. To explicitly force a specific handler, use the `@CmdOption(handler = TheSpecificHandler.class)`.
+
+=== Pre-registered CmdOptionHandlers
+
+At construction time CmdlineParser pre-registeres various handlers like the following snippet:
+
+[source,java]
+----
+CmdlineParser cp = new CmdlineParser(config);
+cp.registerHandler(new BooleanOptionHandler());
+cp.registerHandler(new BooleanHandler());
+cp.registerHandler(new StringFieldHandler());
+cp.registerHandler(new PutIntoMapHandler());
+cp.registerHandler(new AddToCollectionHandler());
+cp.registerHandler(new StringMethodHandler());
+cp.registerHandler(new IntegerHandler());
+----
+
+=== Unregistering all registered CmdOptionHandlers
+
+[source,java]
+----
+CmdlineParser cp = new CmdlineParser(config);
+cp.unregisterAllHandler();
+----
+
+== Debugging
+
+CmdOption has a fairly detailed set of error messages, that will be thrown as `CmdlineParserException`. 
+If you need more information what goes on under the hood, you can use the special command line option `--CMDOPTION_DEBUG`. When used, CmdOption will display detailed information about the found configurations and the parsing process. This might help to understand issues further. I most cases, this will help you to resolve your issues. Of course, you can disable this functionality with `setDebugModeAllowed(false)`.
+
+If you have issues you can not solve, do not hessitate to http://cmdoption.tototec.de/cmdoption/projects/cmdoption/issues/new[open a support ticket] or search for other (open) issues in the http://cmdoption.tototec.de/cmdoption/projects/cmdoption/issues[CmdOption ticket system].
+
+== Creating a streaming command line interface
+
+Normally, CmdOption parses a complete command line, populates the config object(s) and ensures, that the config is valid, according to the configuration. Only, if the config is checked and ok, the parse method returns.
+
+In some cases, a streaming command line interface is more appropriate than the typical static approach. In a streaming command line interface each option and parameter is immediatly evaluated before the next option or parameter is read. The next allowed option/parameter often depends on the previously parsed one. An example for an program with a streaming command line interface is http://www.bunkus.org/videotools/ogmtools/[ogmtools/ogmmerge].
+
+Creating such a streaming command line parsers is very easy with CmdOption. Of course, most context sensitive validation must be handled by the application itself. You have to add the @@CmdOption@ annotation to methods instead of fields. The arguments of that options, if any, must match the arguments of that method. In the body of such a method the option can now immediatly processed. Typically, minCount and maxCount of the options are unconstrained, as the validity is dependent on the context.
+
+
+== ChangeLog
+
+=== CmdOption 0.3.2 - 2013-11-27
+
+* Improved debug output.
+* Fixed a visibility bug and made class OptionHandle public.
+* Added some JavaDoc.
+
+=== CmdOption 0.3.1 - 2013-08-11
+
+* Added new IntegerHandler which supports Integer and int fields and methods.
+* Added the line length as new constructor parameter of DefaultUsageFormatter.
+* Improved debug output.
+
+=== CmdOption 0.3.0 - 2013-05-07
+
+* Added support for inherited fields and methods.
+* Added new BooleanHandler, which replaces BooleanFieldHandler, but also
+  handles methods.
+* Changed SBuild-driven test runner to scalatest, for better commandline 
+  output.
+* Added more unit tests.
+* Added Changelog.
+
+=== CmdOption 0.2.1 - 2013-01-19
+
+* Parameter names of options (args) can be translated.
+
+=== CmdOption 0.2.0 - 2012-11-25
+
+* Localizated output of error and validation messages.
+* Localization support for user provided configuration.
+* Added new attribute requires to @CmdOption annotation.
+* Added new attribute conflictsWith to @CmdOption annotation.
+* Added user provided "AboutLine" to generated formatted usage output.
+* New handler for parsing URLs.
+* Extended OptionHandler API. The applyParams method has now an additionally
+  parameter containing the name of the parsed option.
+* Changed UsageFormatter API.
+* Migrated build system to SBuild.
+* Updated documentation.
+
+=== CmdOption 0.1.0 - 2012-03-07
+
+* CmdOption is now located in package de.tototec.cmdoption. The previous
+  package was de.tobiasroeser.cmdoption.
+* No hardcoded option format - In cmdoption-0.0.4 and before you could give
+  one long parameter (inplicitly starting with a "--") and a short option
+  (starting with one "-"). Since version 0.1.0 you are no longer limited in
+  format and count, just use the names argument of CmdOption annotation.
+  Remember, to include the hyphen(s) in the name, as those are no longer
+  implicit.
+* The Parser class is now CmdlineParser - The old one CmdOptionParser no longer
+  exists.
+* Support for commands - When CmdOption detects a command, all subsequent
+  arguments are parsed into that command exclusivly.
+* External UsageFormatter - You have the full control over the appearance of
+  the usage/help.
+
+=== CmdOption 0.0.4 - 2010-12-16
+
+=== CmdOption 0.0.3 - 2010-08-03
+
