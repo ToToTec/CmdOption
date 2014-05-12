@@ -296,6 +296,18 @@ In some cases, a streaming command line interface is more appropriate than the t
 
 Creating such a streaming command line parsers is very easy with CmdOption. Of course, most context sensitive validation must be handled by the application itself. You have to add the @@CmdOption@ annotation to methods instead of fields. The arguments of that options, if any, must match the arguments of that method. In the body of such a method the option can now immediatly processed. Typically, minCount and maxCount of the options are unconstrained, as the validity is dependent on the context.
 
+== License
+
+CmdOption is developed and released under the Apache License, Version 2.
+
+== Contributing
+
+Your contributions are much apreciated. If you found a bug or have a feature request, please open a new issue on GitHub. We also accept pull requests.
+
+== Building CmdOption from Source
+
+CmdOption is build with http://sbuild.org/[SBuild].
+
 
 == ChangeLog
 
