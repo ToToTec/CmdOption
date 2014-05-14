@@ -710,6 +710,11 @@ public class CmdlineParser {
 				continue;
 			}
 
+			if (element instanceof Field && Modifier.isFinal(((Field) element).getModifiers())) {
+				debug("Skipping option on final field: {0}", element);
+				continue;
+			}
+
 			final String[] names = anno.names();
 			// The Interface itself means to specified handler
 			final Class<? extends CmdOptionHandler> annoHandlerType = anno.handler() == CmdOptionHandler.class ? null
