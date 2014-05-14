@@ -35,8 +35,7 @@ class SBuild(implicit project: Project) {
     AntMkdir(dir = Path("target"))
     val targetDir = "target/" + srcDist
     AntDelete(dir = Path(targetDir))
-    AntExec(executable = "svn", args = Array("export", ".", targetDir))
-    AntZip(destFile = ctx.targetFile.get, baseDir = Path("target"), includes = srcDist + "/**")
+    AntExec(executable = "git", args = Array("archive", "--format", "zip", "--output", ctx.targetFile.get.getPath(), "master"))
   }
 
   Target(binDistZip) dependsOn binDistFiles.map{ n => TargetRef(n) } exec { ctx: TargetContext =>
