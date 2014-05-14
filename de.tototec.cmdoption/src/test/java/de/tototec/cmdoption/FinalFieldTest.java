@@ -1,7 +1,5 @@
 package de.tototec.cmdoption;
 
-import static org.testng.Assert.assertTrue;
-
 import java.util.Locale;
 
 import org.testng.Assert;
@@ -66,9 +64,7 @@ public class FinalFieldTest extends Assert {
 	@Test
 	public void testFinalFieldWithDefault() {
 		final ConfigWithFinalField config = new ConfigWithFinalField();
-		final CmdlineParser cp = new CmdlineParser();
-		cp.setDebugMode(true);
-		cp.addObject(config);
+		final CmdlineParser cp = new CmdlineParser(config);
 		assertUsage(cp, expectedFinalUsage);
 		assertEquals(config.help, false);
 	}
@@ -76,9 +72,7 @@ public class FinalFieldTest extends Assert {
 	@Test(expectedExceptions = CmdlineParserException.class)
 	public void testFinalFieldWithDefaultFail() {
 		final ConfigWithFinalField config = new ConfigWithFinalField();
-		final CmdlineParser cp = new CmdlineParser();
-		cp.setDebugMode(true);
-		cp.addObject(config);
+		final CmdlineParser cp = new CmdlineParser(config);
 		assertUsage(cp, expectedFinalUsage);
 		assertEquals(config.help, false);
 		cp.parse("--help", "false");
