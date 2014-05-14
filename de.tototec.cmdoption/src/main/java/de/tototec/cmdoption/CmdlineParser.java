@@ -50,7 +50,9 @@ import de.tototec.cmdoption.handler.StringMethodHandler;
  */
 public class CmdlineParser {
 
-	private I18n i18n = I18nFactory.getI18n(CmdlineParser.class);
+	private final I18n i18n = I18nFactory.getI18n(CmdlineParser.class);
+
+	private final Logger log = LoggerFactory.getLogger(CmdlineParser.class);
 
 	/**
 	 * The option handle handling the main parameter(s) of the command line.
@@ -118,11 +120,19 @@ public class CmdlineParser {
 	}
 
 	private void debug(final String msg, final Object... args) {
+		// always log.debug
+		if (log.isDebugEnabled()) {
+			if (args == null || args.length == 0) {
+				log.debug(msg);
+			} else {
+				log.debug(MessageFormat.format(msg, args));
+			}
+		}
+
 		if (parent != null) {
 			parent.debug(msg, args);
 		} else {
 			if (debugMode) {
-
 				if (args == null || args.length == 0) {
 					System.out.println(DEBUG_PREFIX + msg);
 				} else {
@@ -177,14 +187,12 @@ public class CmdlineParser {
 	}
 
 	private void printDebugState() {
-		if (debugMode) {
-			debug("Parameter: " + parameter);
-			debug("Options: " + Util.mkString(options, "\n  ", ",\n  ", null));
-			debug("Commands: " + Util.mkString(commands, "\n  ", ",\n  ", null));
-			debug("ResourceBundle: {0}, Locale: {1}", resourceBundle,
-					resourceBundle == null ? null : resourceBundle.getLocale());
-			debug("CmdOptionHandlers: " + Util.mkString(handlerRegistry.entrySet(), "\n  ", "\n  ", null));
-		}
+		debug("Parameter: " + parameter);
+		debug("Options: " + Util.mkString(options, "\n  ", ",\n  ", null));
+		debug("Commands: " + Util.mkString(commands, "\n  ", ",\n  ", null));
+		debug("ResourceBundle: {0}, Locale: {1}", resourceBundle,
+				resourceBundle == null ? null : resourceBundle.getLocale());
+		debug("CmdOptionHandlers: " + Util.mkString(handlerRegistry.entrySet(), "\n  ", "\n  ", null));
 	}
 
 	public void parse(final boolean dryrun, final boolean detectHelpAndSkipValidation, String... cmdline) {
@@ -252,7 +260,7 @@ public class CmdlineParser {
 							Util.mkString(
 									Arrays.asList(optionHandle.getArgs()).subList(cmdline.length - index - 1,
 											optionHandle.getArgsCount()), null, ", ", null), param, optionHandle
-											.getArgsCount(), cmdline.length - index - 1);
+									.getArgsCount(), cmdline.length - index - 1);
 				}
 				// slurp next cmdline arguments into option arguments
 				final String[] optionArgs = Arrays.copyOfRange(cmdline, index + 1,
@@ -736,13 +744,13 @@ public class CmdlineParser {
 				// TODO: should we ignore the help parameter?
 				final OptionHandle paramHandle = new OptionHandle(new String[] {}, anno.description(), annoHandlerType,
 						object, element, anno.args(), anno.minCount(), anno.maxCount(), false /*
-						 * cannot
-						 * be
-						 * a
-						 * help
-						 * option
-						 */, anno.hidden(),
-						 anno.requires(), anno.conflictsWith());
+																							 * cannot
+																							 * be
+																							 * a
+																							 * help
+																							 * option
+																							 */, anno.hidden(),
+						anno.requires(), anno.conflictsWith());
 
 				if (paramHandle.getArgsCount() <= 0) {
 					throw new CmdlineParserException(null,

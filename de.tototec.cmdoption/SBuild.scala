@@ -14,6 +14,9 @@ class SBuild(implicit _project: Project) {
   val sourcesJar = jar.substring(0, jar.length - 4) + "-sources.jar"
   val javadocJar = jar.substring(0, jar.length - 4) + "-javadoc.jar"
 
+  val compileCp =
+    "mvn:org.slf4j:slf4j-api:1.7.5"
+
   val testCp =
     "mvn:org.testng:testng:6.4" ~
       "mvn:com.beust:jcommander:1.30" ~ // transitive required by testng
@@ -21,7 +24,7 @@ class SBuild(implicit _project: Project) {
       "mvn:org.scala-lang:scala-library:2.10.2" ~
       "mvn:org.scala-lang:scala-actors:2.10.2"
 
-  ExportDependencies("eclipse.classpath", testCp)
+  ExportDependencies("eclipse.classpath", compileCp ~ testCp)
 
   val poFiles = Path("src/main/po").listFiles.filter(f => f.getName.endsWith(".po"))
 
@@ -31,8 +34,9 @@ class SBuild(implicit _project: Project) {
     AntDelete(dir = Path("target"))
   }
 
-  Target("phony:compile").cacheable dependsOn "scan:src/main/java" exec {
+  Target("phony:compile").cacheable dependsOn compileCp ~ "scan:src/main/java" exec {
     addons.java.Javac(
+      classpath = compileCp.files,
       source = "1.5", target = "1.5", encoding = "UTF-8", debugInfo = "all",
       destDir = Path("target/classes"),
       sources = "scan:src/main/java".files
@@ -123,13 +127,14 @@ class SBuild(implicit _project: Project) {
     ))
   }
 
-  Target(javadocJar).cacheable dependsOn "scan:src/main/java" exec { ctx: TargetContext =>
+  Target(javadocJar).cacheable dependsOn compileCp ~ "scan:src/main/java" exec { ctx: TargetContext =>
     val docDir = Path("target/javadoc")
     AntMkdir(dir = docDir)
 
     new org.apache.tools.ant.taskdefs.Javadoc() {
       setProject(AntProject())
       setSourcepath(AntPath(location = Path("src/main/java")))
+      setClasspath(AntPath(locations = compileCp.files))
       setDestdir(docDir)
     }.execute
 
