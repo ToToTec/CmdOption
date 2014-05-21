@@ -22,7 +22,10 @@ class SBuild(implicit _project: Project) {
       "mvn:com.beust:jcommander:1.30" ~ // transitive required by testng
       "mvn:org.scalatest:scalatest_2.10:1.9.1" ~
       "mvn:org.scala-lang:scala-library:2.10.2" ~
-      "mvn:org.scala-lang:scala-actors:2.10.2"
+      "mvn:org.scala-lang:scala-actors:2.10.2" ~
+      "mvn:org.slf4j:slf4j-api:1.7.5" ~
+      "mvn:ch.qos.logback:logback-core:1.1.0" ~
+      "mvn:ch.qos.logback:logback-classic:1.1.0"
 
   ExportDependencies("eclipse.classpath", compileCp ~ testCp)
 
