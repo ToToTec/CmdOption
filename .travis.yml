@@ -5,3 +5,10 @@ jdk:
   - oraclejdk7
   - openjdk6
   - openjdk7
+
+env:
+  - LC_ALL=C
+
+before_script: "./sbuild-wrapper --version"
+
+script: "./sbuild-wrapper --keep-going all"
