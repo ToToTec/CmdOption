@@ -11,4 +11,4 @@ env:
 
 before_script: "./sbuild-wrapper --version"
 
-script: "./sbuild-wrapper --keep-going all"
+script: "./sbuild-wrapper --keep-going -j 1 all"
