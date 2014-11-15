@@ -3,6 +3,9 @@
 :toc-placement: preamble
 :currentversion: 0.3.2
 
+image:https://travis-ci.org/ToToTec/CmdOption.svg?branch=master["Build Status", link="https://travis-ci.org/ToToTec/CmdOption"]
+image:https://www.codacy.com/project/badge/e3f730346034401281fa8e3fe4802afd["Codacy Badge", link="https://www.codacy.com"]
+
 Current version is {currentversion}.
 
 == Overview
