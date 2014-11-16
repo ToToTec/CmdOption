@@ -1,5 +1,6 @@
 package de.tototec.cmdoption;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -137,10 +138,12 @@ public class DefaultUsageFormatter implements UsageFormatter {
 
 		output.append(title).append("\n");
 		mkSpace(output, col1Prefix);
-		output.append(Util.mkString(translate(resourceBundle, parameter.getArgs()), null, " ", null));
+		final String[] translatedArgs = translate(resourceBundle, parameter.getArgs());
+		output.append(Util.mkString(translatedArgs, null, " ", null));
 		if (parameter.getDescription() != null) {
 			mkSpace(output, colSpace);
-			output.append(translate(resourceBundle, parameter.getDescription()));
+			output.append(MessageFormat.format(translate(resourceBundle, parameter.getDescription()),
+					(Object[]) translatedArgs));
 		}
 		output.append("\n");
 	}
@@ -159,9 +162,13 @@ public class DefaultUsageFormatter implements UsageFormatter {
 			}
 			hasOptions = true;
 			final String optionNames = Util.mkString(option.getNames(), null, ",", null);
-			final String argNames = Util.mkString(translate(resourceBundle, option.getArgs()), null, " ", null);
-			optionsToFormat.add(new String[] { optionNames + (argNames.length() == 0 ? "" : (" " + argNames)),
-					translate(resourceBundle, option.getDescription()) });
+			final String[] translatedArgs = translate(resourceBundle, option.getArgs());
+			final String argNames = Util.mkString(translatedArgs, null, " ", null);
+			optionsToFormat
+			.add(new String[] {
+					optionNames + (argNames.length() == 0 ? "" : (" " + argNames)),
+					MessageFormat.format(translate(resourceBundle, option.getDescription()),
+							(Object[]) translatedArgs) });
 		}
 
 		if (!hasOptions) {

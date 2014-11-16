@@ -25,7 +25,8 @@ class SBuild(implicit _project: Project) {
       "mvn:org.scala-lang:scala-actors:2.10.2" ~
       "mvn:org.slf4j:slf4j-api:1.7.5" ~
       "mvn:ch.qos.logback:logback-core:1.1.0" ~
-      "mvn:ch.qos.logback:logback-classic:1.1.0"
+      "mvn:ch.qos.logback:logback-classic:1.1.0" ~
+      "http://dl.bintray.com/lefou/poor-mans-lambda-test/de/tobiasroeser/de.tobiasroeser.lambdatest/0.0.3/de.tobiasroeser.lambdatest-0.0.3.jar"
 
   ExportDependencies("eclipse.classpath", compileCp ~ testCp)
 
@@ -48,7 +49,7 @@ class SBuild(implicit _project: Project) {
 
   Target("phony:compileTest").cacheable dependsOn testCp ~ jar ~ "scan:src/test/java" exec {
     addons.java.Javac(
-      source = "1.5", target = "1.5", encoding = "UTF-8", debugInfo = "all",
+      source = "1.8", target = "1.8", encoding = "UTF-8", debugInfo = "all",
       destDir = Path("target/test-classes"),
       sources = "scan:src/test/java".files,
       classpath = testCp.files ++ jar.files

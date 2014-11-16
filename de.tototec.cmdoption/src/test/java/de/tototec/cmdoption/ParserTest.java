@@ -1,22 +1,24 @@
 package de.tototec.cmdoption;
 
-import org.testng.annotations.Test;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
-public class ParserTest {
+import org.testng.annotations.Test;
+
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
+
+public class ParserTest extends FreeSpec {
 
 	@Test
 	public void testParseEmptyConfig() {
-		class Config {
-		}
+		class Config {}
 		final CmdlineParser cp = new CmdlineParser(new Config());
 		cp.parse();
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Unsupported option or parameter found: --help")
 	public void testParseHelpFail() {
-		class Config {
-		}
+		class Config {}
 		final CmdlineParser cp = new CmdlineParser(new Config());
 		// should fail because we have no option --help defined
 		cp.parse(new String[] { "--help" });
@@ -157,4 +159,59 @@ public class ParserTest {
 		assertTrue(sb.length() > 10);
 		cp.parse(new String[] { "--opt" });
 	}
+
+	public static class Config7 {
+		@CmdOption(names = "-a", description = "A")
+		public void setA() {}
+
+		@CmdOption(args = { "1" }, description = "B")
+		public void setB(final String one) {}
+	}
+
+	public static class Config8 {
+		@CmdOption(names = "-a", args = { "1" }, description = "A")
+		public void setA(final String one) {}
+
+		@CmdOption(args = { "1", "2" }, description = "B with args")
+		public void setB(final String one, final String two) {}
+	}
+
+	public static class Config9 {
+		@CmdOption(names = "-a", args = { "1" }, description = "A with arg {0}")
+		public void setA(final String one) {}
+
+		@CmdOption(args = { "1", "2" }, description = "B with arg {0} and {1}")
+		public void setB(final String one, final String two) {}
+	}
+
+	{
+		test("description placeholder without any args", () -> {
+			final StringBuilder sb = new StringBuilder();
+			new CmdlineParser(new Config7()).usage(sb);
+			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
+					+ "Options:\n"
+					+ "  -a  A\n\n"
+					+ "Parameter:\n"
+					+ "  1  B\n");
+		});
+		test("description unused placeholder with 1 arg", () -> {
+			final StringBuilder sb = new StringBuilder();
+			new CmdlineParser(new Config8()).usage(sb);
+			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
+					+ "Options:\n"
+					+ "  -a 1  A\n\n"
+					+ "Parameter:\n"
+					+ "  1 2  B with args\n");
+		});
+		test("description used placeholder with 1 arg", () -> {
+			final StringBuilder sb = new StringBuilder();
+			new CmdlineParser(new Config9()).usage(sb);
+			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
+					+ "Options:\n"
+					+ "  -a 1  A with arg 1\n\n"
+					+ "Parameter:\n"
+					+ "  1 2  B with arg 1 and 2\n");
+		});
+	}
+
 }
