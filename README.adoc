@@ -1,7 +1,8 @@
 = CmdOption - Command line parsing has never been easier
 :toc:
 :toc-placement: preamble
-:currentversion: 0.3.2
+// TODO: also replace version in xml snippet
+:currentversion: 0.3.3
 
 image:https://travis-ci.org/ToToTec/CmdOption.svg?branch=master["Build Status", link="https://travis-ci.org/ToToTec/CmdOption"]
 image:https://www.codacy.com/project/badge/e3f730346034401281fa8e3fe4802afd["Codacy Badge", link="https://www.codacy.com/p/3189/dashboard"]
@@ -20,12 +21,12 @@ CmdOption is also available form http://search.maven.org/#search%7Cgav%7C1%7Cg%3
 
 Maven users can use the following dependency declaration:
 
-[source,xml,subs="attributes"]
+[source,xml]
 ----
 <dependency>
     <groupId>de.tototec</groupId>
     <artifactId>de.tototec.cmdoption</artifactId>
-    <version>{currentversion}</version>
+    <version>0.3.3</version>
 </dependency>
 ----
 
@@ -82,7 +83,7 @@ The `@CmdOption` annotation can be used to declare fields and methods as options
 Attributes of the `@CmdOption` annotation:
 
 * *names* : `String[]` - The names of this option.
-* *description* : `String` - The description of the option.
+* *description* : `String` - The description of the option. If this option supports args, you can refer to the argument names with `{0}`, `{1}`, and so on.
 * *args* : `String` - The arguments (their names) supported by this option. The count of arguments is used, to determite the option handler to use. The names are used in (validation) messages and the usage display.
 * *minCount* : `int` - The minimal allowed count this option can be specified. Optional options have 0 here, which is the default.
 * *maxCount* : `int` - The maximal allowed count this option can be specified. Use -1 to specify infinity. Default is 1.
@@ -313,6 +314,13 @@ CmdOption is build with http://sbuild.org/[SBuild].
 
 
 == ChangeLog
+
+=== CmdOption 0.3.3 - 2014-11-17
+
+* Detect and report annotations on final fields
+* Use a logging framework if one is available on the classpath
+* Support placeholder for args in option descriptions, including their
+  translations (if any)
 
 === CmdOption 0.3.2 - 2013-11-27
 
