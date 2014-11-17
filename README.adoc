@@ -15,9 +15,7 @@ CmdOption is a simple annotation-driven command line parser toolkit for Java 5 a
 
 == Download
 
-Download the latest version *CmdOption {currentversion}* from http://cmdoption.tototec.de/cmdoption/projects/cmdoption/files[*cmdoption.tototec.de*].
-
-CmdOption is also available form http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22de.tototec%22%20AND%20a%3A%22de.tototec.cmdoption%22[Maven central repository].
+CmdOption is available form http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22de.tototec%22%20AND%20a%3A%22de.tototec.cmdoption%22[Maven central repository].
 
 Maven users can use the following dependency declaration:
 
