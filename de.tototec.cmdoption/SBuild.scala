@@ -20,7 +20,7 @@ class SBuild(implicit _project: Project) {
   val testCp =
     "mvn:org.testng:testng:6.4" ~
       "mvn:com.beust:jcommander:1.30" ~ // transitive required by testng
-      "mvn:org.scalatest:scalatest_2.10:1.9.1" ~
+      "mvn:org.scalatest:scalatest_2.10:2.2.2" ~
       "mvn:org.scala-lang:scala-library:2.10.2" ~
       "mvn:org.scala-lang:scala-actors:2.10.2" ~
       "mvn:org.slf4j:slf4j-api:1.7.5" ~
@@ -61,7 +61,7 @@ class SBuild(implicit _project: Project) {
       failOnError = true, dir = Path("target"), fork = true,
       classpath = AntPath(locations = testCp.files ++ jar.files ++ Seq(Path("target/test-classes"), Path("src/test/resources"))),
       className = "org.scalatest.tools.Runner",
-      arguments = Seq("-oF", "-b", "src/test/resources/TestNGSuite.xml".files.head.getPath)
+      arguments = Seq("-oG", "-b", "src/test/resources/TestNGSuite.xml".files.head.getPath)
     )
   }
 
