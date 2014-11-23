@@ -98,7 +98,7 @@ public class LoggerFactory {
 		}
 	}
 
-	private static Logger dummyLogger = null;
+	private static volatile Logger dummyLogger = null;
 
 	public static Logger getLogger(final Class<?> clazz) {
 		if (dummyLogger != null)

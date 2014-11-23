@@ -625,7 +625,7 @@ public class CmdlineParser {
 
 	protected Method findMethod(final Iterable<Method> methods, final Method method) {
 		for (final Method existsingMethod : methods) {
-			if (existsingMethod.getName() == method.getName()) {
+			if ((existsingMethod.getName()).equals(method.getName())) {
 				final Class<?>[] existingTypes = existsingMethod.getParameterTypes();
 				final Class<?>[] newTypes = method.getParameterTypes();
 				if (existingTypes.length == newTypes.length) {
