@@ -3,9 +3,6 @@ langauge: java
 jdk:
   - oraclejdk8
 
-env:
-  - LC_ALL=C
-
 before_script: "./sbuild-wrapper --version"
 
 script: "./sbuild-wrapper --keep-going -j 1 all"
