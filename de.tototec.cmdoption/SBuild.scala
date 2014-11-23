@@ -57,12 +57,17 @@ class SBuild(implicit _project: Project) {
   }
 
   Target("phony:test") dependsOn "compileTest" ~ testCp ~ jar ~ "scan:src/test/resources" ~ "src/test/resources/TestNGSuite.xml" exec {
-    AntJava(
+    new AntJava(
       failOnError = true, dir = Path("target"), fork = true,
       classpath = AntPath(locations = testCp.files ++ jar.files ++ Seq(Path("target/test-classes"), Path("src/test/resources"))),
       className = "org.scalatest.tools.Runner",
       arguments = Seq("-oG", "-b", "src/test/resources/TestNGSuite.xml".files.head.getPath)
-    )
+    ) {
+      addEnv(new org.apache.tools.ant.types.Environment.Variable() {
+        setKey("LC_ALL")
+        setValue("C")
+      })
+    }.execute()
   }
 
   val msgCatalog = "target/po/messages.pot"
