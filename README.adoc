@@ -11,7 +11,16 @@ Current version is {currentversion}.
 
 == Overview
 
-CmdOption is a simple annotation-driven command line parser toolkit for Java 5 applications. Everything you need is (at least one) simple configuration object. Each field and method annotated with an `@CmdOption` annotation will be processed. Based on this config, CmdOption is able to parse any commandline, guaranteeing the declared specification. The result is directly stored in the given config object. When errors occur, CmdOption gives a meaningful error message. Generated output and validation/error messages can be localized.
+CmdOption is a simple annotation-driven command line parser toolkit for Java 5 applications.
+Everything you need is (at least one) simple configuration object.
+Each field and method annotated with an `@CmdOption` annotation will be processed.
+Based on this config, CmdOption is able to parse any commandline, guaranteeing the declared specification.
+The result is directly stored in the given config object.
+When errors occur, CmdOption gives a meaningful error message.
+Generated output and validation/error messages can be localized.
+
+This document shows usage, configuration options and some advanced topics.
+Please also visit the https://github.com/ToToTec/CmdOption/wiki[project wiki] for more examples and user provided content.
 
 == Download
 
