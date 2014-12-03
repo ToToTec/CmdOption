@@ -300,7 +300,7 @@ cp.unregisterAllHandler();
 CmdOption has a fairly detailed set of error messages, that will be thrown as `CmdlineParserException`. 
 If you need more information what goes on under the hood, you can use the special command line option `--CMDOPTION_DEBUG`. When used, CmdOption will display detailed information about the found configurations and the parsing process. This might help to understand issues further. I most cases, this will help you to resolve your issues. Of course, you can disable this functionality with `setDebugModeAllowed(false)`.
 
-If you have issues you can not solve, do not hessitate to http://cmdoption.tototec.de/cmdoption/projects/cmdoption/issues/new[open a support ticket] or search for other (open) issues in the http://cmdoption.tototec.de/cmdoption/projects/cmdoption/issues[CmdOption ticket system].
+If you have issues you can not solve, do not hessitate to https://github.com/ToToTec/CmdOption/issues/new[open a support ticket] or search for other (open) issues in the https://github.com/ToToTec/CmdOption/issues[CmdOption ticket system].
 
 == Creating a streaming command line interface
 
@@ -316,7 +316,7 @@ CmdOption is developed and released under the Apache License, Version 2.
 
 == Contributing
 
-Your contributions are much apreciated. If you found a bug or have a feature request, please open a new issue on GitHub. We also accept pull requests.
+Your contributions are much apreciated. If you found a bug or have a feature request, please open a https://github.com/ToToTec/CmdOption/issues[new issue on GitHub]. We also accept pull requests.
 
 == Building CmdOption from Source
 
