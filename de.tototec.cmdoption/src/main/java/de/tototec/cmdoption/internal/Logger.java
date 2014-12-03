@@ -1,4 +1,4 @@
-package de.tototec.cmdoption;
+package de.tototec.cmdoption.internal;
 
 /**
  * A lightweight wrapper around a logging API, if available.

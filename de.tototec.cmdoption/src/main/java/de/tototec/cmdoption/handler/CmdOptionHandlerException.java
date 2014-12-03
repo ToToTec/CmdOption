@@ -3,7 +3,7 @@ package de.tototec.cmdoption.handler;
 import java.text.MessageFormat;
 
 import de.tototec.cmdoption.CmdlineParserException;
-import de.tototec.cmdoption.I18nFactory;
+import de.tototec.cmdoption.internal.I18nFactory;
 
 public class CmdOptionHandlerException extends Exception {
 

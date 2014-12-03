@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.tototec.cmdoption.handler.CmdOptionHandler;
+import de.tototec.cmdoption.internal.FList;
 
 public class OptionHandle {
 
@@ -120,13 +121,13 @@ public class OptionHandle {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() +
-				"(names=" + Util.mkString(getNames(), null, ",", null) +
-				",args=" + Util.mkString(getArgs(), null, ",", null) +
+				"(names=" + FList.mkString(getNames(), ",") +
+				",args=" + FList.mkString(getArgs(), ",") +
 				",minCount=" + getMinCount() +
 				",maxCount=" + getMaxCount() +
 				",description=" + getDescription() +
-				",requires=" + Util.mkString(getRequires(), null, ",", null) +
-				",conflictsWith=" + Util.mkString(getConflictsWith(), null, ",", null) +
+				",requires=" + FList.mkString(getRequires(), ",") +
+				",conflictsWith=" + FList.mkString(getConflictsWith(), ",") +
 				",isHidden=" + isHidden() +
 				",isHelp=" + isHelp() +
 				",handler=" + getCmdOptionHandler().getClass().getName() +
