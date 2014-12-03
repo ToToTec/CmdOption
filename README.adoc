@@ -457,6 +457,11 @@ Have a look at some other projects I'm involved with:
 
 == ChangeLog
 
+=== CmdOption {master} - WIP 0.4.0
+
+* Detect matching or missing CmdOptionHandlers earlier and absolutly.
+  They were now associated to the annotation options at scanning time.
+
 === CmdOption 0.3.3 - 2014-11-17
 
 * Detect and report annotations on final fields
