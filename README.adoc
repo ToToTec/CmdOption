@@ -158,7 +158,7 @@ You can either create the `ResourceBundle` yourself and set it into the CmdlineP
 
 ==== Example: A translation via Properties file
 
-.File org/example/Main.java
+.File: org/example/Main.java
 [source,java]
 ----
 package org.example;
@@ -209,7 +209,7 @@ public class Main {
 
 We will use a properties files to provide the translations into German.
 
-.File org/example/Messages_de.properties
+.File: org/example/Messages_de.properties
 [source,properties]
 ----
 Show\ this\ help.=Zeigt diese Hilfe an.
