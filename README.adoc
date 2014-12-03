@@ -187,6 +187,26 @@ The class `CmdlineParser` has various methods to customize the behaviour and the
 * *usage(StringBuilder)* - Format and print the usage display to the given `StringBuilder`.
 * *setUsageFormatter(UsageFormatter)* - Register a custom `UsageFormatter` that is used to format the usage display. If not changed, the `DefaultUsageFormatter` is used. Please note, that `DefaultUsageFormatter` already has some configuration options on it's own which you should try first, before writing you own usage formatter implementation.
 
+== Exception Handling
+
+The `parse` methods of `CmdlineParser` will throw a `CmdlineParserException` when the given cmdline contains validation errors.
+Thus, you always can assume sane and proper initialized config object (according to the configuration).
+If you don't catch the exception, the JVM typically prints the error message and a stack trace to the commandline. Although helpful, it isn't always want you want to be shown to your user.
+
+It is highly recommended to surround the call to the `parse` method with a try-catch-block and provide a sane error message and/or if you prefer so a details usage display.
+
+.Example of sane and useful error handling
+[source,java]
+----
+CmdlineParser cp = ...
+try {
+  cp.parse(args);
+} catch (CmdlineParserException e) {
+  System.err.println("Error: " + e.getMessage() + "\nRun myprogram --help for help.");
+  System.exit(1);
+}
+----
+
 == Localization
 
 There are two source of messages, that needs localization. Those from CmdOption itself like error and validation messages, and those, provided by the user of the CmdOption toolkit.
@@ -215,6 +235,11 @@ CmdOption also supports the translation of the user-provided strings. Those stri
 If you provide a `ResourceBundle`, CmdOption will use that bundle to translate your messages. The JVM default locale is used.
 
 You can either create the `ResourceBundle` yourself and set it into the CmdlineParser, or you can tell the CmdlineParser the name for the message catalog and the classloader, that should be used to access the message catalog.
+
+=== Localized CmdlineParserException
+
+The `CmdlineParserException` thrown by CmdOption when some error or validation issue occur contains the error message in both the localized and the non-localized form.
+If you want display the localized error message, please use `CmdlineParserException.getLocalizedMessage()`.
 
 ==== Example: A translation via Properties file
 
