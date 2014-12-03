@@ -31,9 +31,9 @@ import de.tototec.cmdoption.handler.StringMethodHandler;
 /**
  * CmdOption main entry point to configure the parser, parse the command line
  * and provide help.
- * 
+ *
  * The central method to parse a command line is {@link #parse(String...)}.
- * 
+ *
  * The command line will be parsed and validated based on configuration objects
  * which are annotated with CmdOption-specific annotations, which are:
  * <ul>
@@ -41,12 +41,12 @@ import de.tototec.cmdoption.handler.StringMethodHandler;
  * <li>{@link CmdCommand}
  * <li>{@link CmdOptionDelegate}
  * </ul>
- * 
+ *
  * Each parsed option will be directly applied to the corresponding method or
  * field. The configuration objects are typically provided as constructor
  * arguments, but it is also possible to use the {@link #addObject(Object...)}
  * method to add additional configuration objects.
- * 
+ *
  */
 public class CmdlineParser {
 
@@ -188,12 +188,14 @@ public class CmdlineParser {
 
 	private String debugState(final String prefix) {
 		return prefix + "Parameter: " + parameter
-				+ prefix + "Options: " + Util.mkString(options, "\n  ", ",\n  ", null)
-				+ prefix + "Commands: " + Util.mkString(commands, "\n  ", ",\n  ", null)
-				+ prefix + "ResourceBundle: " + resourceBundle
-				+ prefix + "Locale: " + (resourceBundle == null ? null : resourceBundle.getLocale())
-				+ prefix + "CmdOptionHandlers: "
-				+ Util.mkString(handlerRegistry.entrySet(), "\n  ", "\n" + prefix + "  ", null);
+				+ "\n" + prefix + "Options: "
+				+ Util.mkString(options, "\n" + prefix + "  ", ",\n" + prefix + "  ", null)
+				+ "\n" + prefix + "Commands: "
+				+ Util.mkString(commands, "\n" + prefix + "  ", ",\n" + prefix + "  ", null)
+				+ "\n" + prefix + "ResourceBundle: " + resourceBundle
+				+ "\n" + prefix + "Locale: " + (resourceBundle == null ? null : resourceBundle.getLocale())
+				+ "\n" + prefix + "CmdOptionHandlers: "
+				+ Util.mkString(handlerRegistry.entrySet(), "\n" + prefix + "  ", "\n" + prefix + "  ", null);
 	}
 
 	public void parse(final boolean dryrun, final boolean detectHelpAndSkipValidation, String... cmdline) {
@@ -518,7 +520,7 @@ public class CmdlineParser {
 	/**
 	 * Add an additional configuration object containing CmdOption-specific
 	 * annotations to the configuration.
-	 * 
+	 *
 	 * @param objects
 	 */
 	public void addObject(final Object... objects) {
