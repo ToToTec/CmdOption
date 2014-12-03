@@ -61,12 +61,11 @@ public class FinalFieldTest extends Assert {
 		assertEquals(config.help, true);
 	}
 
-	@Test
+	@Test(expectedExceptions = CmdlineParserException.class)
 	public void testFinalFieldWithDefault() {
 		final ConfigWithFinalField config = new ConfigWithFinalField();
+		@SuppressWarnings("unused")
 		final CmdlineParser cp = new CmdlineParser(config);
-		assertUsage(cp, expectedFinalUsage);
-		assertEquals(config.help, false);
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class)

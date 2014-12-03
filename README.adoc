@@ -25,7 +25,7 @@ Please also visit the {wikiUrl}[project wiki] for more examples and user provide
 
 == Download
 
-CmdOption is available form http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22de.tototec%22%20AND%20a%3A%22de.tototec.cmdoption%22[Maven central repository].
+CmdOption is available from http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22de.tototec%22%20AND%20a%3A%22de.tototec.cmdoption%22[Maven central repository].
 
 Maven users can use the following dependency declaration:
 
@@ -38,7 +38,7 @@ Maven users can use the following dependency declaration:
 </dependency>
 ----
 
-http://sbuild.tototec.de[SBuild] users can use the following dependency:
+http://sbuild.org[SBuild] users can use the following dependency:
 
 [source,scala,subs="attributes"]
 ----
@@ -340,21 +340,45 @@ Parameter:
 
 == CmdOptionHandler
 
-CmdOption supports field and method access. The set of supported types and method signatures is not hardcoded, but determined by the registered CmdOptionHandlers. CmdOptions comes with some ready-to-use CmdOptionsHandlers. By default, a well-choosen set of CmdOptionsHandlers is already registered, making a good start for most usage scenarios.  To customize the behavoir of CmdOption, one has some options:
+CmdOption supports field and method access.
+The set of supported types and method signatures is not hardcoded, but determined by the registered `CmdOptionHandler`s.
+CmdOption comes with some ready-to-use `CmdOptionsHandler`s.
+You can find these in the `de.tototec.cmdoption.handler` package.
 
-* Write and register additional CmdOptionHandlers
+By default, a well-choosen set of `CmdOptionsHandler`s is already registered, making a good start for most usage scenarios.
+To customize the behavoir of CmdOption, one has some options:
+
+* Write and register additional `CmdOptionHandler`s
 * if necessary, unregister all handlers before registering
-* Explicitly select a specific CmdOptionHandler in the `@CmdOption`-Annotation
+* Explicitly select a specific `CmdOptionHandler` in the `@CmdOption`-Annotation (which needs to have a default constructor)
 
-=== Registering an additional CmdOptionHandler
+Please note, that newly registered `CmdOptionHandler`s will only have an effect for configuration objects that are added after the handler was registered.
+That means, when you want to parse your config with a special set of `CmdOptionHandler`s, you should first create the parser without specifying the config object, than register the desired handlers and after that add your config object.
+
+.Example:
+[source,java]
+----
+Config config = new Config();
+
+CmdlineParser cp = new CmdlineParser(/* do not add the config here */);
+cp.unregisterAllHandler();
+cp.registerHandler(new SpecialHandler());
+// ...
+
+// now we can add the config
+cp.addObject(config);
+----
+
+=== Registering an additional `CmdOptionHandler`
 
 [source,java]
 ----
-CmdlineParser cp = new CmdlineParser(config);
+CmdlineParser cp = new CmdlineParser();
 cp.registerHandler(new MyOptionHandler());
 ----
 
-The order of registered handlers is important. The first handler, that will match a declared field or method, will be used to parse it. To explicitly force a specific handler, use the `@CmdOption(handler = TheSpecificHandler.class)`.
+The order of registered handlers is important. The first handler, that will match a declared field or method, will be used to parse it.
+To explicitly force a specific handler, use the `@CmdOption(handler = TheSpecificHandler.class)`.
 
 === Pre-registered CmdOptionHandlers
 
@@ -362,7 +386,7 @@ At construction time CmdlineParser pre-registeres various handlers like the foll
 
 [source,java]
 ----
-CmdlineParser cp = new CmdlineParser(config);
+CmdlineParser cp = new CmdlineParser();
 cp.registerHandler(new BooleanOptionHandler());
 cp.registerHandler(new BooleanHandler());
 cp.registerHandler(new StringFieldHandler());
@@ -376,14 +400,19 @@ cp.registerHandler(new IntegerHandler());
 
 [source,java]
 ----
-CmdlineParser cp = new CmdlineParser(config);
+CmdlineParser cp = new CmdlineParser();
 cp.unregisterAllHandler();
 ----
 
 == Debugging
 
-CmdOption has a fairly detailed set of error messages, that will be thrown as `CmdlineParserException`. 
-If you need more information what goes on under the hood, you can use the special command line option `--CMDOPTION_DEBUG`. When used, CmdOption will display detailed information about the found configurations and the parsing process. This might help to understand issues further. I most cases, this will help you to resolve your issues. Of course, you can disable this functionality with `setDebugModeAllowed(false)`.
+CmdOption has a fairly detailed set of error messages, that will be thrown as `CmdlineParserException`.
+
+When CmdOption detects the presence of a SLF4J Logger, it will use it to log its internals.
+If no such logger is found on the classpath you can still gather more information what goes on under the hood by using the special command line option `--CMDOPTION_DEBUG`. 
+When used, CmdOption will display detailed information about the found configurations and the parsing process.
+This might help to understand issues further.
+In most cases, this will help you to resolve your issues. Of course, you can disable this functionality with `setDebugModeAllowed(false)`.
 
 If you have issues you can not solve, do not hessitate to https://github.com/ToToTec/CmdOption/issues/new[open a support ticket] or search for other (open) issues in the https://github.com/ToToTec/CmdOption/issues[CmdOption ticket system].
 
@@ -411,12 +440,20 @@ CmdOption is developed and released under the Apache License, Version 2.
 == Contributing
 
 Your contributions are much apreciated.
-If you found a bug or have a feature request, please open a https://github.com/ToToTec/CmdOption/issues[new issue on GitHub]. We also accept pull requests.
+If you found a bug or have a feature request, please open a https://github.com/ToToTec/CmdOption/issues[new issue on GitHub].
+We also accept pull requests.
 
 == Building CmdOption from Source
 
 CmdOption is build with http://sbuild.org/[SBuild].
 
+== Other Projects
+
+Have a look at some other projects I'm involved with:
+
+* [https://github.com/ToToTec/de.tototec.utils.functional[Functional Utils] - Functional Utility Classes for working with Java 5+ 
+* [https://github.com/lefou/poor-mans-lambda-test/[Poor Mans Lambda Test] - Minimal Java8 Lambda enabled testing for TestNG
+* http://sbuild.org[SBuild] - A Scala-based build tool
 
 == ChangeLog
 

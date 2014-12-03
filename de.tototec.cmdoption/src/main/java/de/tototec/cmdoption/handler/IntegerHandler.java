@@ -3,24 +3,25 @@ package de.tototec.cmdoption.handler;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import de.tototec.cmdoption.I18n;
 
 /**
  * Apply an one-arg option to a {@link Integer} (or <code>int</code>) field or
  * method.
- * 
+ *
  * @since 0.3.1
  */
 public class IntegerHandler implements CmdOptionHandler {
 
-	public IntegerHandler() {
-	}
+	public IntegerHandler() {}
 
 	public boolean canHandle(final AccessibleObject element, final int argCount) {
 		if (element instanceof Field && argCount == 1) {
 			final Field field = (Field) element;
-			return field.getType().equals(Integer.class) || field.getType().equals(int.class);
+			return !Modifier.isFinal(field.getModifiers())
+					&& (field.getType().equals(Integer.class) || field.getType().equals(int.class));
 		} else if (element instanceof Method && argCount == 1) {
 			final Method method = (Method) element;
 			if (method.getParameterTypes().length == 1) {

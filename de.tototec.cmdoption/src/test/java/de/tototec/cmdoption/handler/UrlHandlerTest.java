@@ -35,9 +35,10 @@ public class UrlHandlerTest {
 	@Test
 	public void testUrlField() {
 		final Config config = new Config();
-		final CmdlineParser cp = new CmdlineParser(config);
+		final CmdlineParser cp = new CmdlineParser();
 		cp.unregisterAllHandler();
 		cp.registerHandler(new UrlHandler());
+		cp.addObject(config);
 		cp.parse("--url-one", "http://cmdoption.tototec.de");
 
 		final URL testUrl;
@@ -54,18 +55,20 @@ public class UrlHandlerTest {
 	@Test(expectedExceptions = CmdlineParserException.class)
 	public void testUrlFieldFail() {
 		final Config config = new Config();
-		final CmdlineParser cp = new CmdlineParser(config);
+		final CmdlineParser cp = new CmdlineParser();
 		cp.unregisterAllHandler();
 		cp.registerHandler(new UrlHandler());
+		cp.addObject(config);
 		cp.parse("--url-one", "http//cmdoption.tototec.de");
 	}
 
 	@Test
 	public void testUrlMethod() {
 		final Config config = new Config();
-		final CmdlineParser cp = new CmdlineParser(config);
+		final CmdlineParser cp = new CmdlineParser();
 		cp.unregisterAllHandler();
 		cp.registerHandler(new UrlHandler());
+		cp.addObject(config);
 		cp.parse("--url-two", "http://cmdoption.tototec.de");
 
 		final URL testUrl;
@@ -82,9 +85,10 @@ public class UrlHandlerTest {
 	@Test(expectedExceptions = CmdlineParserException.class)
 	public void testUrlMethodFail() {
 		final Config config = new Config();
-		final CmdlineParser cp = new CmdlineParser(config);
+		final CmdlineParser cp = new CmdlineParser();
 		cp.unregisterAllHandler();
 		cp.registerHandler(new UrlHandler());
+		cp.addObject(config);
 		cp.parse("--url-two", "http//cmdoption.tototec.de");
 	}
 

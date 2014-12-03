@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * Apply an two-arg option to an {@link Map}.
- * 
+ *
  */
 public class PutIntoMapHandler implements CmdOptionHandler {
 

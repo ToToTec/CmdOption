@@ -2,11 +2,15 @@ package de.tototec.cmdoption.handler;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * Apply an one-arg option to a {@link Boolean} (or <code>boolean</code>) field.
  * Evaluated the argument to <code>true</code> if it is "true", "on" or "1".
- * 
+ *
+ * You can customize the words interpreted as <code>true</code> or
+ * <code>false</code> by using the non-default constructor.
+ *
  * @deprecated {@link BooleanHandler} does the same and also supports methods.
  *             Deprecated since 0.3.0.
  */
@@ -24,7 +28,7 @@ public class BooleanFieldHandler implements CmdOptionHandler {
 	/**
 	 * If the list of falseWords is empty or <code>null</code>, any words not in
 	 * trueWords is considered as false.
-	 * 
+	 *
 	 * @param trueWords
 	 * @param falseWords
 	 * @param caseSensitive
@@ -38,7 +42,8 @@ public class BooleanFieldHandler implements CmdOptionHandler {
 	public boolean canHandle(final AccessibleObject element, final int argCount) {
 		if (element instanceof Field && argCount == 1) {
 			final Field field = (Field) element;
-			return field.getType().equals(Boolean.class) || field.getType().equals(boolean.class);
+			return !Modifier.isFinal(field.getModifiers())
+					&& (field.getType().equals(Boolean.class) || field.getType().equals(boolean.class));
 		}
 		return false;
 	}

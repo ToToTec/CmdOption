@@ -11,7 +11,7 @@ public class OptionHandle {
 
 	private final String[] names;
 	private final String description;
-	private final Class<? extends CmdOptionHandler> cmdOptionHandlerType;
+	private final CmdOptionHandler cmdOptionHandler;
 	private final AccessibleObject element;
 	private final String[] args;
 	private final int minCount;
@@ -25,7 +25,7 @@ public class OptionHandle {
 	public OptionHandle(
 			final String[] names,
 			final String description,
-			final Class<? extends CmdOptionHandler> cmdOptionHandlerType,
+			final CmdOptionHandler cmdOptionHandler,
 			final Object object,
 			final AccessibleObject element,
 			final String[] args,
@@ -37,7 +37,7 @@ public class OptionHandle {
 			final String[] conflictsWith) {
 		this.names = names;
 		this.description = description;
-		this.cmdOptionHandlerType = cmdOptionHandlerType;
+		this.cmdOptionHandler = cmdOptionHandler;
 		this.object = object;
 		this.element = element;
 		this.args = args;
@@ -57,8 +57,8 @@ public class OptionHandle {
 		return description;
 	}
 
-	public Class<? extends CmdOptionHandler> getCmdOptionHandlerType() {
-		return cmdOptionHandlerType;
+	public CmdOptionHandler getCmdOptionHandler() {
+		return cmdOptionHandler;
 	}
 
 	public String[] getArgs() {
@@ -129,6 +129,8 @@ public class OptionHandle {
 				",conflictsWith=" + Util.mkString(getConflictsWith(), null, ",", null) +
 				",isHidden=" + isHidden() +
 				",isHelp=" + isHelp() +
+				",handler=" + getCmdOptionHandler().getClass().getName() +
 				")";
 	}
+
 }

@@ -2,18 +2,19 @@ package de.tototec.cmdoption.handler;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 /**
  * Apply an one-arg option to a field of type {@link String}.
- * 
+ *
  */
 public class StringFieldHandler implements CmdOptionHandler {
 
 	public boolean canHandle(final AccessibleObject element, final int argCount) {
 		if (element instanceof Field && argCount == 1) {
 			final Field field = (Field) element;
-			return field.getType().equals(String.class);
+			return !Modifier.isFinal(field.getModifiers()) && field.getType().equals(String.class);
 		}
 		return false;
 	}

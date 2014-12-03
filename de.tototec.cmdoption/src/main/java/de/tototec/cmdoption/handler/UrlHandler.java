@@ -3,6 +3,7 @@ package de.tototec.cmdoption.handler;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -12,7 +13,8 @@ public class UrlHandler implements CmdOptionHandler {
 	public boolean canHandle(final AccessibleObject element, final int argCount) {
 		if (argCount == 1) {
 			if (element instanceof Field) {
-				return ((Field) element).getType().equals(URL.class);
+				final Field field = (Field) element;
+				return !Modifier.isFinal(field.getModifiers()) && field.getType().equals(URL.class);
 			} else if (element instanceof Method) {
 				final Class<?>[] params = ((Method) element).getParameterTypes();
 				return params.length == 1 && params[0].equals(URL.class);

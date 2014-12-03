@@ -3,12 +3,13 @@ package de.tototec.cmdoption.handler;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /**
  * Apply an zero-arg option to an {@link Boolean} (or <code>boolean</code>)
  * field. If the option is present, the field will be evaluated to
  * <code>true</code>.
- * 
+ *
  */
 public class BooleanOptionHandler implements CmdOptionHandler {
 
@@ -38,7 +39,8 @@ public class BooleanOptionHandler implements CmdOptionHandler {
 		if (element instanceof Field) {
 			final Field field = (Field) element;
 			final Class<?> type = field.getType();
-			return boolean.class.equals(type) || Boolean.class.equals(type);
+			return !Modifier.isFinal(field.getModifiers())
+					&& (boolean.class.equals(type) || Boolean.class.equals(type));
 		} else if (element instanceof Method) {
 			final Method method = (Method) element;
 			if (method.getParameterTypes().length == 0) {

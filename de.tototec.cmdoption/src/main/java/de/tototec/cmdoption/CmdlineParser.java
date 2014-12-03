@@ -100,15 +100,25 @@ public class CmdlineParser {
 		debugMode = parent.debugMode;
 		programName = commandName;
 		handlerRegistry = parent.handlerRegistry;
+
 		scanOptions(commandObject);
 	}
 
+	/**
+	 * Create a new commandline parser instance and scan all given object for
+	 * supported options, parameters and commands using the pre-registered
+	 * default handlers. Please note that if you want to use a custom set of
+	 * option handlers, you should not give your config objects here but use the
+	 * {@link #addObject(Object...)} method after you registered the desired set
+	 * of handlers.
+	 *
+	 * @param objects The configuration objects containing supported annotations.
+	 */
 	public CmdlineParser(final Object... objects) {
 		parent = null;
 		programName = "<main class>";
+		// ensure order by using a LinkedHashMap
 		handlerRegistry = new LinkedHashMap<Class<? extends CmdOptionHandler>, CmdOptionHandler>();
-
-		addObject(objects);
 
 		registerHandler(new BooleanOptionHandler());
 		registerHandler(new BooleanHandler());
@@ -117,6 +127,8 @@ public class CmdlineParser {
 		registerHandler(new AddToCollectionHandler());
 		registerHandler(new StringMethodHandler());
 		registerHandler(new IntegerHandler());
+
+		addObject(objects);
 	}
 
 	private void debug(final String msg, final Object... args) {
@@ -275,14 +287,7 @@ public class CmdlineParser {
 				index += optionHandle.getArgsCount();
 
 				final AccessibleObject element = optionHandle.getElement();
-				final CmdOptionHandler handler = findHandler(element, optionHandle.getArgsCount(),
-						optionHandle.getCmdOptionHandlerType());
-
-				if (handler == null) {
-					throw new CmdlineParserException(null,
-							I18n.marktr("No suitable handler found for option: {0} ({1} argument(s))"), param,
-							optionHandle.getArgsCount());
-				}
+				final CmdOptionHandler handler = optionHandle.getCmdOptionHandler();
 
 				if (!dryrun) {
 					try {
@@ -347,13 +352,7 @@ public class CmdlineParser {
 				index += parameter.getArgsCount() - 1;
 
 				final AccessibleObject element = parameter.getElement();
-				final CmdOptionHandler handler = findHandler(element, parameter.getArgsCount(),
-						parameter.getCmdOptionHandlerType());
-
-				if (handler == null) {
-					throw new CmdlineParserException(null, I18n.marktr("No suitable handler found for option: {0}"),
-							param);
-				}
+				final CmdOptionHandler handler = parameter.getCmdOptionHandler();
 
 				if (!dryrun) {
 					try {
@@ -487,19 +486,22 @@ public class CmdlineParser {
 		CmdOptionHandler handler = null;
 		if (cmdOptionHandlerType != null && !cmdOptionHandlerType.equals(CmdOptionHandler.class)) {
 			// requested a specific handler
+			final CmdOptionHandler dedicatedHandler;
 			if (handlerRegistry.containsKey(cmdOptionHandlerType)) {
-				handler = handlerRegistry.get(cmdOptionHandlerType);
+				dedicatedHandler = handlerRegistry.get(cmdOptionHandlerType);
 			} else {
 				try {
-					handler = cmdOptionHandlerType.newInstance();
+					dedicatedHandler = cmdOptionHandlerType.newInstance();
 				} catch (final Exception e) {
 					throw new CmdlineParserException(e, I18n.marktr("Could not create handler: {0}"),
 							cmdOptionHandlerType);
 				}
-				// commented out, because self-introduced handler (only in a
-				// specific annotation) should not be made available to all
-				// other options.
-				// handlerRegistry.put(annoHandlerType, handler);
+				// not registering this handler because self-introduced handler
+				// (only in a specific annotation) should not be made available
+				// to all other options.
+			}
+			if (dedicatedHandler.canHandle(element, argsCount)) {
+				handler = dedicatedHandler;
 			}
 		} else {
 			// walk through registered hander and find one
@@ -726,21 +728,34 @@ public class CmdlineParser {
 			}
 
 			if (element instanceof Field && Modifier.isFinal(((Field) element).getModifiers())) {
-				debug("Skipping option on final field: {0}", element);
-				continue;
+				debug("Detected option on final field: {0}", element);
+				// continue;
 			}
 
 			final String[] names = anno.names();
 			// The Interface itself means to specified handler
-			final Class<? extends CmdOptionHandler> annoHandlerType = anno.handler() == CmdOptionHandler.class ? null
-					: anno.handler();
+			// final Class<? extends CmdOptionHandler> annoHandlerType =
+			// anno.handler() == CmdOptionHandler.class ? null
+			// : anno.handler();
 
-			// No names is not allowed currently
-			// TODO: check if we could use no-name options as parameter semantic
+			final CmdOptionHandler handler = findHandler(element, anno.args().length, anno.handler());
+			if (handler == null) {
+				throw new CmdlineParserException(null,
+						I18n.marktr("No suitable handler found for option(s): {0} ({1} argument(s))"),
+						Util.mkString(anno.names(), "", ",", ""),
+						anno.args().length);
+				// if (handler == null) {
+				// throw new CmdlineParserException(null,
+				// I18n.marktr("No suitable handler found for option: {0}"),
+				// param);
+				// }
+
+				// debug("No handler found for annotated element: {0}",
+				// element);
+				// continue;
+			}
+
 			if (names == null || names.length == 0) {
-				// throw new
-				// CmdlineParserException("Could not determine option name(s) for: "
-				// + element);
 				// No names means this is the ONLY parameter
 				if (parameter != null) {
 					throw new CmdlineParserException(
@@ -749,7 +764,7 @@ public class CmdlineParser {
 							parameter.getElement(), element);
 				}
 				// TODO: should we ignore the help parameter?
-				final OptionHandle paramHandle = new OptionHandle(new String[] {}, anno.description(), annoHandlerType,
+				final OptionHandle paramHandle = new OptionHandle(new String[] {}, anno.description(), handler,
 						object, element, anno.args(), anno.minCount(), anno.maxCount(), false /*
 						 * cannot
 						 * be
@@ -766,7 +781,7 @@ public class CmdlineParser {
 				parameter = paramHandle;
 
 			} else {
-				final OptionHandle option = new OptionHandle(names, anno.description(), annoHandlerType, object,
+				final OptionHandle option = new OptionHandle(names, anno.description(), handler, object,
 						element, anno.args(), anno.minCount(), anno.maxCount(), anno.isHelp(), anno.hidden(),
 						anno.requires(), anno.conflictsWith());
 
@@ -792,6 +807,11 @@ public class CmdlineParser {
 		}
 	}
 
+	/**
+	 * Register a new CmdOptionHandler. Please note: The newly registered
+	 * handlers will only have an effect to succeeding calls to
+	 * {@link #addObject(Object...)}.
+	 */
 	public void registerHandler(final CmdOptionHandler handler) {
 		if (handler != null) {
 			debug("Register CmdOptionHandler: {0}", handler);
