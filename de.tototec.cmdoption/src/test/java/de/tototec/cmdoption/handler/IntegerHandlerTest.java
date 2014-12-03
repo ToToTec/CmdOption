@@ -1,13 +1,12 @@
 package de.tototec.cmdoption.handler;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
+import static org.testng.Assert.assertEquals;
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 import de.tototec.cmdoption.CmdOption;
 import de.tototec.cmdoption.CmdlineParser;
 import de.tototec.cmdoption.CmdlineParserException;
 
-public class IntegerHandlerTest {
+public class IntegerHandlerTest extends FreeSpec {
 
 	public static class IntegerConfig {
 		@CmdOption(names = "-a", args = "N")
@@ -27,48 +26,6 @@ public class IntegerHandlerTest {
 		public Integer getB() {
 			return b;
 		}
-	}
-
-	@Test
-	public void testIntegerField() {
-		final IntegerConfig config = new IntegerConfig();
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.unregisterAllHandler();
-		cp.registerHandler(new IntegerHandler());
-		cp.parse("-a", "1");
-
-		Assert.assertEquals(config.getA(), Integer.valueOf(1));
-		Assert.assertEquals(config.getB(), null);
-	}
-
-	@Test(expectedExceptions = CmdlineParserException.class)
-	public void testIntegerFieldFail() {
-		final IntegerConfig config = new IntegerConfig();
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.unregisterAllHandler();
-		cp.registerHandler(new IntegerHandler());
-		cp.parse("-a", "a");
-	}
-
-	@Test
-	public void testIntegerMethod() {
-		final IntegerConfig config = new IntegerConfig();
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.unregisterAllHandler();
-		cp.registerHandler(new IntegerHandler());
-		cp.parse("-b", "1");
-
-		Assert.assertEquals(config.getB(), Integer.valueOf(1));
-		Assert.assertEquals(config.getA(), null);
-	}
-
-	@Test(expectedExceptions = CmdlineParserException.class)
-	public void testIntegerMethodFail() {
-		final IntegerConfig config = new IntegerConfig();
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.unregisterAllHandler();
-		cp.registerHandler(new IntegerHandler());
-		cp.parse("-b", "b");
 	}
 
 	public static class IntConfig {
@@ -91,46 +48,91 @@ public class IntegerHandlerTest {
 		}
 	}
 
-	@Test
-	public void testIntField() {
-		final IntConfig config = new IntConfig();
-		final CmdlineParser cp = new CmdlineParser(config);
+	public CmdlineParser cp() {
+		final CmdlineParser cp = new CmdlineParser();
 		cp.unregisterAllHandler();
 		cp.registerHandler(new IntegerHandler());
-		cp.parse("-a", "1");
-
-		Assert.assertEquals(config.getA(), 1);
-		Assert.assertEquals(config.getB(), 0);
+		return cp;
 	}
 
-	@Test(expectedExceptions = CmdlineParserException.class)
-	public void testIntFieldFail() {
-		final IntConfig config = new IntConfig();
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.unregisterAllHandler();
-		cp.registerHandler(new IntegerHandler());
-		cp.parse("-a", "a");
-	}
+	{
+		test("Integer field", () -> {
+			final IntegerConfig config = new IntegerConfig();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			cp.parse("-a", "1");
+			assertEquals(config.getA(), Integer.valueOf(1));
+			assertEquals(config.getB(), null);
+		});
 
-	@Test
-	public void testIntMethod() {
-		final IntConfig config = new IntConfig();
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.unregisterAllHandler();
-		cp.registerHandler(new IntegerHandler());
-		cp.parse("-b", "1");
+		test("Integer field fail with non-integer", () -> {
+			final IntegerConfig config = new IntegerConfig();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			intercept(CmdlineParserException.class, "Could not read integer value \"a\".", () -> {
+				cp.parse("-a", "a");
+			});
+			assertEquals(config.getA(), null);
+			assertEquals(config.getB(), null);
+		});
 
-		Assert.assertEquals(config.getB(), 1);
-		Assert.assertEquals(config.getA(), 0);
-	}
+		test("Integer method", () -> {
+			final IntegerConfig config = new IntegerConfig();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			cp.parse("-b", "1");
+			assertEquals(config.getA(), null);
+			assertEquals(config.getB(), Integer.valueOf(1));
+		});
 
-	@Test(expectedExceptions = CmdlineParserException.class)
-	public void testIntMethodFail() {
-		final IntConfig config = new IntConfig();
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.unregisterAllHandler();
-		cp.registerHandler(new IntegerHandler());
-		cp.parse("-b", "b");
+		test("Integer method fail with non-integer", () -> {
+			final IntegerConfig config = new IntegerConfig();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			intercept(CmdlineParserException.class, "Could not read integer value \"b\".", () -> {
+				cp.parse("-b", "b");
+			});
+			assertEquals(config.getA(), null);
+			assertEquals(config.getB(), null);
+		});
+
+		test("Int field", () -> {
+			final IntConfig config = new IntConfig();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			cp.parse("-a", "1");
+			assertEquals(config.getA(), 1);
+			assertEquals(config.getB(), 0);
+		});
+		test("Int field fail with non-integer", () -> {
+			final IntConfig config = new IntConfig();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			intercept(CmdlineParserException.class, "Could not read integer value \"a\".", () -> {
+				cp.parse("-a", "a");
+			});
+			assertEquals(config.getA(), 0);
+			assertEquals(config.getB(), 0);
+		});
+
+		test("Int method", () -> {
+			final IntConfig config = new IntConfig();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			cp.parse("-b", "1");
+			assertEquals(config.getA(), 0);
+			assertEquals(config.getB(), 1);
+		});
+		test("Int method fail with non-integer", () -> {
+			final IntConfig config = new IntConfig();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			intercept(CmdlineParserException.class, "Could not read integer value \"b\".", () -> {
+				cp.parse("-b", "b");
+			});
+			assertEquals(config.getA(), 0);
+			assertEquals(config.getB(), 0);
+		});
 	}
 
 }

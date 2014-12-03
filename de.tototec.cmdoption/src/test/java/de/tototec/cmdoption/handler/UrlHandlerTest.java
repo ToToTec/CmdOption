@@ -1,16 +1,15 @@
 package de.tototec.cmdoption.handler;
 
-import java.net.MalformedURLException;
+import static org.testng.Assert.assertEquals;
+
 import java.net.URL;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 import de.tototec.cmdoption.CmdOption;
 import de.tototec.cmdoption.CmdlineParser;
 import de.tototec.cmdoption.CmdlineParserException;
 
-public class UrlHandlerTest {
+public class UrlHandlerTest extends FreeSpec {
 
 	public static class Config {
 		@CmdOption(names = "--url-one", args = "URL")
@@ -32,64 +31,50 @@ public class UrlHandlerTest {
 		}
 	}
 
-	@Test
-	public void testUrlField() {
-		final Config config = new Config();
+	public CmdlineParser cp() {
 		final CmdlineParser cp = new CmdlineParser();
 		cp.unregisterAllHandler();
 		cp.registerHandler(new UrlHandler());
-		cp.addObject(config);
-		cp.parse("--url-one", "http://cmdoption.tototec.de");
-
-		final URL testUrl;
-		try {
-			testUrl = new URL("http://cmdoption.tototec.de");
-		} catch (final MalformedURLException e1) {
-			throw new RuntimeException("URL to test is invalid");
-		}
-
-		Assert.assertEquals(config.getUrlOne(), testUrl);
-		Assert.assertEquals(config.getUrlTwo(), null);
+		return cp;
 	}
 
-	@Test(expectedExceptions = CmdlineParserException.class)
-	public void testUrlFieldFail() {
-		final Config config = new Config();
-		final CmdlineParser cp = new CmdlineParser();
-		cp.unregisterAllHandler();
-		cp.registerHandler(new UrlHandler());
-		cp.addObject(config);
-		cp.parse("--url-one", "http//cmdoption.tototec.de");
-	}
+	{
+		test("URL field", () -> {
+			final Config config = new Config();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			cp.parse("--url-one", "http://cmdoption.tototec.de");
+			assertEquals(config.getUrlOne(), new URL("http://cmdoption.tototec.de"));
+			assertEquals(config.getUrlTwo(), null);
+		});
 
-	@Test
-	public void testUrlMethod() {
-		final Config config = new Config();
-		final CmdlineParser cp = new CmdlineParser();
-		cp.unregisterAllHandler();
-		cp.registerHandler(new UrlHandler());
-		cp.addObject(config);
-		cp.parse("--url-two", "http://cmdoption.tototec.de");
+		test("URL field fail with invalid URL", () -> {
+			final Config config = new Config();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			intercept(CmdlineParserException.class, "Invalid url: \"http//cmdoption.tototec.de\"", () -> {
+				cp.parse("--url-one", "http//cmdoption.tototec.de");
+			});
+		});
 
-		final URL testUrl;
-		try {
-			testUrl = new URL("http://cmdoption.tototec.de");
-		} catch (final MalformedURLException e1) {
-			throw new RuntimeException("URL to test is invalid");
-		}
+		test("URL method", () -> {
+			final Config config = new Config();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			cp.parse("--url-two", "http://cmdoption.tototec.de");
+			assertEquals(config.getUrlTwo(), new URL("http://cmdoption.tototec.de"));
+			assertEquals(config.getUrlOne(), null);
+		});
 
-		Assert.assertEquals(config.getUrlTwo(), testUrl);
-		Assert.assertEquals(config.getUrlOne(), null);
-	}
+		test("URL method fail with invalid URL", () -> {
+			final Config config = new Config();
+			final CmdlineParser cp = cp();
+			cp.addObject(config);
+			intercept(CmdlineParserException.class, "Invalid url: \"http//cmdoption.tototec.de\"", () -> {
+				cp.parse("--url-two", "http//cmdoption.tototec.de");
+			});
+		});
 
-	@Test(expectedExceptions = CmdlineParserException.class)
-	public void testUrlMethodFail() {
-		final Config config = new Config();
-		final CmdlineParser cp = new CmdlineParser();
-		cp.unregisterAllHandler();
-		cp.registerHandler(new UrlHandler());
-		cp.addObject(config);
-		cp.parse("--url-two", "http//cmdoption.tototec.de");
 	}
 
 }
