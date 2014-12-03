@@ -90,9 +90,9 @@ The `@CmdOption` annotation can be used to declare fields and methods as options
 
 Attributes of the `@CmdOption` annotation:
 
-* *names* : `String[]` - The names of this option.
+* *names* : `String[]` - The names of this option. To declare the main parameter(s) leave this attribute unset (see below).
 * *description* : `String` - The description of the option. If this option supports args, you can refer to the argument names with `{0}`, `{1}`, and so on.
-* *args* : `String` - The arguments (their names) supported by this option. The count of arguments is used, to determite the option handler to use. The names are used in (validation) messages and the usage display.
+* *args* : `String[]` - The arguments (their names) supported by this option. The count of arguments is used, to determite the option handler to use. The names are used in (validation) messages and the usage display.
 * *minCount* : `int` - The minimal allowed count this option can be specified. Optional options have 0 here, which is the default.
 * *maxCount* : `int` - The maximal allowed count this option can be specified. Use -1 to specify infinity. Default is 1.
 * *handler* : `Class` - A class implementing the `CmdOptionHandler` interface to apply the parsed option to the annotated field or method. If this is not given, all handler registered for auto-detect will by tried in order.
@@ -149,15 +149,16 @@ CmdOption also supports the translation of the user-provided strings. Those stri
 * The AboutLine
 * The option descriptions
 * The command descriptions
+* The argument names of an option
+* The main parameter names
 
 If you provide a `ResourceBundle`, CmdOption will use that bundle to translate your messages. The JVM default locale is used.
 
 You can either create the `ResourceBundle` yourself and set it into the CmdlineParser, or you can tell the CmdlineParser the name for the message catalog and the classloader, that should be used to access the message catalog.
 
-#ExampleATranslationViaPropertiesFile
 ==== Example: A translation via Properties file
 
-.File: org/example/Main.java
+.File org/example/Main.java
 [source,java]
 ----
 package org.example;
@@ -208,7 +209,7 @@ public class Main {
 
 We will use a properties files to provide the translations into German.
 
-.File: org/example/Messages_de.properties
+.File org/example/Messages_de.properties
 [source,properties]
 ----
 Show\ this\ help.=Zeigt diese Hilfe an.
@@ -234,10 +235,10 @@ Options:
 
 Parameter:
   file  Names to process.
-</pre>
+----
 
-Output of the program in a German environment:
-<pre>
+.Output of the program in a German environment:
+----
 % java -jar myprogram --help
 Beispiel Namensprozessor v1.0
 
