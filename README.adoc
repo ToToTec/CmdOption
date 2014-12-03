@@ -304,11 +304,20 @@ If you have issues you can not solve, do not hessitate to https://github.com/ToT
 
 == Creating a streaming command line interface
 
-Normally, CmdOption parses a complete command line, populates the config object(s) and ensures, that the config is valid, according to the configuration. Only, if the config is checked and ok, the parse method returns.
+Normally, CmdOption parses a complete command line, populates the config object(s) and ensures, that the config is valid, according to the configuration.
+Only, if the config is checked and ok, the parse method returns.
 
-In some cases, a streaming command line interface is more appropriate than the typical static approach. In a streaming command line interface each option and parameter is immediatly evaluated before the next option or parameter is read. The next allowed option/parameter often depends on the previously parsed one. An example for an program with a streaming command line interface is http://www.bunkus.org/videotools/ogmtools/[ogmtools/ogmmerge].
+In some cases, a streaming command line interface is more appropriate than the typical static approach.
+In a streaming command line interface each option and parameter is immediatly evaluated before the next option or parameter is read.
+The next allowed option/parameter often depends on the previously parsed one.
+An example for an program with a streaming command line interface is http://www.bunkus.org/videotools/ogmtools/[ogmtools/ogmmerge].
 
-Creating such a streaming command line parsers is very easy with CmdOption. Of course, most context sensitive validation must be handled by the application itself. You have to add the @@CmdOption@ annotation to methods instead of fields. The arguments of that options, if any, must match the arguments of that method. In the body of such a method the option can now immediatly processed. Typically, minCount and maxCount of the options are unconstrained, as the validity is dependent on the context.
+Creating such a streaming command line parsers is very easy with CmdOption.
+Of course, most context sensitive validation must be handled by the application itself.
+You have to add the `@CmdOption` annotation to methods instead of fields.
+The arguments of that options, if any, must match the arguments of that method.
+In the body of such a method the option can now immediatly processed.
+Typically, minCount and maxCount of the options are unconstrained, as the validity is dependent on the context.
 
 == License
 
@@ -316,7 +325,8 @@ CmdOption is developed and released under the Apache License, Version 2.
 
 == Contributing
 
-Your contributions are much apreciated. If you found a bug or have a feature request, please open a https://github.com/ToToTec/CmdOption/issues[new issue on GitHub]. We also accept pull requests.
+Your contributions are much apreciated.
+If you found a bug or have a feature request, please open a https://github.com/ToToTec/CmdOption/issues[new issue on GitHub]. We also accept pull requests.
 
 == Building CmdOption from Source
 
