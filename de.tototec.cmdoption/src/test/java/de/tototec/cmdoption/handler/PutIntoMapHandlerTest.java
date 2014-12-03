@@ -24,10 +24,11 @@ public class PutIntoMapHandlerTest extends FreeSpec {
 			final CmdlineParser cp = new CmdlineParser();
 			cp.unregisterAllHandler();
 			cp.registerHandler(new PutIntoMapHandler());
-			cp.addObject(cp);
+			cp.addObject(config);
+
 			cp.parse("--map1", "k", "v");
 			assertEquals(config.map1.isEmpty(), false);
-			assertEquals(config.map1.get("key"), "value");
+			assertEquals(config.map1.get("k"), "v");
 		});
 	}
 }
