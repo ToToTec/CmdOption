@@ -75,6 +75,7 @@ _For a more complete example see also link:#example-a-translation-via-properties
 
 The commandline based on the config object above can contain:
 
+* an optional `--help` or `-h` option, which (when used) disables the commandline validation
 * an optional `--verbose` or `-v` option
 * any count of additional option pairs via `--options` or `-o`
 * at least on paramter
