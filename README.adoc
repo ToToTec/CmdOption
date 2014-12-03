@@ -134,6 +134,21 @@ Parameter:
   file  Names to process
 ----
 
+== Characteristics of CmdOption
+
+CmdOption gets the commandline arguments as an Java string array and processes it starting from the first element.
+For each element, it checks if the found argument is a know option or command name.
+If it is a known option, it starts to parse that option. If the options defines itself arguments, it also parses these arguments.
+If the fount argumemt is detected as command, than CmdOptions switches into the command mode.
+After CmdOption once switched into command mode, all succeeding arguments are only parsed into the scope of that command.
+
+If the application supports parameters (non-options, declared with a `@CmdOption` annotation without a `names` parameter) it will scan all commandline arguemnts that are not detected as options or commands into that parameter.
+The special option `--` is supported, to stop CmdOption from parsing any succeeding arguement as option or command.
+That way, you can force succeeding argument to be parsed as parameters.
+E.g. To delete a file with the name "-r" with the Unix tool `rm` you can use `rm -- -r`, otherwise `rm` would interpret `-r` as option but not as filename.
+
+// Add @ when implemented
+
 == Options and Parameters
 
 The `@CmdOption` annotation can be used to declare fields and methods as options.
