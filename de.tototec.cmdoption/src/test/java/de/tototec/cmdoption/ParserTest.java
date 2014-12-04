@@ -106,7 +106,7 @@ public class ParserTest {
 		assertEquals(config.help, true);
 	}
 
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Could not parse argument '--help' as boolean parameter.")
+	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Could not parse argument \"--help\" as boolean parameter.")
 	public void testParseHelpTwiceFail() {
 		final CmdlineParser cp = new CmdlineParser(new Config4());
 		cp.parse(new String[] { "--help", "--help" });
