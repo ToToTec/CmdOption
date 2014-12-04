@@ -23,13 +23,37 @@ public class DefaultUsageFormatter implements UsageFormatter {
 	private int colSpace = 2;
 	private int col1Prefix = 2;
 
-	public DefaultUsageFormatter(final boolean withCommandDetails) {
-		this(withCommandDetails, 80);
+	private volatile LineLengthDetector lineLengthDetector;
+
+	public DefaultUsageFormatter(final boolean withCommandDetails, final int lineLength,
+			final LineLengthDetector lineLengthDetector) {
+		this.withCommandDetails = withCommandDetails;
+		this.lineLengthDetector = lineLengthDetector;
+		this.lineLength = lineLength;
 	}
 
 	public DefaultUsageFormatter(final boolean withCommandDetails, final int lineLength) {
-		this.withCommandDetails = withCommandDetails;
-		this.lineLength = lineLength;
+		this(withCommandDetails, lineLength, null);
+	}
+
+	public DefaultUsageFormatter(final boolean withCommandDetails) {
+		this(withCommandDetails, 80, null);
+	}
+
+	protected int getLineLength() {
+		if (lineLengthDetector != null) {
+			synchronized (this) {
+				if (lineLengthDetector != null) {
+					final Integer detectedLength = lineLengthDetector.detectOrNull();
+					if (detectedLength != null) {
+						lineLength = detectedLength.intValue();
+					}
+					// do it only once
+					lineLengthDetector = null;
+				}
+			}
+		}
+		return lineLength;
 	}
 
 	protected String translate(final ResourceBundle resourceBundle, final String string) {
@@ -183,7 +207,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 			output.append(title).append("\n");
 		}
 
-		formatTable(output, optionsToFormat, col1Prefix, colSpace, lineLength);
+		formatTable(output, optionsToFormat, col1Prefix, colSpace, getLineLength());
 	}
 
 	protected void formatCommands(final StringBuilder output, final List<CommandHandle> commands, final String title,
@@ -202,7 +226,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 			commandsToFormat.add(new String[] { commandNames, translate(resourceBundle, option.getDescription()) });
 		}
 
-		formatTable(output, commandsToFormat, col1Prefix, colSpace, lineLength);
+		formatTable(output, commandsToFormat, col1Prefix, colSpace, getLineLength());
 	}
 
 	public static void mkSpace(final StringBuilder output, final int space) {

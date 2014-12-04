@@ -94,7 +94,7 @@ public class CmdlineParser {
 	private String defaultCommandName = null;
 
 	private final Map<Class<? extends CmdOptionHandler>, CmdOptionHandler> handlerRegistry;
-	private UsageFormatter usageFormatter = new DefaultUsageFormatter(true);
+	private UsageFormatter usageFormatter;
 	private String programName;
 	private String parsedCommandName;
 	private String aboutLine;
@@ -117,8 +117,9 @@ public class CmdlineParser {
 		handlerRegistry = parent.handlerRegistry;
 		resourceBundle = parent.resourceBundle;
 		argsFromFilePrefix = parent.argsFromFilePrefix;
+		usageFormatter = parent.usageFormatter;
 
-		//  TODO: should we set the commands description as about line?
+		// TODO: should we set the commands description as about line?
 
 		scanOptions(commandObject);
 	}
@@ -137,6 +138,8 @@ public class CmdlineParser {
 	public CmdlineParser(final Object... objects) {
 		parent = null;
 		programName = "<main class>";
+		usageFormatter = new DefaultUsageFormatter(true, 80, new TtyLineLengthDetector());
+
 		// ensure order by using a LinkedHashMap
 		handlerRegistry = new LinkedHashMap<Class<? extends CmdOptionHandler>, CmdOptionHandler>();
 
