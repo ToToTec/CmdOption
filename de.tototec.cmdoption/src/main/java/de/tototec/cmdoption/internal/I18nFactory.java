@@ -1,4 +1,4 @@
-package de.tototec.cmdoption;
+package de.tototec.cmdoption.internal;
 
 import java.text.MessageFormat;
 import java.util.Locale;

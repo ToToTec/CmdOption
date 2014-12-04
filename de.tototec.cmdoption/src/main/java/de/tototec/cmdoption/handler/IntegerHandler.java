@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import de.tototec.cmdoption.I18n;
+import de.tototec.cmdoption.internal.I18n;
 
 /**
  * Apply an one-arg option to a {@link Integer} (or <code>int</code>) field or

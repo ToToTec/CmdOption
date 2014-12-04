@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import de.tototec.cmdoption.internal.FList;
+import de.tototec.cmdoption.internal.I18n;
+import de.tototec.cmdoption.internal.I18nFactory;
+
 public class DefaultUsageFormatter implements UsageFormatter {
 
 	private final I18n i18n = I18nFactory.getI18n(DefaultUsageFormatter.class);
@@ -115,13 +119,13 @@ public class DefaultUsageFormatter implements UsageFormatter {
 						output,
 						commandOptions,
 						"\n" + i18n.tr("Options for command:") + " "
-								+ Util.mkString(command.getNames(), null, ", ", null), cmdlineModel.getResourceBundle());
+								+ FList.mkString(command.getNames(), ", "), cmdlineModel.getResourceBundle());
 
 				formatParameter(
 						output,
 						command.getCmdlineParser().getCmdlineModel().getParameter(),
 						"\n" + i18n.tr("Parameter for command:") + " "
-								+ Util.mkString(command.getNames(), null, ", ", null), cmdlineModel.getResourceBundle());
+								+ FList.mkString(command.getNames(), ", "), cmdlineModel.getResourceBundle());
 			}
 		}
 
@@ -139,7 +143,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 		output.append(title).append("\n");
 		mkSpace(output, col1Prefix);
 		final String[] translatedArgs = translate(resourceBundle, parameter.getArgs());
-		output.append(Util.mkString(translatedArgs, null, " ", null));
+		output.append(FList.mkString(translatedArgs, " "));
 		if (parameter.getDescription() != null) {
 			mkSpace(output, colSpace);
 			output.append(MessageFormat.format(translate(resourceBundle, parameter.getDescription()),
@@ -161,9 +165,9 @@ public class DefaultUsageFormatter implements UsageFormatter {
 				continue;
 			}
 			hasOptions = true;
-			final String optionNames = Util.mkString(option.getNames(), null, ",", null);
+			final String optionNames = FList.mkString(option.getNames(), ",");
 			final String[] translatedArgs = translate(resourceBundle, option.getArgs());
-			final String argNames = Util.mkString(translatedArgs, null, " ", null);
+			final String argNames = FList.mkString(translatedArgs, " ");
 			optionsToFormat
 			.add(new String[] {
 					optionNames + (argNames.length() == 0 ? "" : (" " + argNames)),
@@ -194,7 +198,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 
 		final LinkedList<String[]> commandsToFormat = new LinkedList<String[]>();
 		for (final CommandHandle option : commands) {
-			final String commandNames = Util.mkString(option.getNames(), null, ",", null);
+			final String commandNames = FList.mkString(option.getNames(), ",");
 			commandsToFormat.add(new String[] { commandNames, translate(resourceBundle, option.getDescription()) });
 		}
 

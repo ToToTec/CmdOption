@@ -1,5 +1,10 @@
 package de.tototec.cmdoption;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -27,6 +32,13 @@ import de.tototec.cmdoption.handler.IntegerHandler;
 import de.tototec.cmdoption.handler.PutIntoMapHandler;
 import de.tototec.cmdoption.handler.StringFieldHandler;
 import de.tototec.cmdoption.handler.StringMethodHandler;
+import de.tototec.cmdoption.internal.F1;
+import de.tototec.cmdoption.internal.FList;
+import de.tototec.cmdoption.internal.I18n;
+import de.tototec.cmdoption.internal.I18nFactory;
+import de.tototec.cmdoption.internal.Logger;
+import de.tototec.cmdoption.internal.LoggerFactory;
+import de.tototec.cmdoption.internal.Optional;
 
 /**
  * CmdOption main entry point to configure the parser, parse the command line
@@ -95,11 +107,18 @@ public class CmdlineParser {
 
 	private ResourceBundle resourceBundle;
 
+	private Optional<String> argsFromFilePrefix = Optional.some("@");
+
 	protected CmdlineParser(final CmdlineParser parent, final String commandName, final Object commandObject) {
 		this.parent = parent;
+		debugAllowed = parent.debugAllowed;
 		debugMode = parent.debugMode;
 		programName = commandName;
 		handlerRegistry = parent.handlerRegistry;
+		resourceBundle = parent.resourceBundle;
+		argsFromFilePrefix = parent.argsFromFilePrefix;
+
+		//  TODO: should we set the commands description as about line?
 
 		scanOptions(commandObject);
 	}
@@ -112,7 +131,8 @@ public class CmdlineParser {
 	 * {@link #addObject(Object...)} method after you registered the desired set
 	 * of handlers.
 	 *
-	 * @param objects The configuration objects containing supported annotations.
+	 * @param objects
+	 *            The configuration objects containing supported annotations.
 	 */
 	public CmdlineParser(final Object... objects) {
 		parent = null;
@@ -201,13 +221,13 @@ public class CmdlineParser {
 	private String debugState(final String prefix) {
 		return prefix + "Parameter: " + parameter
 				+ "\n" + prefix + "Options: "
-				+ Util.mkString(options, "\n" + prefix + "  ", ",\n" + prefix + "  ", null)
+				+ FList.mkString(options, "\n" + prefix + "  ", ",\n" + prefix + "  ", "")
 				+ "\n" + prefix + "Commands: "
-				+ Util.mkString(commands, "\n" + prefix + "  ", ",\n" + prefix + "  ", null)
+				+ FList.mkString(commands, "\n" + prefix + "  ", ",\n" + prefix + "  ", "")
 				+ "\n" + prefix + "ResourceBundle: " + resourceBundle
 				+ "\n" + prefix + "Locale: " + (resourceBundle == null ? null : resourceBundle.getLocale())
 				+ "\n" + prefix + "CmdOptionHandlers: "
-				+ Util.mkString(handlerRegistry.entrySet(), "\n" + prefix + "  ", "\n" + prefix + "  ", null);
+				+ FList.mkString(handlerRegistry.entrySet(), "\n" + prefix + "  ", "\n" + prefix + "  ", "");
 	}
 
 	public void parse(final boolean dryrun, final boolean detectHelpAndSkipValidation, String... cmdline) {
@@ -221,6 +241,47 @@ public class CmdlineParser {
 			throw new CmdlineParserException(null, msg, defaultCommandName);
 		}
 
+		// Avoid null access
+		cmdline = cmdline == null ? new String[] {} : cmdline;
+
+		if (argsFromFilePrefix.isDefined()) {
+			cmdline = FList.flatMap(cmdline, new F1<String, List<String>>() {
+				@Override
+				public List<String> apply(final String arg) {
+					if (arg.startsWith(argsFromFilePrefix.get())) {
+						debug("Expanding {0} into argument list", arg);
+						final File file = new File(arg.substring(1));
+						if (file.exists() && file.isFile()) {
+							try {
+								final BufferedReader reader = new BufferedReader(new FileReader(file));
+								final List<String> args = new LinkedList<String>();
+								String line;
+								while ((line = reader.readLine()) != null) {
+									// if (line.trim().length() > 0) {
+									args.add(line);
+									// }
+								}
+								reader.close();
+								return args;
+							} catch (final FileNotFoundException e) {
+								throw new CmdlineParserException(
+										MessageFormat.format("File referenced via {0} does not exist.", arg), e);
+							} catch (final IOException e) {
+								throw new CmdlineParserException(
+										MessageFormat.format("File referenced via {0} could not be read.", arg), e);
+							}
+						} else {
+							throw new CmdlineParserException(
+									MessageFormat.format("File referenced via {0} does not exist.", arg));
+						}
+					} else {
+						return Arrays.asList(arg);
+					}
+				}
+			}).toArray(new String[0]);
+
+		}
+
 		if (!dryrun) {
 			debug("Parsing...");
 			// Check without applying anything
@@ -230,9 +291,6 @@ public class CmdlineParser {
 		if (dryrun) {
 			validateOptions();
 		}
-
-		// Avoid null access
-		cmdline = cmdline == null ? new String[] {} : cmdline;
 
 		// Should be set to false, if an stopOption was found and parsing of
 		// options is no longer allowed
@@ -276,9 +334,9 @@ public class CmdlineParser {
 					throw new CmdlineParserException(
 							null,
 							I18n.marktr("Missing arguments(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}."),
-							Util.mkString(
+							FList.mkString(
 									Arrays.asList(optionHandle.getArgs()).subList(cmdline.length - index - 1,
-											optionHandle.getArgsCount()), null, ", ", null), param, optionHandle
+											optionHandle.getArgsCount()), ", "), param, optionHandle
 											.getArgsCount(), cmdline.length - index - 1);
 				}
 				// slurp next cmdline arguments into option arguments
@@ -356,7 +414,7 @@ public class CmdlineParser {
 
 				if (!dryrun) {
 					try {
-						debug("Apply main parameter from parameters: {0}", Util.mkString(optionArgs, null, ", ", null));
+						debug("Apply main parameter from parameters: {0}", FList.mkString(optionArgs, ", "));
 						final boolean origAccessibleFlag = element.isAccessible();
 						if (!origAccessibleFlag) {
 							element.setAccessible(true);
@@ -405,9 +463,9 @@ public class CmdlineParser {
 					final Object[] msgArgsTr;
 					if (option.getNames() == null || option.getNames().length == 0) {
 						msg = I18n.marktr("Main parameter \"{0}\" was given {1} times, but must be given {2} times");
-						msgArgs = new Object[] { Util.mkString(option.getArgs(), null, " ", null), count,
+						msgArgs = new Object[] { FList.mkString(option.getArgs(), " "), count,
 								MessageFormat.format(rangeMsg, rangeArgs) };
-						msgArgsTr = new Object[] { Util.mkString(option.getArgs(), null, " ", null), count,
+						msgArgsTr = new Object[] { FList.mkString(option.getArgs(), " "), count,
 								i18n.tr(rangeMsg, rangeArgs) };
 					} else {
 						msg = I18n.marktr("Option \"{0}\" was given {1} times, but must be given {2} times");
@@ -742,7 +800,7 @@ public class CmdlineParser {
 			if (handler == null) {
 				throw new CmdlineParserException(null,
 						I18n.marktr("No suitable handler found for option(s): {0} ({1} argument(s))"),
-						Util.mkString(anno.names(), "", ",", ""),
+						FList.mkString(anno.names(), ","),
 						anno.args().length);
 				// if (handler == null) {
 				// throw new CmdlineParserException(null,
@@ -879,6 +937,26 @@ public class CmdlineParser {
 
 	public void setResourceBundle(final ResourceBundle resourceBundle) {
 		this.resourceBundle = resourceBundle;
+	}
+
+	/**
+	 * Set the argument prefix used to mark a cmdline argument as file which
+	 * contains more commandline parameters. If not changed, this is by default
+	 * the <code>"@"</code> sign. You can also disable this feature by setting
+	 * <code>null</code> or the empty string.
+	 *
+	 * The file contains additional arguments, each one on a new line.
+	 *
+	 * @param prefix
+	 *            The prefix to mark an argument as arguments-file or
+	 *            <code>null</code> to disable the feature.
+	 */
+	public void setReadArgsFromFilePrefix(final String prefix) {
+		if (prefix == null || prefix.trim().isEmpty()) {
+			argsFromFilePrefix = Optional.none();
+		} else {
+			argsFromFilePrefix = Optional.some(prefix.trim());
+		}
 	}
 
 }

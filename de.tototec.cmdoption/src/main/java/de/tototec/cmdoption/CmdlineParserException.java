@@ -2,6 +2,8 @@ package de.tototec.cmdoption;
 
 import java.text.MessageFormat;
 
+import de.tototec.cmdoption.internal.I18nFactory;
+
 public class CmdlineParserException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
