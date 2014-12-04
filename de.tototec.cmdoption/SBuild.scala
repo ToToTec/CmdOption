@@ -26,7 +26,7 @@ class SBuild(implicit _project: Project) {
       "mvn:org.slf4j:slf4j-api:1.7.5" ~
       "mvn:ch.qos.logback:logback-core:1.1.0" ~
       "mvn:ch.qos.logback:logback-classic:1.1.0" ~
-      "http://dl.bintray.com/lefou/poor-mans-lambda-test/de/tobiasroeser/de.tobiasroeser.lambdatest/0.0.3/de.tobiasroeser.lambdatest-0.0.3.jar"
+      "mvn:de.tototec:de.tobiasroeser.lambdatest:0.0.3"
 
   ExportDependencies("eclipse.classpath", compileCp ~ testCp)
 
