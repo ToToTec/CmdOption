@@ -481,8 +481,8 @@ CmdOption is build with http://sbuild.org/[SBuild].
 
 Have a look at some other projects I'm involved with:
 
-* [https://github.com/ToToTec/de.tototec.utils.functional[Functional Utils] - Functional Utility Classes for working with Java 5+ 
-* [https://github.com/lefou/poor-mans-lambda-test/[Poor Mans Lambda Test] - Minimal Java8 Lambda enabled testing for TestNG
+* https://github.com/ToToTec/de.tototec.utils.functional[Functional Utils] - Functional Utility Classes for working with Java 5+ 
+* https://github.com/lefou/poor-mans-lambda-test/[Poor Mans Lambda Test] - Minimal Java8 Lambda enabled testing for TestNG
 * http://sbuild.org[SBuild] - A Scala-based build tool
 
 == ChangeLog
