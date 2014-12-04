@@ -9,9 +9,15 @@ public abstract class I18n {
 		return string;
 	}
 
-	public static String marktrc(String context, String msgid) {
+	public static String marktrc(final String context, final String msgid) {
 		// Placeholder to allow mark of translatable strings.
 		return msgid;
+	}
+
+	public interface PreparedI18n {
+		String notr();
+
+		String tr();
 	}
 
 	public abstract String tr(final String msg, final Object... params);
@@ -21,6 +27,8 @@ public abstract class I18n {
 	public abstract String trc(String context, String msgid, Object... params);
 
 	public abstract String trcn(String context, String msgid, String msgidPlural, long n, Object... params);
+
+	public abstract PreparedI18n preparetr(final String msg, final Object... params);
 
 	public abstract Locale getLocale();
 

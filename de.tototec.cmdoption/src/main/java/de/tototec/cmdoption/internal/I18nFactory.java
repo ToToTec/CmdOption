@@ -45,6 +45,27 @@ public abstract class I18nFactory {
 			}
 
 			@Override
+			public PreparedI18n preparetr(final String msg, final Object... params) {
+				final I18n outer = this;
+				return new PreparedI18n() {
+
+					@Override
+					public String tr() {
+						return outer.tr(msg, params);
+					}
+
+					@Override
+					public String notr() {
+						if (params != null && params.length > 0) {
+							return MessageFormat.format(msg, params);
+						} else {
+							return msg;
+						}
+					}
+				};
+			}
+
+			@Override
 			public Locale getLocale() {
 				return locale;
 			}

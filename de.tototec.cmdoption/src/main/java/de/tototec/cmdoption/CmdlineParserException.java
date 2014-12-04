@@ -27,11 +27,6 @@ public class CmdlineParserException extends RuntimeException {
 		super(message);
 	}
 
-	public CmdlineParserException(final Throwable cause, final String message, final Object... params) {
-		this(params == null || params.length == 0 ? message : MessageFormat.format(message, params), cause, I18nFactory
-				.getI18n(CmdlineParserException.class).tr(message, params));
-	}
-
 	@Override
 	public String getLocalizedMessage() {
 		return localizedMessage == null ? getMessage() : localizedMessage;

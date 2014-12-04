@@ -35,6 +35,7 @@ import de.tototec.cmdoption.handler.StringMethodHandler;
 import de.tototec.cmdoption.internal.F1;
 import de.tototec.cmdoption.internal.FList;
 import de.tototec.cmdoption.internal.I18n;
+import de.tototec.cmdoption.internal.I18n.PreparedI18n;
 import de.tototec.cmdoption.internal.I18nFactory;
 import de.tototec.cmdoption.internal.Logger;
 import de.tototec.cmdoption.internal.LoggerFactory;
@@ -240,8 +241,9 @@ public class CmdlineParser {
 		}
 
 		if (defaultCommandName != null && !quickCommandMap.containsKey(defaultCommandName)) {
-			final String msg = I18n.marktr("Default command \"{0}\" is not a known command.");
-			throw new CmdlineParserException(null, msg, defaultCommandName);
+			final PreparedI18n msg = i18n.preparetr("Default command \"{0}\" is not a known command.",
+					defaultCommandName);
+			throw new CmdlineParserException(msg.notr(), null, msg.tr());
 		}
 
 		// Avoid null access
@@ -334,13 +336,13 @@ public class CmdlineParser {
 				}
 
 				if (cmdline.length <= index + optionHandle.getArgsCount()) {
-					throw new CmdlineParserException(
-							null,
-							I18n.marktr("Missing arguments(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}."),
+					final PreparedI18n msg = i18n.preparetr(
+							"Missing arguments(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}.",
 							FList.mkString(
 									Arrays.asList(optionHandle.getArgs()).subList(cmdline.length - index - 1,
 											optionHandle.getArgsCount()), ", "), param, optionHandle
 											.getArgsCount(), cmdline.length - index - 1);
+					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				// slurp next cmdline arguments into option arguments
 				final String[] optionArgs = Arrays.copyOfRange(cmdline, index + 1,
@@ -364,9 +366,9 @@ public class CmdlineParser {
 					} catch (final CmdOptionHandlerException e) {
 						throw new CmdlineParserException(e.getMessage(), e, e.getLocalizedMessage());
 					} catch (final Exception e) {
-						throw new CmdlineParserException(e,
-								I18n.marktr("Could not apply parameters {0} to field/method {1}"),
+						final PreparedI18n msg = i18n.preparetr("Could not apply parameters {0} to field/method {1}",
 								Arrays.toString(optionArgs), element);
+						throw new CmdlineParserException(msg.notr(), e, msg.tr());
 					}
 				}
 			} else if (parseOptions && quickCommandMap.containsKey(param)) {
@@ -402,10 +404,11 @@ public class CmdlineParser {
 
 				if (cmdline.length <= index + parameter.getArgsCount() - 1) {
 					final int countOfGivenParams = cmdline.length - index;
-					throw new CmdlineParserException(null,
-							I18n.marktr("Missing arguments: {0} Parameter requires {1} arguments, but you gave {2}."),
+					final PreparedI18n msg = i18n.preparetr(
+							"Missing arguments: {0} Parameter requires {1} arguments, but you gave {2}.",
 							Arrays.asList(parameter.getArgs()).subList(countOfGivenParams, parameter.getArgsCount()),
 							parameter.getArgsCount(), countOfGivenParams);
+					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				// slurp next cmdline arguments into option arguments
 				final String[] optionArgs = Arrays.copyOfRange(cmdline, index, index + parameter.getArgsCount());
@@ -430,14 +433,15 @@ public class CmdlineParser {
 					} catch (final CmdOptionHandlerException e) {
 						throw new CmdlineParserException(e.getMessage(), e, e.getLocalizedMessage());
 					} catch (final Exception e) {
-						throw new CmdlineParserException(e,
-								I18n.marktr("Could not apply parameters {0} to field/method {1}"),
+						final PreparedI18n msg = i18n.preparetr("Could not apply parameters {0} to field/method {1}",
 								Arrays.toString(optionArgs), element);
+						throw new CmdlineParserException(msg.notr(), e, msg.tr());
 					}
 				}
 
 			} else {
-				throw new CmdlineParserException(null, I18n.marktr("Unsupported option or parameter found: {0}"), param);
+				final PreparedI18n msg = i18n.preparetr("Unsupported option or parameter found: {0}", param);
+				throw new CmdlineParserException(msg.notr(), msg.tr());
 			}
 		}
 
@@ -497,9 +501,10 @@ public class CmdlineParser {
 							if (reqOptionCount == null || reqOptionCount.intValue() <= 0) {
 								// required option was not called, this is an
 								// error
-								throw new CmdlineParserException(null,
-										I18n.marktr("When using option \"{0}\" also option \"{1}\" must be given."),
+								final PreparedI18n msg = i18n.preparetr(
+										"When using option \"{0}\" also option \"{1}\" must be given.",
 										calledOption.getNames()[0], required);
+								throw new CmdlineParserException(msg.notr(), msg.tr());
 							}
 						}
 					}
@@ -516,9 +521,10 @@ public class CmdlineParser {
 							if (conflictOptionCount != null && conflictOptionCount.intValue() > 0) {
 								// conflicting option was called, this is an
 								// conflict
-								throw new CmdlineParserException(null,
-										I18n.marktr("Options \"{0}\" and \"{1}\" cannot be used at the same time."),
+								final PreparedI18n msg = i18n.preparetr(
+										"Options \"{0}\" and \"{1}\" cannot be used at the same time.",
 										calledOption.getNames()[0], conflict);
+								throw new CmdlineParserException(msg.notr(), msg.tr());
 							}
 						}
 					}
@@ -554,8 +560,8 @@ public class CmdlineParser {
 				try {
 					dedicatedHandler = cmdOptionHandlerType.newInstance();
 				} catch (final Exception e) {
-					throw new CmdlineParserException(e, I18n.marktr("Could not create handler: {0}"),
-							cmdOptionHandlerType);
+					final PreparedI18n msg = i18n.preparetr("Could not create handler: {0}", cmdOptionHandlerType);
+					throw new CmdlineParserException(msg.notr(), e, msg.tr());
 				}
 				// not registering this handler because self-introduced handler
 				// (only in a specific annotation) should not be made available
@@ -601,7 +607,8 @@ public class CmdlineParser {
 		final String[] names = commandAnno.names();
 
 		if (names == null || names.length == 0) {
-			throw new CmdlineParserException(null, I18n.marktr("Command found without required name in: {0}"), object);
+			final PreparedI18n msg = i18n.preparetr("Command found without required name in: {0}", object);
+			throw new CmdlineParserException(msg.notr(), null, msg.tr());
 		}
 
 		final CmdlineParser subCmdlineParser = new CmdlineParser(this, names[0], object);
@@ -611,8 +618,9 @@ public class CmdlineParser {
 
 		for (final String name : names) {
 			if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
-				throw new CmdlineParserException(null,
-						I18n.marktr("Duplicate command/option name \"{0}\" found in: {1}"), name, object);
+				final PreparedI18n msg = i18n.preparetr("Duplicate command/option name \"{0}\" found in: {1}", name,
+						object);
+				throw new CmdlineParserException(msg.notr(), msg.tr());
 			}
 			quickCommandMap.put(name, command);
 		}
@@ -627,24 +635,25 @@ public class CmdlineParser {
 					// required option does not exists
 					final String optionName = optionHandle.getNames() == null ? "<no name>"
 							: optionHandle.getNames()[0];
-
-					throw new CmdlineParserException(null,
-							I18n.marktr("The option \"{0}\" requires the unknown/missing option \"{1}\"."), optionName,
+					final PreparedI18n msg = i18n.preparetr(
+							"The option \"{0}\" requires the unknown/missing option \"{1}\".", optionName,
 							reqOptionName);
+					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 			}
 			for (final String conflictOptionName : optionHandle.getConflictsWith()) {
 				final String optionName = optionHandle.getNames() == null ? "<no name>" : optionHandle.getNames()[0];
 				if (Arrays.asList(optionHandle.getNames()).contains(conflictOptionName)) {
-					throw new CmdlineParserException(null,
-							I18n.marktr("Option \"{0}\" is configured to conflicts with itself."), optionName);
+					final PreparedI18n msg = i18n.preparetr("Option \"{0}\" is configured to conflicts with itself.",
+							optionName);
+					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				if (quickOptionMap.get(conflictOptionName) == null) {
 					// required option does not exists
-
-					throw new CmdlineParserException(null,
-							I18n.marktr("The option \"{0}\" conflicts with a unknown/missing option \"{1}\"."),
+					final PreparedI18n msg = i18n.preparetr(
+							"The option \"{0}\" conflicts with a unknown/missing option \"{1}\".",
 							optionName, conflictOptionName);
+					throw new CmdlineParserException(msg.notr(), msg.tr());
 
 				}
 			}
@@ -794,35 +803,23 @@ public class CmdlineParser {
 			}
 
 			final String[] names = anno.names();
-			// The Interface itself means to specified handler
-			// final Class<? extends CmdOptionHandler> annoHandlerType =
-			// anno.handler() == CmdOptionHandler.class ? null
-			// : anno.handler();
 
 			final CmdOptionHandler handler = findHandler(element, anno.args().length, anno.handler());
 			if (handler == null) {
-				throw new CmdlineParserException(null,
-						I18n.marktr("No suitable handler found for option(s): {0} ({1} argument(s))"),
+				final PreparedI18n msg = i18n.preparetr(
+						"No suitable handler found for option(s): {0} ({1} argument(s))",
 						FList.mkString(anno.names(), ","),
 						anno.args().length);
-				// if (handler == null) {
-				// throw new CmdlineParserException(null,
-				// I18n.marktr("No suitable handler found for option: {0}"),
-				// param);
-				// }
-
-				// debug("No handler found for annotated element: {0}",
-				// element);
-				// continue;
+				throw new CmdlineParserException(msg.notr(), null, msg.tr());
 			}
 
 			if (names == null || names.length == 0) {
 				// No names means this is the ONLY parameter
 				if (parameter != null) {
-					throw new CmdlineParserException(
-							null,
-							I18n.marktr("More than one parameter definition found. First definition: {0} Second definition: {1}"),
+					final PreparedI18n msg = i18n.preparetr(
+							"More than one parameter definition found. First definition: {0} Second definition: {1}",
 							parameter.getElement(), element);
+					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				// TODO: should we ignore the help parameter?
 				final OptionHandle paramHandle = new OptionHandle(new String[] {}, anno.description(), handler,
@@ -836,8 +833,8 @@ public class CmdlineParser {
 						 anno.requires(), anno.conflictsWith());
 
 				if (paramHandle.getArgsCount() <= 0) {
-					throw new CmdlineParserException(null,
-							I18n.marktr("Parameter definition must support at least on argument."));
+					final PreparedI18n msg = i18n.preparetr("Parameter definition must support at least on argument.");
+					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				parameter = paramHandle;
 
@@ -848,8 +845,9 @@ public class CmdlineParser {
 
 				for (final String name : names) {
 					if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
-						throw new CmdlineParserException(null,
-								I18n.marktr("Duplicate command/option name \"{0}\" found in: {1}"), name, element);
+						final PreparedI18n msg = i18n.preparetr("Duplicate command/option name \"{0}\" found in: {1}",
+								name, element);
+						throw new CmdlineParserException(msg.notr(), msg.tr());
 					}
 					quickOptionMap.put(name, option);
 				}
