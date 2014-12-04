@@ -111,9 +111,14 @@ public class CmdlineParser {
 
 	protected CmdlineParser(final CmdlineParser parent, final String commandName, final Object commandObject) {
 		this.parent = parent;
+		debugAllowed = parent.debugAllowed;
 		debugMode = parent.debugMode;
 		programName = commandName;
 		handlerRegistry = parent.handlerRegistry;
+		resourceBundle = parent.resourceBundle;
+		argsFromFilePrefix = parent.argsFromFilePrefix;
+
+		//  TODO: should we set the commands description as about line?
 
 		scanOptions(commandObject);
 	}
@@ -932,6 +937,26 @@ public class CmdlineParser {
 
 	public void setResourceBundle(final ResourceBundle resourceBundle) {
 		this.resourceBundle = resourceBundle;
+	}
+
+	/**
+	 * Set the argument prefix used to mark a cmdline argument as file which
+	 * contains more commandline parameters. If not changed, this is by default
+	 * the <code>"@"</code> sign. You can also disable this feature by setting
+	 * <code>null</code> or the empty string.
+	 *
+	 * The file contains additional arguments, each one on a new line.
+	 *
+	 * @param prefix
+	 *            The prefix to mark an argument as arguments-file or
+	 *            <code>null</code> to disable the feature.
+	 */
+	public void setReadArgsFromFilePrefix(final String prefix) {
+		if (prefix == null || prefix.trim().isEmpty()) {
+			argsFromFilePrefix = Optional.none();
+		} else {
+			argsFromFilePrefix = Optional.some(prefix.trim());
+		}
 	}
 
 }
