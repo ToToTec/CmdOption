@@ -8,6 +8,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
+import de.tototec.cmdoption.internal.I18n;
+import de.tototec.cmdoption.internal.I18n.PreparedI18n;
+import de.tototec.cmdoption.internal.I18nFactory;
+
 public class UrlHandler implements CmdOptionHandler {
 
 	public boolean canHandle(final AccessibleObject element, final int argCount) {
@@ -33,11 +37,15 @@ public class UrlHandler implements CmdOptionHandler {
 				((Method) element).invoke(config, url);
 			}
 		} catch (final MalformedURLException e) {
-			throw new CmdOptionHandlerException("Invalid url: \"" + args[0] + "\"", e);
+			final I18n i18n = I18nFactory.getI18n(UrlHandler.class);
+			final PreparedI18n msg = i18n.preparetr("Invalid url: \"{0}\"", args[0]);
+			throw new CmdOptionHandlerException(msg.notr(), e, msg.tr());
 		} catch (final Exception e) {
 			// TODO better message
-			throw new CmdOptionHandlerException("Could not apply parameters: " + Arrays.toString(args)
-					+ " to field/method " + element, e);
+			final I18n i18n = I18nFactory.getI18n(UrlHandler.class);
+			final PreparedI18n msg = i18n.preparetr("Could not apply parameters: {0} to field/method {1}",
+					Arrays.toString(args), element);
+			throw new CmdOptionHandlerException(msg.notr(), e, msg.tr());
 		}
 
 	}

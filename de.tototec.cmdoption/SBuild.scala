@@ -82,7 +82,10 @@ class SBuild(implicit _project: Project) {
       failOnError = true,
       executable = "xgettext",
       args = Array[String](
-        "-ktr", "-kmarktr",
+        "-ktr", "-kmarktr", "-kpreparetr",
+        // "--sort-output",
+        "--sort-by-file",
+        "--no-wrap",
         "--directory", new File(srcDirUri).getPath,
         "--output-dir", ctx.targetFile.get.getParent,
         "--output", ctx.targetFile.get.getName) ++ "scan:src/main/java".files.map(file => srcDirUri.relativize(file.toURI).getPath)

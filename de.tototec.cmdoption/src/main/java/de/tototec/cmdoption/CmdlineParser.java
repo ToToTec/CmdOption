@@ -243,7 +243,7 @@ public class CmdlineParser {
 		if (defaultCommandName != null && !quickCommandMap.containsKey(defaultCommandName)) {
 			final PreparedI18n msg = i18n.preparetr("Default command \"{0}\" is not a known command.",
 					defaultCommandName);
-			throw new CmdlineParserException(msg.notr(), null, msg.tr());
+			throw new CmdlineParserException(msg.notr(), msg.tr());
 		}
 
 		// Avoid null access
@@ -269,15 +269,16 @@ public class CmdlineParser {
 								reader.close();
 								return args;
 							} catch (final FileNotFoundException e) {
-								throw new CmdlineParserException(
-										MessageFormat.format("File referenced via {0} does not exist.", arg), e);
+								final PreparedI18n msg = i18n.preparetr("File referenced via {0} does not exist.", arg);
+								throw new CmdlineParserException(msg.notr(), e, msg.tr());
 							} catch (final IOException e) {
-								throw new CmdlineParserException(
-										MessageFormat.format("File referenced via {0} could not be read.", arg), e);
+								final PreparedI18n msg = i18n.preparetr("File referenced via {0} could not be read.",
+										arg);
+								throw new CmdlineParserException(msg.notr(), e, msg.tr());
 							}
 						} else {
-							throw new CmdlineParserException(
-									MessageFormat.format("File referenced via {0} does not exist.", arg));
+							final PreparedI18n msg = i18n.preparetr("File referenced via {0} does not exist.", arg);
+							throw new CmdlineParserException(msg.notr(), msg.tr());
 						}
 					} else {
 						return Arrays.asList(arg);
@@ -451,18 +452,15 @@ public class CmdlineParser {
 				final OptionHandle option = optionC.getKey();
 				final Integer count = optionC.getValue();
 				if (count < option.getMinCount() || (option.getMaxCount() > 0 && count > option.getMaxCount())) {
-					final String rangeMsg;
-					final Object[] rangeArgs;
+					final PreparedI18n rangeMsg;
 					if (option.getMaxCount() < 0) {
-						rangeMsg = I18n.marktr("at least {0}");
-						rangeArgs = new Object[] { option.getMinCount() };
+						rangeMsg = i18n.preparetr("at least {0}", option.getMinCount());
 					} else {
 						if (option.getMinCount() == option.getMaxCount()) {
-							rangeMsg = I18n.marktr("exactly {0}");
-							rangeArgs = new Object[] { option.getMinCount() };
+							rangeMsg = i18n.preparetr("exactly {0}", option.getMinCount());
 						} else {
-							rangeMsg = I18n.marktr("between {0} and {1}");
-							rangeArgs = new Object[] { option.getMinCount(), option.getMaxCount() };
+							rangeMsg = i18n.preparetr("between {0} and {1}",
+									option.getMinCount(), option.getMaxCount());
 						}
 					}
 					final String msg;
@@ -470,14 +468,12 @@ public class CmdlineParser {
 					final Object[] msgArgsTr;
 					if (option.getNames() == null || option.getNames().length == 0) {
 						msg = I18n.marktr("Main parameter \"{0}\" was given {1} times, but must be given {2} times");
-						msgArgs = new Object[] { FList.mkString(option.getArgs(), " "), count,
-								MessageFormat.format(rangeMsg, rangeArgs) };
-						msgArgsTr = new Object[] { FList.mkString(option.getArgs(), " "), count,
-								i18n.tr(rangeMsg, rangeArgs) };
+						msgArgs = new Object[] { FList.mkString(option.getArgs(), " "), count, rangeMsg.notr() };
+						msgArgsTr = new Object[] { FList.mkString(option.getArgs(), " "), count, rangeMsg.tr() };
 					} else {
 						msg = I18n.marktr("Option \"{0}\" was given {1} times, but must be given {2} times");
-						msgArgs = new Object[] { option.getNames()[0], count, MessageFormat.format(rangeMsg, rangeArgs) };
-						msgArgsTr = new Object[] { option.getNames()[0], count, i18n.tr(rangeMsg, rangeArgs) };
+						msgArgs = new Object[] { option.getNames()[0], count, rangeMsg.notr() };
+						msgArgsTr = new Object[] { option.getNames()[0], count, rangeMsg.tr() };
 					}
 					throw new CmdlineParserException(MessageFormat.format(msg, msgArgs), i18n.tr(msg, msgArgsTr));
 				}
@@ -608,7 +604,7 @@ public class CmdlineParser {
 
 		if (names == null || names.length == 0) {
 			final PreparedI18n msg = i18n.preparetr("Command found without required name in: {0}", object);
-			throw new CmdlineParserException(msg.notr(), null, msg.tr());
+			throw new CmdlineParserException(msg.notr(), msg.tr());
 		}
 
 		final CmdlineParser subCmdlineParser = new CmdlineParser(this, names[0], object);
@@ -810,7 +806,7 @@ public class CmdlineParser {
 						"No suitable handler found for option(s): {0} ({1} argument(s))",
 						FList.mkString(anno.names(), ","),
 						anno.args().length);
-				throw new CmdlineParserException(msg.notr(), null, msg.tr());
+				throw new CmdlineParserException(msg.notr(), msg.tr());
 			}
 
 			if (names == null || names.length == 0) {

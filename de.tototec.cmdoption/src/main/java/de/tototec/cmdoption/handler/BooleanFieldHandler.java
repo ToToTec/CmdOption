@@ -4,6 +4,10 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import de.tototec.cmdoption.internal.I18n;
+import de.tototec.cmdoption.internal.I18n.PreparedI18n;
+import de.tototec.cmdoption.internal.I18nFactory;
+
 /**
  * Apply an one-arg option to a {@link Boolean} (or <code>boolean</code>) field.
  * Evaluated the argument to <code>true</code> if it is "true", "on" or "1".
@@ -79,14 +83,18 @@ public class BooleanFieldHandler implements CmdOptionHandler {
 		}
 
 		if (decission == null) {
-			throw new CmdOptionHandlerException("Could not parse argument '" + args[0] + "' as boolean parameter.");
+			final I18n i18n = I18nFactory.getI18n(BooleanFieldHandler.class);
+			final PreparedI18n msg = i18n.preparetr("Could not parse argument \"{0}\" as boolean parameter.", args[0]);
+			throw new CmdOptionHandlerException(msg.notr(), msg.tr());
 		}
 
 		try {
 			final Field field = (Field) element;
 			field.set(config, decission);
 		} catch (final Exception e) {
-			throw new CmdOptionHandlerException("Could not apply argument '" + args[0] + "'.", e);
+			final I18n i18n = I18nFactory.getI18n(BooleanFieldHandler.class);
+			final PreparedI18n msg = i18n.preparetr("Could not apply argument \"{0}\".", args[0]);
+			throw new CmdOptionHandlerException(msg.notr(), msg.tr());
 		}
 
 	}

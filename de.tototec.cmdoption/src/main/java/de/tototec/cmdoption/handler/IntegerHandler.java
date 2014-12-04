@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import de.tototec.cmdoption.internal.I18n;
+import de.tototec.cmdoption.internal.I18n.PreparedI18n;
+import de.tototec.cmdoption.internal.I18nFactory;
 
 /**
  * Apply an one-arg option to a {@link Integer} (or <code>int</code>) field or
@@ -41,7 +43,9 @@ public class IntegerHandler implements CmdOptionHandler {
 			final String arg = args[0];
 			parsedValue = Integer.parseInt(arg);
 		} catch (final NumberFormatException e) {
-			throw new CmdOptionHandlerException(e, I18n.marktr("Could not read integer value \"{0}\"."), args[0]);
+			final I18n i18n = I18nFactory.getI18n(IntegerHandler.class);
+			final PreparedI18n msg = i18n.preparetr("Could not read integer value \"{0}\".", args[0]);
+			throw new CmdOptionHandlerException(msg.notr(), e, msg.tr());
 		}
 
 		try {
@@ -53,7 +57,9 @@ public class IntegerHandler implements CmdOptionHandler {
 				method.invoke(config, parsedValue);
 			}
 		} catch (final Exception e) {
-			throw new CmdOptionHandlerException(e, I18n.marktr("Could not apply argument \"{0}\"."), args[0]);
+			final I18n i18n = I18nFactory.getI18n(IntegerHandler.class);
+			final PreparedI18n msg = i18n.preparetr("Could not apply argument \"{0}\".", args[0]);
+			throw new CmdOptionHandlerException(msg.notr(), e, msg.tr());
 		}
 
 	}
