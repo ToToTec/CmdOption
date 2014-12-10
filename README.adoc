@@ -489,8 +489,15 @@ Have a look at some other projects I'm involved with:
 
 === CmdOption {master} - WIP 0.4.0
 
-* Detect matching or missing CmdOptionHandlers earlier and absolutly.
-  They were now associated to the annotation options at scanning time.
+* Fixed a bug where some options are silently ignored (if declared as final
+  field).
+* Detect matching CmdOptionHandlers in scanning phase. This results in proper
+  detection of missing handlers / unsupported fields/types. Also there will be
+  no surprises depending on the given arguments.
+* Added support to read commandline arguments from file(s) with `@`-syntax.
+* Usage formatter now, by default, tries to detect the line lenght of the
+  terminal (under Linux and probably Mac OSX).
+* Various internal refactorings.
 
 === CmdOption 0.3.3 - 2014-11-17
 
