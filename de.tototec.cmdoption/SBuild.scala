@@ -18,7 +18,7 @@ class SBuild(implicit _project: Project) {
     "mvn:org.slf4j:slf4j-api:1.7.5"
 
   val testCp =
-    "mvn:org.testng:testng:6.4" ~
+    "mvn:org.testng:testng:6.8.8" ~
       "mvn:com.beust:jcommander:1.30" ~ // transitive required by testng
       "mvn:org.scalatest:scalatest_2.10:2.2.2" ~
       "mvn:org.scala-lang:scala-library:2.10.2" ~

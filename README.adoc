@@ -371,19 +371,19 @@ Parameter:
 == CmdOptionHandler
 
 CmdOption supports field and method access.
-The set of supported types and method signatures is not hardcoded, but determined by the registered `CmdOptionHandler`s.
-CmdOption comes with some ready-to-use `CmdOptionsHandler`s.
+The set of supported types and method signatures is not hardcoded, but determined by the registered `CmdOptionHandler` s.
+CmdOption comes with some ready-to-use `CmdOptionsHandler` s.
 You can find these in the `de.tototec.cmdoption.handler` package.
 
-By default, a well-choosen set of `CmdOptionsHandler`s is already registered, making a good start for most usage scenarios.
+By default, a well-choosen set of `CmdOptionsHandler` s is already registered, making a good start for most usage scenarios.
 To customize the behavoir of CmdOption, one has some options:
 
-* Write and register additional `CmdOptionHandler`s
+* Write and register additional `CmdOptionHandler` s
 * if necessary, unregister all handlers before registering
 * Explicitly select a specific `CmdOptionHandler` in the `@CmdOption`-Annotation (which needs to have a default constructor)
 
-Please note, that newly registered `CmdOptionHandler`s will only have an effect for configuration objects that are added after the handler was registered.
-That means, when you want to parse your config with a special set of `CmdOptionHandler`s, you should first create the parser without specifying the config object, than register the desired handlers and after that add your config object.
+Please note, that newly registered `CmdOptionHandler` s will only have an effect for configuration objects that are added after the handler was registered.
+That means, when you want to parse your config with a special set of `CmdOptionHandler` s, you should register them _before_ you add your config object. In this case, you cannot use the convenience constructor of `CmdlineParser` that accepts your config objects, but you need to use the default constructor and add your config objects with `CmdlineParser.addObject(Object...)`.
 
 .Example:
 [source,java]
@@ -408,7 +408,7 @@ cp.registerHandler(new MyOptionHandler());
 ----
 
 The order of registered handlers is important. The first handler, that will match a declared field or method, will be used to parse it.
-To explicitly force a specific handler, use the `@CmdOption(handler = TheSpecificHandler.class)`.
+To explicitly force a specific handler, use the `handler` parameter of the `@CmdOption` annotation: `@CmdOption(handler = TheSpecificHandler.class)`.
 
 === Pre-registered CmdOptionHandlers
 
@@ -428,6 +428,8 @@ cp.registerHandler(new IntegerHandler());
 
 === Unregistering all registered CmdOptionHandlers
 
+To register all `CmdOptionHandler` s, even the pregegistered ones, you need to use call `CmdlineParser.unresgisterAllHandler()`.
+
 [source,java]
 ----
 CmdlineParser cp = new CmdlineParser();
@@ -442,7 +444,7 @@ When CmdOption detects the presence of a SLF4J Logger, it will use it to log its
 If no such logger is found on the classpath you can still gather more information what goes on under the hood by using the special command line option `--CMDOPTION_DEBUG`. 
 When used, CmdOption will display detailed information about the found configurations and the parsing process.
 This might help to understand issues further.
-In most cases, this will help you to resolve your issues. Of course, you can disable this functionality with `setDebugModeAllowed(false)`.
+In most cases, this will help you to resolve your issues. Of course, you can disable this functionality with `CmdlineParser.setDebugModeAllowed(false)`.
 
 If you have issues you can not solve, do not hessitate to https://github.com/ToToTec/CmdOption/issues/new[open a support ticket] or search for other (open) issues in the https://github.com/ToToTec/CmdOption/issues[CmdOption ticket system].
 
