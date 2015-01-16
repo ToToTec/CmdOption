@@ -63,9 +63,17 @@ class SBuild(implicit _project: Project) {
       className = "org.scalatest.tools.Runner",
       arguments = Seq("-oG", "-b", "src/test/resources/TestNGSuite.xml".files.head.getPath)
     ) {
-      addEnv(new org.apache.tools.ant.types.Environment.Variable() {
-        setKey("LC_ALL")
-        setValue("C")
+      addSysproperty(new org.apache.tools.ant.types.Environment.Variable() {
+        setKey("user.country")
+        setValue("")
+      })
+      addSysproperty(new org.apache.tools.ant.types.Environment.Variable() {
+        setKey("user.language")
+        setValue("")
+      })
+      addSysproperty(new org.apache.tools.ant.types.Environment.Variable() {
+        setKey("user.variant")
+        setValue("")
       })
     }.execute()
   }
