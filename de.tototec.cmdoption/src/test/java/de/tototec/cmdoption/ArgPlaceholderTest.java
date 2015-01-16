@@ -2,7 +2,6 @@ package de.tototec.cmdoption;
 
 import static org.testng.Assert.assertEquals;
 
-
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -10,9 +9,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-
-import de.tobiasroeser.lambdatest.testng.FreeSpec;import de.tototec.cmdoption.test.TestSupport;
-
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
+import de.tototec.cmdoption.test.TestSupport;
 
 public class ArgPlaceholderTest extends FreeSpec {
 
