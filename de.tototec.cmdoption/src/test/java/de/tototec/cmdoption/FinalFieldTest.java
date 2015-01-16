@@ -6,8 +6,6 @@ import java.util.Locale;
 
 import org.testng.annotations.Test;
 
-import de.tototec.cmdoption.test.TestSupport;
-
 public class FinalFieldTest {
 
 	public static class Config {
@@ -30,34 +28,31 @@ public class FinalFieldTest {
 
 	@Test
 	public void testField() {
-		TestSupport.withLocale(Locale.ROOT, () -> {
-			final Config config = new Config();
-			final CmdlineParser cp = new CmdlineParser(config);
-			final StringBuilder sb = new StringBuilder();
-			cp.usage(sb);
-			assertEquals(sb.toString(), expectedUsage);
-			assertEquals(config.help, false);
-			cp.parse("--help", "false");
-			assertEquals(config.help, false);
-			cp.parse("--help", "true");
-			assertEquals(config.help, true);
-		});
+		final Config config = new Config();
+		final CmdlineParser cp = new CmdlineParser(config);
+		cp.setUsageFormatter(new DefaultUsageFormatter(true, 80, null, Locale.ROOT));
+		final StringBuilder sb = new StringBuilder();
+		cp.usage(sb);
+		assertEquals(sb.toString(), expectedUsage);
+		assertEquals(config.help, false);
+		cp.parse("--help", "false");
+		assertEquals(config.help, false);
+		cp.parse("--help", "true");
+		assertEquals(config.help, true);
 	}
 
 	@Test
 	public void testFieldWithDefault() {
-		TestSupport.withLocale(Locale.ROOT, () -> {
-			final ConfigWithDefault config = new ConfigWithDefault();
-			final CmdlineParser cp = new CmdlineParser(config);
-			final StringBuilder sb = new StringBuilder();
-			cp.usage(sb);
-			assertEquals(sb.toString(), expectedUsage);
-			assertEquals(config.help, false);
-			cp.parse("--help", "false");
-			assertEquals(config.help, false);
-			cp.parse("--help", "true");
-			assertEquals(config.help, true);
-		});
+		final ConfigWithDefault config = new ConfigWithDefault();
+		final CmdlineParser cp = new CmdlineParser(config);
+		final StringBuilder sb = new StringBuilder();
+		cp.usage(sb);
+		assertEquals(sb.toString(), expectedUsage);
+		assertEquals(config.help, false);
+		cp.parse("--help", "false");
+		assertEquals(config.help, false);
+		cp.parse("--help", "true");
+		assertEquals(config.help, true);
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class)
@@ -69,15 +64,13 @@ public class FinalFieldTest {
 
 	@Test(expectedExceptions = CmdlineParserException.class)
 	public void testFinalFieldWithDefaultFail() {
-		TestSupport.withLocale(Locale.ROOT, () -> {
-			final ConfigWithFinalField config = new ConfigWithFinalField();
-			final CmdlineParser cp = new CmdlineParser(config);
-			final StringBuilder sb = new StringBuilder();
-			cp.usage(sb);
-			assertEquals(sb.toString(), expectedUsage);
-			assertEquals(config.help, false);
-			cp.parse("--help", "false");
-		});
+		final ConfigWithFinalField config = new ConfigWithFinalField();
+		final CmdlineParser cp = new CmdlineParser(config);
+		final StringBuilder sb = new StringBuilder();
+		cp.usage(sb);
+		assertEquals(sb.toString(), expectedUsage);
+		assertEquals(config.help, false);
+		cp.parse("--help", "false");
 	}
 
 }

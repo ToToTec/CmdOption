@@ -5,12 +5,10 @@ import static org.testng.Assert.assertEquals;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import de.tobiasroeser.lambdatest.testng.FreeSpec;
-import de.tototec.cmdoption.test.TestSupport;
 
 public class ArgPlaceholderTest extends FreeSpec {
 
@@ -41,9 +39,7 @@ public class ArgPlaceholderTest extends FreeSpec {
 	{
 		test("description placeholder without any args", () -> {
 			final StringBuilder sb = new StringBuilder();
-			TestSupport.withLocale(Locale.ROOT, () -> {
-				new CmdlineParser(new Config7()).usage(sb);
-			});
+			new CmdlineParser(new Config7()).usage(sb);
 			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a  A\n\n"
@@ -52,9 +48,7 @@ public class ArgPlaceholderTest extends FreeSpec {
 		});
 		test("description unused placeholder with args", () -> {
 			final StringBuilder sb = new StringBuilder();
-			TestSupport.withLocale(Locale.ROOT, () -> {
-				new CmdlineParser(new Config8()).usage(sb);
-			});
+			new CmdlineParser(new Config8()).usage(sb);
 			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a 1  A\n\n"
@@ -63,9 +57,7 @@ public class ArgPlaceholderTest extends FreeSpec {
 		});
 		test("description used placeholder with args", () -> {
 			final StringBuilder sb = new StringBuilder();
-			TestSupport.withLocale(Locale.ROOT, () -> {
-				new CmdlineParser(new Config9()).usage(sb);
-			});
+			new CmdlineParser(new Config9()).usage(sb);
 			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a 1  A with arg 1\n\n"
@@ -75,44 +67,42 @@ public class ArgPlaceholderTest extends FreeSpec {
 
 		test("description used placeholder with args and translation", () -> {
 			final StringBuilder sb = new StringBuilder();
-			TestSupport.withLocale(Locale.ROOT, () -> {
-				final CmdlineParser cp = new CmdlineParser(new Config9());
+			final CmdlineParser cp = new CmdlineParser(new Config9());
 
-				final ResourceBundle rb = new ResourceBundle() {
-					private final Map<String, String> trs = new LinkedHashMap<String, String>() {
-						private static final long serialVersionUID = 1L;
-						{
-							put("1", "one");
-							put("2", "two");
-						}
-					};
-
-					@Override
-					protected Object handleGetObject(final String key) {
-						return trs.get(key);
-					}
-
-					@Override
-					public Enumeration<String> getKeys() {
-						final Iterator<String> it = trs.keySet().iterator();
-						return new Enumeration<String>() {
-
-							@Override
-							public boolean hasMoreElements() {
-								return it.hasNext();
-							}
-
-							@Override
-							public String nextElement() {
-								return it.next();
-							}
-
-						};
+			final ResourceBundle rb = new ResourceBundle() {
+				private final Map<String, String> trs = new LinkedHashMap<String, String>() {
+					private static final long serialVersionUID = 1L;
+					{
+						put("1", "one");
+						put("2", "two");
 					}
 				};
-				cp.setResourceBundle(rb);
-				cp.usage(sb);
-			});
+
+				@Override
+				protected Object handleGetObject(final String key) {
+					return trs.get(key);
+				}
+
+				@Override
+				public Enumeration<String> getKeys() {
+					final Iterator<String> it = trs.keySet().iterator();
+					return new Enumeration<String>() {
+
+						@Override
+						public boolean hasMoreElements() {
+							return it.hasNext();
+						}
+
+						@Override
+						public String nextElement() {
+							return it.next();
+						}
+
+					};
+				}
+			};
+			cp.setResourceBundle(rb);
+			cp.usage(sb);
 			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a one  A with arg one\n\n"
