@@ -921,8 +921,12 @@ public class CmdlineParser {
 	}
 
 	public void setResourceBundle(final String resourceBundleName, final ClassLoader classloader) {
+		setResourceBundle(resourceBundleName, Locale.getDefault(), classloader);
+	}
+
+	public void setResourceBundle(final String resourceBundleName, final Locale locale, final ClassLoader classloader) {
 		try {
-			this.resourceBundle = ResourceBundle.getBundle(resourceBundleName, Locale.getDefault(), classloader);
+			this.resourceBundle = ResourceBundle.getBundle(resourceBundleName, locale, classloader);
 			debug("Loaded a ResourceBundle with name \"{0}\" using classloader \"{1}\". Locale: {2}",
 					resourceBundleName, classloader, resourceBundle.getLocale());
 		} catch (final MissingResourceException e) {
