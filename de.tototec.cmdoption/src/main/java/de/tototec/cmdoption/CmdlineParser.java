@@ -750,7 +750,7 @@ public class CmdlineParser {
 
 			final Package pack = parentClass.getPackage();
 			parentClass = parentClass.getSuperclass();
-			if ((pack == null && parentClass.getPackage() == null) ||
+			if ((pack == null && parentClass.getPackage() != null) ||
 					(pack != null && !pack.equals(parentClass.getPackage()))) {
 				otherPackageNonPrivateMethods.addAll(currentPackageNonPrivateMethods);
 				currentPackageNonPrivateMethods.clear();
