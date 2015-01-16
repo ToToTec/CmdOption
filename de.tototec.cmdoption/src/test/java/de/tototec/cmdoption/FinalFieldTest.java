@@ -1,11 +1,12 @@
 package de.tototec.cmdoption;
 
+import static org.testng.Assert.assertEquals;
+
 import java.util.Locale;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class FinalFieldTest extends Assert {
+public class FinalFieldTest {
 
 	public static class Config {
 		@CmdOption(names = "--help", args = "true|false")
