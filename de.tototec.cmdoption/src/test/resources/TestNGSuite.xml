@@ -3,6 +3,7 @@
 <suite name="TestNGSuite">
 	<test name="Tests">
 		<packages>
+			<package name="" />
 			<package name="de.tototec.cmdoption" />
 			<package name="de.tototec.cmdoption.handler" />
 		</packages>
