@@ -10,6 +10,8 @@ image:https://www.codacy.com/project/badge/e3f730346034401281fa8e3fe4802afd["Cod
 
 Current version is {currentversion}.
 
+Please note, that this page documents possibly not yet released features.
+
 == Overview
 
 CmdOption is a simple annotation-driven command line parser toolkit for Java 5 applications.
