@@ -502,6 +502,7 @@ Have a look at some other projects I'm involved with:
 * Usage formatter now, by default, tries to detect the line lenght of the
   terminal (under Linux and probably Mac OSX).
 * Various internal refactorings.
+* Fixed support for config classes in the default package.
 
 === CmdOption 0.3.3 - 2014-11-17
 
