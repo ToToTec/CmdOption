@@ -503,6 +503,7 @@ Have a look at some other projects I'm involved with:
   terminal (under Linux and probably Mac OSX).
 * Various internal refactorings.
 * Fixed support for config classes in the default package.
+* Fallback to java.util.logging if SLF4J is not detected.
 
 === CmdOption 0.3.3 - 2014-11-17
 
