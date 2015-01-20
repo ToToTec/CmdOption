@@ -2,7 +2,7 @@
 :toc:
 :toc-placement: preamble
 // TODO: also replace version in xml snippet
-:currentversion: 0.3.3
+:currentversion: 0.4.0
 :wikiUrl:  https://github.com/ToToTec/CmdOption/wiki
 
 image:https://travis-ci.org/ToToTec/CmdOption.svg?branch=master["Build Status", link="https://travis-ci.org/ToToTec/CmdOption"]
@@ -36,7 +36,7 @@ Maven users can use the following dependency declaration:
 <dependency>
     <groupId>de.tototec</groupId>
     <artifactId>de.tototec.cmdoption</artifactId>
-    <version>0.3.3</version>
+    <version>0.4.0</version>
 </dependency>
 ----
 
@@ -491,7 +491,7 @@ Have a look at some other projects I'm involved with:
 
 == ChangeLog
 
-=== CmdOption {master} - WIP 0.4.0
+=== CmdOption 0.4.0 - 2014-01-20
 
 * Fixed a bug where some options are silently ignored (if declared as final
   field).
