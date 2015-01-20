@@ -332,7 +332,7 @@ public class CmdlineParser {
 				final OptionHandle optionHandle = quickOptionMap.get(param);
 				optionCount.put(optionHandle, optionCount.get(optionHandle) + 1);
 				if (optionHandle.isHelp()) {
-					debug("Detected a help request though: " + param);
+					debug("Detected a help request through: " + param);
 					helpDetected = true;
 				}
 
