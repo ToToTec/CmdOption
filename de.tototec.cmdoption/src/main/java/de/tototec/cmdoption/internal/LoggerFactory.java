@@ -55,6 +55,92 @@ public class LoggerFactory {
 		}
 	}
 
+	public static class JavaUtilLogger implements Logger {
+		private final java.util.logging.Logger underlying;
+
+		public JavaUtilLogger(final Class<?> clazz) {
+			underlying = java.util.logging.Logger.getLogger(clazz.getName());
+		}
+
+		private void log(final java.util.logging.Level level, final String msg, final Object... args) {
+			if (underlying.isLoggable(level)) {
+				final String formattedMsg;
+				final Throwable thrown;
+				if (args != null && args.length > 0) {
+					final int l;
+					if (args[args.length - 1] instanceof Throwable) {
+						l = args.length - 1;
+						thrown = (Throwable) args[args.length - 1];
+					}
+					else {
+						l = args.length;
+						thrown = null;
+					}
+					if (l > 0) {
+						final String[] parts = msg.split("[{][}]");
+						final StringBuilder strBuilder = new StringBuilder(parts[0]);
+						for (int i = 1; i < parts.length; ++i) {
+							strBuilder.append("{").append(i - 1).append("}").append(parts[i]);
+						}
+						formattedMsg = strBuilder.toString();
+					} else {
+						formattedMsg = msg;
+					}
+				} else {
+					formattedMsg = msg;
+					thrown = null;
+				}
+				underlying.log(level, formattedMsg, thrown);
+			}
+
+		}
+
+		public boolean isErrorEnabled() {
+			return underlying.isLoggable(java.util.logging.Level.SEVERE);
+		}
+
+		public boolean isWarnEnabled() {
+			return underlying.isLoggable(java.util.logging.Level.WARNING);
+		}
+
+		public boolean isInfoEnabled() {
+			return underlying.isLoggable(java.util.logging.Level.INFO);
+		}
+
+		public boolean isDebugEnabled() {
+			return underlying.isLoggable(java.util.logging.Level.FINE);
+		}
+
+		public boolean isTraceEnabled() {
+			return underlying.isLoggable(java.util.logging.Level.FINER);
+		}
+
+		public void error(final String msg, final Object... args) {
+			log(java.util.logging.Level.SEVERE, msg, args);
+		}
+
+		public void warn(final String msg, final Object... args) {
+			log(java.util.logging.Level.WARNING, msg, args);
+		}
+
+		public void info(final String msg, final Object... args) {
+			log(java.util.logging.Level.INFO, msg, args);
+		}
+
+		public void debug(final String msg, final Object... args) {
+			log(java.util.logging.Level.FINE, msg, args);
+		}
+
+		public void trace(final String msg, final Object... args) {
+			log(java.util.logging.Level.FINER, msg, args);
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "(" + underlying + ")";
+		}
+	}
+
 	public static class DummyLogger implements Logger {
 
 		public boolean isErrorEnabled() {
@@ -77,20 +163,15 @@ public class LoggerFactory {
 			return false;
 		}
 
-		public void error(final String msg, final Object... args) {
-		}
+		public void error(final String msg, final Object... args) {}
 
-		public void warn(final String msg, final Object... args) {
-		}
+		public void warn(final String msg, final Object... args) {}
 
-		public void info(final String msg, final Object... args) {
-		}
+		public void info(final String msg, final Object... args) {}
 
-		public void debug(final String msg, final Object... args) {
-		}
+		public void debug(final String msg, final Object... args) {}
 
-		public void trace(final String msg, final Object... args) {
-		}
+		public void trace(final String msg, final Object... args) {}
 
 		@Override
 		public String toString() {
@@ -98,22 +179,18 @@ public class LoggerFactory {
 		}
 	}
 
-	private static volatile Logger dummyLogger = null;
+	private static transient volatile boolean slf4ClassTestedButUnavailable = false;
 
 	public static Logger getLogger(final Class<?> clazz) {
-		if (dummyLogger != null)
-			return dummyLogger;
-		try {
-			return new Slf4jLogger(clazz);
-		} catch (final NoClassDefFoundError e) {
-			if (dummyLogger == null) {
-				synchronized (LoggerFactory.class) {
-					if (dummyLogger == null) {
-						dummyLogger = new DummyLogger();
-					}
-				}
+		// synchronization would be too costly.
+		// There is no problem in trying multiple times before giving up.
+		if (!slf4ClassTestedButUnavailable) {
+			try {
+				return new Slf4jLogger(clazz);
+			} catch (final NoClassDefFoundError e) {
+				slf4ClassTestedButUnavailable = true;
 			}
-			return dummyLogger;
 		}
+		return new JavaUtilLogger(clazz);
 	}
 }
