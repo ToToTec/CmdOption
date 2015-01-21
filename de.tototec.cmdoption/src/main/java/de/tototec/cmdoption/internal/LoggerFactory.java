@@ -1,5 +1,6 @@
 package de.tototec.cmdoption.internal;
 
+
 public class LoggerFactory {
 
 	public static class Slf4jLogger implements Logger {
@@ -62,34 +63,64 @@ public class LoggerFactory {
 			underlying = java.util.logging.Logger.getLogger(clazz.getName());
 		}
 
-		private void log(final java.util.logging.Level level, final String msg, final Object... args) {
-			if (underlying.isLoggable(level)) {
-				final String formattedMsg;
-				final Throwable thrown;
-				if (args != null && args.length > 0) {
-					final int l;
-					if (args[args.length - 1] instanceof Throwable) {
-						l = args.length - 1;
-						thrown = (Throwable) args[args.length - 1];
-					}
-					else {
-						l = args.length;
-						thrown = null;
-					}
-					if (l > 0) {
-						final String[] parts = msg.split("[{][}]");
-						final StringBuilder strBuilder = new StringBuilder(parts[0]);
-						for (int i = 1; i < parts.length; ++i) {
-							strBuilder.append("{").append(i - 1).append("}").append(parts[i]);
-						}
-						formattedMsg = strBuilder.toString();
-					} else {
-						formattedMsg = msg;
-					}
-				} else {
-					formattedMsg = msg;
+		protected Object[] formattedMsgAndCause(final String msg, final Object... args) {
+			final String formattedMsg;
+			final Throwable thrown;
+			if (args != null && args.length > 0) {
+				final int l;
+				if (args[args.length - 1] instanceof Throwable) {
+					l = args.length - 1;
+					thrown = (Throwable) args[args.length - 1];
+				}
+				else {
+					l = args.length;
 					thrown = null;
 				}
+				if (l > 0) {
+					final StringBuilder strBuilder = new StringBuilder();
+
+					boolean braceOpen = false;
+					int argNr = 0;
+					for (int i = 0; i < msg.length(); ++i) {
+						final char charAt = msg.charAt(i);
+						if (argNr < l) {
+							if (braceOpen) {
+								braceOpen = false;
+								if (charAt == '}') {
+									// instead, insert next arg
+									strBuilder.append(args[argNr]);
+									++argNr;
+									continue;
+								} else {
+									strBuilder.append("{");
+								}
+							} else if (charAt == '{') {
+								braceOpen = true;
+								continue;
+							}
+						}
+						strBuilder.append(charAt);
+					}
+					if (braceOpen) {
+						strBuilder.append("{");
+					}
+
+					formattedMsg = strBuilder.toString();
+				} else {
+					formattedMsg = msg;
+				}
+			} else {
+				formattedMsg = msg;
+				thrown = null;
+			}
+			return new Object[] { formattedMsg, thrown };
+		}
+
+		private void log(final java.util.logging.Level level, final String msg, final Object... args) {
+			if (underlying.isLoggable(level)) {
+				final Object[] formattedMsgAndCause = formattedMsgAndCause(msg, args);
+				final String formattedMsg = (String) formattedMsgAndCause[0];
+				final Throwable thrown = (Throwable) formattedMsgAndCause[1];
 				underlying.log(level, formattedMsg, thrown);
 			}
 
