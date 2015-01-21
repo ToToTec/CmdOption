@@ -491,12 +491,12 @@ Have a look at some other projects I'm involved with:
 
 == ChangeLog
 
-=== CmdOption NEXT
+=== CmdOption 0.4.1 - 2015-01-21
 
 * Fixed message converter/formatter for JUL logger that resulted in garbage
   log messages when no SLF4J API is detected.
 
-=== CmdOption 0.4.0 - 2014-01-20
+=== CmdOption 0.4.0 - 2015-01-20
 
 * Fixed a bug where some options are silently ignored (if declared as final
   field).
