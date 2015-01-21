@@ -1,8 +1,10 @@
 package de.tototec.cmdoption.internal;
 
-
 public class LoggerFactory {
 
+	/**
+	 * All log messages will be pass through SLF4j as-is.
+	 */
 	public static class Slf4jLogger implements Logger {
 		private final org.slf4j.Logger underlying;
 
@@ -56,6 +58,10 @@ public class LoggerFactory {
 		}
 	}
 
+	/**
+	 * All log messages will be pre-processed before given to the JUL logger to
+	 * support SLF4J-style placeholders and arguments semantics.
+	 */
 	public static class JavaUtilLogger implements Logger {
 		private final java.util.logging.Logger underlying;
 
