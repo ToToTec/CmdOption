@@ -472,11 +472,14 @@ Typically, minCount and maxCount of the options are unconstrained, as the validi
 
 CmdOption is developed and released under the *Apache License, Version 2*.
 
-== Contributing
+== Contributing / Support
 
-Your contributions are much apreciated.
+Your contributions are much apreciated and are assumed to be published under the terms of the link:#license[project license] if not stated otherwise.
+
 If you found a bug or have a feature request, please open a https://github.com/ToToTec/CmdOption/issues[new issue on GitHub].
 We also accept pull requests.
+
+You can also use our https://gitter.im/ToToTec/CmdOption[Chat on Gitter.im] for discussions and questions.
 
 == Building CmdOption from Source
 
