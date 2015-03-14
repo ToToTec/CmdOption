@@ -28,6 +28,7 @@ import de.tototec.cmdoption.handler.BooleanHandler;
 import de.tototec.cmdoption.handler.BooleanOptionHandler;
 import de.tototec.cmdoption.handler.CmdOptionHandler;
 import de.tototec.cmdoption.handler.CmdOptionHandlerException;
+import de.tototec.cmdoption.handler.EnumHandler;
 import de.tototec.cmdoption.handler.IntegerHandler;
 import de.tototec.cmdoption.handler.PutIntoMapHandler;
 import de.tototec.cmdoption.handler.StringFieldHandler;
@@ -40,6 +41,7 @@ import de.tototec.cmdoption.internal.I18nFactory;
 import de.tototec.cmdoption.internal.Logger;
 import de.tototec.cmdoption.internal.LoggerFactory;
 import de.tototec.cmdoption.internal.Optional;
+import de.tototec.cmdoption.internal.Procedure1;
 
 /**
  * CmdOption main entry point to configure the parser, parse the command line
@@ -144,15 +146,27 @@ public class CmdlineParser {
 		// ensure order by using a LinkedHashMap
 		handlerRegistry = new LinkedHashMap<Class<? extends CmdOptionHandler>, CmdOptionHandler>();
 
-		registerHandler(new BooleanOptionHandler());
-		registerHandler(new BooleanHandler());
-		registerHandler(new StringFieldHandler());
-		registerHandler(new PutIntoMapHandler());
-		registerHandler(new AddToCollectionHandler());
-		registerHandler(new StringMethodHandler());
-		registerHandler(new IntegerHandler());
+		FList.foreach(defaultHandlers(), new Procedure1<CmdOptionHandler>() {
+			@Override
+			public void apply(final CmdOptionHandler h) {
+				registerHandler(h);
+			}
+		});
 
 		addObject(objects);
+	}
+
+	public List<CmdOptionHandler> defaultHandlers() {
+		return Arrays.asList(
+				new BooleanOptionHandler(),
+				new BooleanHandler(),
+				new StringFieldHandler(),
+				new PutIntoMapHandler(),
+				new AddToCollectionHandler(),
+				new StringMethodHandler(),
+				new IntegerHandler(),
+				new EnumHandler()
+				);
 	}
 
 	private void debug(final String msg, final Object... args) {

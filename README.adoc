@@ -427,6 +427,7 @@ cp.registerHandler(new PutIntoMapHandler());
 cp.registerHandler(new AddToCollectionHandler());
 cp.registerHandler(new StringMethodHandler());
 cp.registerHandler(new IntegerHandler());
+cp.registerHandler(new EnumHandler());
 ----
 
 === Unregistering all registered CmdOptionHandlers
@@ -494,6 +495,12 @@ Have a look at some other projects I'm involved with:
 * http://sbuild.org[SBuild] - A Scala-based build tool
 
 == ChangeLog
+
+=== CmdOption {master}
+
+* Added new EnumHandler which support parsing of enum values into Java enums.
+* Added CmdlineParser.defaultHandlers() which can be overriden to customize
+  the set of applied default handlers.
 
 === CmdOption 0.4.1 - 2015-01-21
 
