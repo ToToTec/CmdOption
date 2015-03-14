@@ -10,10 +10,10 @@ import de.tototec.cmdoption.handler.CmdOptionHandler;
 
 /**
  * An Command line option which optionally supports parameters. It can be used
- * to annotate fields and methods as options. At most on field or method can be
+ * to annotate fields and methods as options. At most one field or method can be
  * annotated with an zero names attribute, which means that field or method
  * represents the main parameter.
- * 
+ *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
@@ -42,7 +42,7 @@ public @interface CmdOption {
 	 * An {@link CmdOptionHandler} to apply the parsed option to the annotated
 	 * field or method. If this is not given, all handler registered for
 	 * auto-detect will by tried in order.
-	 * 
+	 *
 	 * @see CmdlineParser#registerHandler(CmdOptionHandler)
 	 */
 	Class<? extends CmdOptionHandler> handler() default CmdOptionHandler.class;
@@ -75,7 +75,7 @@ public @interface CmdOption {
 	/**
 	 * If this option is only valid in conjunction with other options, you
 	 * should declare those other options here.
-	 * 
+	 *
 	 * @since 0.2.0
 	 */
 	String[] requires() default {};
@@ -83,7 +83,7 @@ public @interface CmdOption {
 	/**
 	 * If this option can not be used in conjunction with an specific other
 	 * option, you should declare those conflicting options here.
-	 * 
+	 *
 	 * @since 0.2.0
 	 */
 	String[] conflictsWith() default {};
