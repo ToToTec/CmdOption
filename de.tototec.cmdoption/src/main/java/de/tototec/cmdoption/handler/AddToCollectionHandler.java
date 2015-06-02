@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 
 /**
- * Add an one-arg option argument to a collection of strings.
+ * Add an one-arg option argument to a mutable collection of strings.
  */
 public class AddToCollectionHandler implements CmdOptionHandler {
 

@@ -10,7 +10,7 @@ import de.tototec.cmdoption.internal.I18n.PreparedI18n;
 import de.tototec.cmdoption.internal.I18nFactory;
 
 /**
- * Apply an two-arg option to an {@link Map}.
+ * Apply an two-arg option to an mutable {@link Map}.
  *
  */
 public class PutIntoMapHandler implements CmdOptionHandler {

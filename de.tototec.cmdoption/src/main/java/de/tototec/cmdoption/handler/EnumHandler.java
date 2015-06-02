@@ -12,6 +12,11 @@ import de.tototec.cmdoption.internal.I18n;
 import de.tototec.cmdoption.internal.I18n.PreparedI18n;
 import de.tototec.cmdoption.internal.I18nFactory;
 
+/**
+ * Parse a Sting to a {@link Enum} of the expected type and applies it to a field or a
+ * one-arg method. The <code>Enum.valueOf</code> method is used.
+ *
+ */
 public class EnumHandler implements CmdOptionHandler {
 
 	public boolean canHandle(final AccessibleObject element, final int argCount) {

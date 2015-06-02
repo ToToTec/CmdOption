@@ -420,15 +420,24 @@ At construction time CmdlineParser pre-registeres various handlers like the foll
 [source,java]
 ----
 CmdlineParser cp = new CmdlineParser();
-cp.registerHandler(new BooleanOptionHandler());
-cp.registerHandler(new BooleanHandler());
-cp.registerHandler(new StringFieldHandler());
-cp.registerHandler(new PutIntoMapHandler());
-cp.registerHandler(new AddToCollectionHandler());
-cp.registerHandler(new StringMethodHandler());
-cp.registerHandler(new IntegerHandler());
-cp.registerHandler(new EnumHandler());
+cp.registerHandler(new BooleanOptionHandler()); // <1>
+cp.registerHandler(new BooleanHandler()); // <2>
+cp.registerHandler(new StringFieldHandler()); // <3>
+cp.registerHandler(new PutIntoMapHandler()); // <4>
+cp.registerHandler(new AddToCollectionHandler()); // <5>
+cp.registerHandler(new StringMethodHandler()); // <6>
+cp.registerHandler(new IntegerHandler()); // <7>
+cp.registerHandler(new EnumHandler()); // <8>
 ----
+
+<1> Apply an zero-arg option to an `Boolean` or `boolean` field. If the option is present, the field will be evaluated to `true`.
+<2> Apply an one-arg option to a `Boolean` or `boolean` field or method. Evaluates the argument to `true` if it is `"true"`, `"on"` or `"1"`.
+<3> Apply an one-arg option to a field of type `String`.
+<4> Apply an two-arg option to an mutable `Map`.
+<5> Add an one-arg option argument to a mutable collection of `String`s.
+<6> Apply an _n_-arg option to a (setter) method with _n_ parameters of type `String`.
+<7> Apply an one-arg option to a `Integer` or `int` field or method.
+<8> Parse a Sting to a Enum of the expected type and applies it to a field or a one-arg method. The `Enum.valueOf` method is used.
 
 === Unregistering all registered CmdOptionHandlers
 
