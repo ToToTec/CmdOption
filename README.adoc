@@ -430,14 +430,14 @@ cp.registerHandler(new IntegerHandler()); // <7>
 cp.registerHandler(new EnumHandler()); // <8>
 ----
 
-<1> link:src/main/java/de/tototec/cmdoption/handler/BooleanOptionHandler.java[`BooleanOptionHandler`] -- Apply an zero-arg option to an `Boolean` or `boolean` field. If the option is present, the field will be evaluated to `true`.
-<2> link:src/main/java/de/tototec/cmdoption/handler/BooleanHandler.java[`BooleanHandler`] -- Apply an one-arg option to a `Boolean` or `boolean` field or method. Evaluates the argument to `true` if it is `"true"`, `"on"` or `"1"`.
-<3> link:src/main/java/de/tototec/cmdoption/handler/StringFieldHandler.java[`StringFieldHandler`] -- Apply an one-arg option to a field of type `String`.
-<4> link:src/main/java/de/tototec/cmdoption/handler/PutIntoMapHandler.java[`PutIntoMapHandler`] -- Apply an two-arg option to an mutable `Map`.
-<5> link:src/main/java/de/tototec/cmdoption/handler/AddToCollectionHandler.java[`AddToCollectionHandler`] -- Add an one-arg option argument to a mutable collection of `String`s.
-<6> link:src/main/java/de/tototec/cmdoption/handler/StringMethodHandler.java[`StringMethodHandler`] -- Apply an _n_-arg option to a (setter) method with _n_ parameters of type `String`.
-<7> link:src/main/java/de/tototec/cmdoption/handler/IntegerHandler.java[`IntegerHandler`] -- Apply an one-arg option to a `Integer` or `int` field or method.
-<8> link:src/main/java/de/tototec/cmdoption/handler/EnumHandler.java[`EnumHandler`] -- Parse a Sting to a Enum of the expected type and applies it to a field or a one-arg method. The `Enum.valueOf` method is used.
+<1> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/BooleanOptionHandler.java[`BooleanOptionHandler`] -- Apply an zero-arg option to an `Boolean` or `boolean` field. If the option is present, the field will be evaluated to `true`.
+<2> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/BooleanHandler.java[`BooleanHandler`] -- Apply an one-arg option to a `Boolean` or `boolean` field or method. Evaluates the argument to `true` if it is `"true"`, `"on"` or `"1"`.
+<3> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/StringFieldHandler.java[`StringFieldHandler`] -- Apply an one-arg option to a field of type `String`.
+<4> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/PutIntoMapHandler.java[`PutIntoMapHandler`] -- Apply an two-arg option to an mutable `Map`.
+<5> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/AddToCollectionHandler.java[`AddToCollectionHandler`] -- Add an one-arg option argument to a mutable collection of `String`s.
+<6> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/StringMethodHandler.java[`StringMethodHandler`] -- Apply an _n_-arg option to a (setter) method with _n_ parameters of type `String`.
+<7> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/IntegerHandler.java[`IntegerHandler`] -- Apply an one-arg option to a `Integer` or `int` field or method.
+<8> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/EnumHandler.java[`EnumHandler`] -- Parse a Sting to a Enum of the expected type and applies it to a field or a one-arg method. The `Enum.valueOf` method is used.
 
 
 
