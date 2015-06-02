@@ -2,7 +2,7 @@
 :toc:
 :toc-placement: preamble
 // TODO: also replace version in xml snippet
-:currentversion: 0.4.1
+:currentversion: 0.4.2
 :wikiUrl:  https://github.com/ToToTec/CmdOption/wiki
 
 image:https://travis-ci.org/ToToTec/CmdOption.svg?branch=master["Build Status", link="https://travis-ci.org/ToToTec/CmdOption"]
@@ -37,7 +37,7 @@ Maven users can use the following dependency declaration:
 <dependency>
     <groupId>de.tototec</groupId>
     <artifactId>de.tototec.cmdoption</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
 </dependency>
 ----
 
@@ -493,6 +493,8 @@ We also accept pull requests.
 
 You can also use our https://gitter.im/ToToTec/CmdOption[Chat on Gitter.im] for discussions and questions.
 
+If you want to show appreciation for the project, please "star" it on https://github.com/ToToTec/CmdOption[GitHub]. That helps me setting my priorities.
+
 == Building CmdOption from Source
 
 CmdOption is build with http://sbuild.org/[SBuild].
@@ -504,10 +506,11 @@ Have a look at some other projects I'm involved with:
 * https://github.com/ToToTec/de.tototec.utils.functional[Functional Utils] - Functional Utility Classes for working with Java 5+ 
 * https://github.com/lefou/poor-mans-lambda-test/[Poor Mans Lambda Test] - Minimal Java8 Lambda enabled testing for TestNG
 * http://sbuild.org[SBuild] - A Scala-based build tool
+* https://github.com/domino-osgi/domino[Domino] - OSGi dynamics made easy with a Scala DSL
 
 == ChangeLog
 
-=== CmdOption {master}
+=== CmdOption 0.4.2 - 2015-06-02
 
 * Added new EnumHandler which support parsing of enum values into Java enums.
 * Added CmdlineParser.defaultHandlers() which can be overriden to customize
