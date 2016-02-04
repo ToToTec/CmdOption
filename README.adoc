@@ -498,6 +498,14 @@ If you want to show appreciation for the project, please "star" it on https://gi
 
 CmdOption is build with http://sbuild.org/[SBuild].
 
+If you don't have SBuild installed, you can also use the `sbuild-wrapper` script.
+
+----
+./sbuild-wrapper all
+----
+
+The built package can be found under `de.tototec.cmdoption/target/de.tototec.cmdoption-{currentversion}.jar`. The complete dist package under `target/cmdoption-dist-{currentversion}.zip`.
+
 == Other Projects
 
 Have a look at some other projects I'm involved with:
