@@ -776,6 +776,12 @@ public class CmdlineParser {
 		elements.addAll(otherPackageNonPrivateMethods);
 		elements.addAll(currentPackageNonPrivateMethods);
 
+		options.addAll(inspectElements(object, elements));
+	}
+
+	protected List<OptionHandle> inspectElements(final Object object, final Set<AccessibleObject> elements) {
+		final List<OptionHandle> options = new LinkedList<OptionHandle>();
+
 		for (final AccessibleObject element : elements) {
 
 			if (element instanceof Field && element.getAnnotation(CmdOptionDelegate.class) != null) {
@@ -863,6 +869,7 @@ public class CmdlineParser {
 				options.add(option);
 			}
 		}
+		return options;
 	}
 
 	public void unregisterAllHandler() {
