@@ -1,7 +1,6 @@
 = CmdOption - Command line parsing has never been easier
 :toc:
 :toc-placement: preamble
-// TODO: also replace version in xml snippet
 :currentversion: 0.4.2
 :wikiUrl:  https://github.com/ToToTec/CmdOption/wiki
 
@@ -32,12 +31,12 @@ CmdOption is available from http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22d
 
 Maven users can use the following dependency declaration:
 
-[source,xml]
+[source,xml,subs="attributes,verbatim"]
 ----
 <dependency>
     <groupId>de.tototec</groupId>
     <artifactId>de.tototec.cmdoption</artifactId>
-    <version>0.4.2</version>
+    <version>{currentverion}</version>
 </dependency>
 ----
 
