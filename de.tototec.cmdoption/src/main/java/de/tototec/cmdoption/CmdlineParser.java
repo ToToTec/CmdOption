@@ -165,8 +165,7 @@ public class CmdlineParser {
 				new AddToCollectionHandler(),
 				new StringMethodHandler(),
 				new IntegerHandler(),
-				new EnumHandler()
-				);
+				new EnumHandler());
 	}
 
 	private void debug(final String msg, final Object... args) {
@@ -605,14 +604,24 @@ public class CmdlineParser {
 	public void addObject(final Object... objects) {
 		for (final Object object : objects) {
 			if (object.getClass().getAnnotation(CmdCommand.class) != null) {
-				scanCommand(object);
+				final CommandHandle command = scanCommand(object);
+				for (final String name : command.getNames()) {
+					if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
+						final PreparedI18n msg = i18n.preparetr("Duplicate command/option name \"{0}\" found in: {1}",
+								name,
+								object);
+						throw new CmdlineParserException(msg.notr(), msg.tr());
+					}
+					quickCommandMap.put(name, command);
+				}
+				commands.add(command);
 			} else {
 				scanOptions(object);
 			}
 		}
 	}
 
-	protected void scanCommand(final Object object) {
+	protected CommandHandle scanCommand(final Object object) {
 		final CmdCommand commandAnno = object.getClass().getAnnotation(CmdCommand.class);
 		final String[] names = commandAnno.names();
 
@@ -623,19 +632,8 @@ public class CmdlineParser {
 
 		final CmdlineParser subCmdlineParser = new CmdlineParser(this, names[0], object);
 		// TODO: set programm name
-		final CommandHandle command = new CommandHandle(names, commandAnno.description(), subCmdlineParser, object,
+		return new CommandHandle(names, commandAnno.description(), subCmdlineParser, object,
 				commandAnno.hidden());
-
-		for (final String name : names) {
-			if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
-				final PreparedI18n msg = i18n.preparetr("Duplicate command/option name \"{0}\" found in: {1}", name,
-						object);
-				throw new CmdlineParserException(msg.notr(), msg.tr());
-			}
-			quickCommandMap.put(name, command);
-		}
-		commands.add(command);
-
 	}
 
 	protected void validateOptions() {
