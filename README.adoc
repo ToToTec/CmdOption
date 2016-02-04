@@ -36,7 +36,7 @@ Maven users can use the following dependency declaration:
 <dependency>
     <groupId>de.tototec</groupId>
     <artifactId>de.tototec.cmdoption</artifactId>
-    <version>{currentverion}</version>
+    <version>{currentversion}</version>
 </dependency>
 ----
 
