@@ -442,12 +442,25 @@ cp.registerHandler(new EnumHandler()); // <8>
 
 === Unregistering all registered CmdOptionHandlers
 
-To register all `CmdOptionHandler` s, even the pregegistered ones, you need to use call `CmdlineParser.unresgisterAllHandler()`.
+To unregister all `CmdOptionHandler` s, even the pre-registered ones, you can invoke `CmdlineParser.unresgisterAllHandler()`.
 
 [source,java]
 ----
 CmdlineParser cp = new CmdlineParser();
 cp.unregisterAllHandler();
+----
+
+You can also access all pre-registered `CmdOptionHandler` s via `CmdlineParser.defaultHandlers()`. 
+This can be useful e.g. to "inject" some handlers before the default ones:
+
+[source,java]
+----
+CmdlineParser cp = new CmdlineParser();
+cp.unregisterAllHandlers();
+cp.registerHandler(new MyHighPrioHandler());
+for(final CmdOptionHandler handler: cp.defaultHandlers()) {
+  cp.registerHandler(handler);
+}
 ----
 
 == Debugging
