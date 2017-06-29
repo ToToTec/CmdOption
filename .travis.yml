@@ -1,7 +1,14 @@
+sudo: false
+
 language: java
 
 jdk:
   - oraclejdk8
+
+addons:
+  apt:
+    packages:
+    - gettext
 
 before_script: "./sbuild-wrapper --version"
 
