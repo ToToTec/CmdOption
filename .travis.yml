@@ -10,6 +10,8 @@ addons:
     packages:
     - gettext
 
-before_script: "./sbuild-wrapper --version"
+before_script: 
+- xgettext --version
+- ./sbuild-wrapper --version
 
 script: "./sbuild-wrapper --keep-going all"
