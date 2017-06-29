@@ -223,7 +223,7 @@ The class `CmdlineParser` has various methods to customize the behaviour and the
 
 The `parse` methods of `CmdlineParser` will throw a `CmdlineParserException` when the given cmdline contains validation errors.
 Thus, you always can assume sane and proper initialized config object (according to the configuration).
-If you don't catch the exception, the JVM typically prints the error message and a stack trace to the commandline. Although helpful, it isn't always want you want to be shown to your users.
+If you don't catch the exception, the JVM typically prints the error message and a stack trace to the commandline. Although helpful, it isn't always what you want to be shown to your users.
 
 It is highly recommended to surround the call to the `parse` method with a try-catch-block and provide a sane error message and/or if you prefer so a details usage display.
 
