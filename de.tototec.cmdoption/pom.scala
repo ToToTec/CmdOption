@@ -19,11 +19,13 @@ Model(
   modelVersion = "4.0.0",
   packaging = "jar",
   properties = Map(
-    "project.build.sourceEncodign" -> "UTF-8",
+    "project.build.sourceEncoding" -> "UTF-8",
     "maven.compiler.source" -> "1.5",
     "maven.compiler.target" -> "1.5",
     "maven.compiler.testSource" -> "1.8",
-    "maven.compiler.testTarget" -> "1.8"
+    "maven.compiler.testTarget" -> "1.8",
+    "maven.compiler.showDeprecation" -> "true",
+    "maven.compiler.showWarnings" -> "true"
   ),
   dependencies = Seq[Dependency](
     Dependency(
