@@ -147,7 +147,6 @@ public class CmdlineParser {
 		handlerRegistry = new LinkedHashMap<Class<? extends CmdOptionHandler>, CmdOptionHandler>();
 
 		FList.foreach(defaultHandlers(), new Procedure1<CmdOptionHandler>() {
-			@Override
 			public void apply(final CmdOptionHandler h) {
 				registerHandler(h);
 			}
