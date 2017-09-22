@@ -2,8 +2,6 @@ package de.tototec.cmdoption;
 
 import static org.testng.Assert.assertEquals;
 
-import java.util.Locale;
-
 import org.testng.annotations.Test;
 
 public class FinalFieldTest {
@@ -24,7 +22,6 @@ public class FinalFieldTest {
 	}
 
 	private final String expectedUsage = "Usage: <main class> [options]\n\nOptions:\n  --help true|false  \n";
-	private final String expectedFinalUsage = "Usage: <main class>\n";
 
 	@Test
 	public void testField() {
@@ -44,6 +41,7 @@ public class FinalFieldTest {
 	public void testFieldWithDefault() {
 		final ConfigWithDefault config = new ConfigWithDefault();
 		final CmdlineParser cp = new CmdlineParser(config);
+		cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
 		final StringBuilder sb = new StringBuilder();
 		cp.usage(sb);
 		assertEquals(sb.toString(), expectedUsage);

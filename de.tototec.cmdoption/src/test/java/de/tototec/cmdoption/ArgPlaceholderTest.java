@@ -39,7 +39,9 @@ public class ArgPlaceholderTest extends FreeSpec {
 	{
 		test("description placeholder without any args", () -> {
 			final StringBuilder sb = new StringBuilder();
-			new CmdlineParser(new Config7()).usage(sb);
+			final CmdlineParser cp = new CmdlineParser(new Config7());
+			cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
+			cp.usage(sb);
 			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a  A\n\n"
@@ -48,7 +50,9 @@ public class ArgPlaceholderTest extends FreeSpec {
 		});
 		test("description unused placeholder with args", () -> {
 			final StringBuilder sb = new StringBuilder();
-			new CmdlineParser(new Config8()).usage(sb);
+			final CmdlineParser cp = new CmdlineParser(new Config8());
+			cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
+			cp.usage(sb);
 			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a 1  A\n\n"
@@ -57,7 +61,9 @@ public class ArgPlaceholderTest extends FreeSpec {
 		});
 		test("description used placeholder with args", () -> {
 			final StringBuilder sb = new StringBuilder();
-			new CmdlineParser(new Config9()).usage(sb);
+			final CmdlineParser cp = new CmdlineParser(new Config9());
+			cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
+			cp.usage(sb);
 			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a 1  A with arg 1\n\n"
@@ -68,6 +74,7 @@ public class ArgPlaceholderTest extends FreeSpec {
 		test("description used placeholder with args and translation", () -> {
 			final StringBuilder sb = new StringBuilder();
 			final CmdlineParser cp = new CmdlineParser(new Config9());
+			cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
 
 			final ResourceBundle rb = new ResourceBundle() {
 				private final Map<String, String> trs = new LinkedHashMap<String, String>() {
