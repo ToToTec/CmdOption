@@ -282,18 +282,19 @@ public class DefaultUsageFormatter implements UsageFormatter {
 	}
 
 	public static void wrap(final StringBuilder output, String text, final int nextLinePrefix, final int lineLength) {
+		final int _lineLength = Math.max(lineLength, 0);
 		text = text.trim();
 
-		if (text.length() <= lineLength) {
+		if (text.length() <= _lineLength) {
 			output.append(text);
 		} else {
 
 			int bestWrap = -1;
 
-			if (" ".equals(text.substring(lineLength, lineLength + 1))) {
-				bestWrap = lineLength;
+			if (" ".equals(text.substring(_lineLength, _lineLength + 1))) {
+				bestWrap = _lineLength;
 			} else {
-				bestWrap = text.substring(0, lineLength).lastIndexOf(" ");
+				bestWrap = text.substring(0, _lineLength).lastIndexOf(" ");
 			}
 
 			if (bestWrap == -1) {
@@ -305,7 +306,7 @@ public class DefaultUsageFormatter implements UsageFormatter {
 				for (int i = 0; i < nextLinePrefix; ++i) {
 					output.append(" ");
 				}
-				wrap(output, text.substring(bestWrap), nextLinePrefix, lineLength);
+				wrap(output, text.substring(bestWrap), nextLinePrefix, _lineLength);
 			} else {
 				output.append(text);
 			}
