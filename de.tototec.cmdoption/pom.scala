@@ -178,6 +178,7 @@ Model(
                       "@failOnError" -> Some("true"),
                       // one invocation for each translation files
                       "@parallel" -> Some("false"),
+                      "arg" -> Some(Config(`@value` = "--backup=none")),
                       // ensure, we pass the files relative to their fileset roots
                       "arg" -> Some(Config(`@value` = "--update")),
                       "srcfile" -> None,
