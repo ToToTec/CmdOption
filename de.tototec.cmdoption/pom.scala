@@ -76,6 +76,13 @@ Model(
     ),
     plugins = Seq(
       Plugin(
+        gav = "org.apache.maven.plugins" % "maven-surefire-plugin" % "2.20.1",
+        configuration = Config(
+          // Avoid string differences in tests because of locale-dependent translations
+          argLine = "-Duser.country=EN -Duser.language=en -Duser.variant="
+        )
+      ),
+      Plugin(
         gav = "org.apache.maven.plugins" % "maven-antrun-plugin" % "1.8",
         executions = Seq(
           Execution(
