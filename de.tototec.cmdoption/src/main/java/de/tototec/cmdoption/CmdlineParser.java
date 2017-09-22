@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -98,7 +99,7 @@ public class CmdlineParser {
 	private String defaultCommandName = null;
 
 	private final Map<Class<? extends CmdOptionHandler>, CmdOptionHandler> handlerRegistry;
-	private UsageFormatter usageFormatter;
+	private UsageFormatter2 usageFormatter;
 	private String programName;
 	private String parsedCommandName;
 	private String aboutLine;
@@ -142,7 +143,7 @@ public class CmdlineParser {
 	public CmdlineParser(final Object... objects) {
 		parent = null;
 		programName = "<main class>";
-		usageFormatter = new DefaultUsageFormatter(true, 80, new TtyLineLengthDetector());
+		usageFormatter = new DefaultUsageFormatter2(true, 80, new TtyLineLengthDetector());
 
 		// ensure order by using a LinkedHashMap
 		handlerRegistry = new LinkedHashMap<Class<? extends CmdOptionHandler>, CmdOptionHandler>();
@@ -207,7 +208,7 @@ public class CmdlineParser {
 		this.debugAllowed = debugAllowed;
 	}
 
-	public void setUsageFormatter(final UsageFormatter usageFormatter) {
+	public void setUsageFormatter(final UsageFormatter2 usageFormatter) {
 		this.usageFormatter = usageFormatter;
 	}
 
@@ -224,7 +225,8 @@ public class CmdlineParser {
 	public void setDefaultCommandClass(final Class<?> defaultCommandClass) {
 		final CmdCommand anno = defaultCommandClass.getAnnotation(CmdCommand.class);
 		if (anno == null) {
-			throw new IllegalArgumentException("Given class is not annotated with @" + CmdCommand.class.getSimpleName());
+			throw new IllegalArgumentException(
+					"Given class is not annotated with @" + CmdCommand.class.getSimpleName());
 		}
 		if (anno.names() == null || anno.names().length == 0 || anno.names()[0].length() == 0) {
 			throw new IllegalArgumentException("Given default command class has no valid name");
@@ -265,7 +267,6 @@ public class CmdlineParser {
 
 		if (argsFromFilePrefix.isDefined()) {
 			cmdline = FList.flatMap(cmdline, new F1<String, List<String>>() {
-				@Override
 				public List<String> apply(final String arg) {
 					if (arg.startsWith(argsFromFilePrefix.get())) {
 						debug("Expanding {0} into argument list", arg);
@@ -355,8 +356,11 @@ public class CmdlineParser {
 							"Missing arguments(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}.",
 							FList.mkString(
 									Arrays.asList(optionHandle.getArgs()).subList(cmdline.length - index - 1,
-											optionHandle.getArgsCount()), ", "), param, optionHandle
-											.getArgsCount(), cmdline.length - index - 1);
+											optionHandle.getArgsCount()),
+									", "),
+							param, optionHandle
+							.getArgsCount(),
+							cmdline.length - index - 1);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				// slurp next cmdline arguments into option arguments
@@ -908,12 +912,19 @@ public class CmdlineParser {
 	}
 
 	public void usage() {
-		final StringBuilder output = new StringBuilder();
-		usage(output);
-		System.out.print(output.toString());
+		usage(System.out);
 	}
 
+	/**
+	 * @deprecated Use {@link #usage(PrintStream)} instead.
+	 * @param output
+	 */
+	@Deprecated
 	public void usage(final StringBuilder output) {
+		new StringBuilderUsageFormatter(usageFormatter).format(output, getCmdlineModel());
+	}
+
+	public void usage(final PrintStream output) {
 		usageFormatter.format(output, getCmdlineModel());
 	}
 

@@ -2,6 +2,9 @@ package de.tototec.cmdoption;
 
 import static org.testng.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -38,33 +41,39 @@ public class ArgPlaceholderTest extends FreeSpec {
 
 	{
 		test("description placeholder without any args", () -> {
-			final StringBuilder sb = new StringBuilder();
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final PrintStream ps = new PrintStream(baos);
 			final CmdlineParser cp = new CmdlineParser(new Config7());
-			cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
-			cp.usage(sb);
-			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
+			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
+			cp.usage(ps);
+			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			assertEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a  A\n\n"
 					+ "Parameter:\n"
 					+ "  1  B\n");
 		});
 		test("description unused placeholder with args", () -> {
-			final StringBuilder sb = new StringBuilder();
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final PrintStream ps = new PrintStream(baos);
 			final CmdlineParser cp = new CmdlineParser(new Config8());
-			cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
-			cp.usage(sb);
-			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
+			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
+			cp.usage(ps);
+			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			assertEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a 1  A\n\n"
 					+ "Parameter:\n"
 					+ "  1 2  B with args\n");
 		});
 		test("description used placeholder with args", () -> {
-			final StringBuilder sb = new StringBuilder();
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final PrintStream ps = new PrintStream(baos);
 			final CmdlineParser cp = new CmdlineParser(new Config9());
-			cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
-			cp.usage(sb);
-			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
+			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
+			cp.usage(ps);
+			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			assertEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a 1  A with arg 1\n\n"
 					+ "Parameter:\n"
@@ -72,9 +81,10 @@ public class ArgPlaceholderTest extends FreeSpec {
 		});
 
 		test("description used placeholder with args and translation", () -> {
-			final StringBuilder sb = new StringBuilder();
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final PrintStream ps = new PrintStream(baos);
 			final CmdlineParser cp = new CmdlineParser(new Config9());
-			cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
+			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
 
 			final ResourceBundle rb = new ResourceBundle() {
 				private final Map<String, String> trs = new LinkedHashMap<String, String>() {
@@ -109,8 +119,9 @@ public class ArgPlaceholderTest extends FreeSpec {
 				}
 			};
 			cp.setResourceBundle(rb);
-			cp.usage(sb);
-			assertEquals(sb.toString(), "Usage: <main class> [options] [parameter]\n\n"
+			cp.usage(ps);
+			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			assertEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a one  A with arg one\n\n"
 					+ "Parameter:\n"

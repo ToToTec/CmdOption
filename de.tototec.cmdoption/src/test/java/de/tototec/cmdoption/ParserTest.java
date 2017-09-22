@@ -3,6 +3,10 @@ package de.tototec.cmdoption;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.Charset;
+
 import org.testng.annotations.Test;
 
 public class ParserTest {
@@ -45,10 +49,12 @@ public class ParserTest {
 	@Test
 	public void testPrintUsageContainsSomeCharacters() {
 		final CmdlineParser cp = new CmdlineParser(new Config3());
-		final StringBuilder sb = new StringBuilder();
-		cp.usage(sb);
-		System.out.println(sb);
-		assertTrue(sb.length() > 10);
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final PrintStream ps = new PrintStream(baos);
+		cp.usage(ps);
+		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+		System.out.println(usage);
+		assertTrue(usage.length() > 10);
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Option \"--help\" was given 2 times, but must be given between 0 and 1 times")
@@ -98,10 +104,12 @@ public class ParserTest {
 	public void testPrintUsageAndParseHelp() {
 		final Config4 config = new Config4();
 		final CmdlineParser cp = new CmdlineParser(config);
-		final StringBuilder sb = new StringBuilder();
-		cp.usage(sb);
-		System.out.println(sb);
-		assertTrue(sb.length() > 10);
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final PrintStream ps = new PrintStream(baos);
+		cp.usage(ps);
+		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+		System.out.println(usage);
+		assertTrue(usage.length() > 10);
 		cp.parse(new String[] { "--help", "true" });
 		assertEquals(config.help, true);
 	}
@@ -124,9 +132,11 @@ public class ParserTest {
 	public void testParseTwoOptionWhichRequiresTwoOtherButOneIsMissingFail() {
 		final Config5 config = new Config5();
 		final CmdlineParser cp = new CmdlineParser(config);
-		final StringBuilder sb = new StringBuilder();
-		cp.usage(sb);
-		assertTrue(sb.length() > 10);
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final PrintStream ps = new PrintStream(baos);
+		cp.usage(ps);
+		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+		assertTrue(usage.length() > 10);
 		cp.parse(new String[] { "--opt", "--reqA" });
 	}
 
@@ -134,9 +144,11 @@ public class ParserTest {
 	public void testParseOneOptionWhichRequiresTwoOthersButOneIsMissingFail() {
 		final Config5 config = new Config5();
 		final CmdlineParser cp = new CmdlineParser(config);
-		final StringBuilder sb = new StringBuilder();
-		cp.usage(sb);
-		assertTrue(sb.length() > 10);
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final PrintStream ps = new PrintStream(baos);
+		cp.usage(ps);
+		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+		assertTrue(usage.length() > 10);
 		cp.parse(new String[] { "--opt" });
 	}
 
@@ -152,9 +164,11 @@ public class ParserTest {
 	public void testParseOptionWhichRequiresAnotherOneFail() {
 		final Config6 config = new Config6();
 		final CmdlineParser cp = new CmdlineParser(config);
-		final StringBuilder sb = new StringBuilder();
-		cp.usage(sb);
-		assertTrue(sb.length() > 10);
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final PrintStream ps = new PrintStream(baos);
+		cp.usage(ps);
+		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+		assertTrue(usage.length() > 10);
 		cp.parse(new String[] { "--opt" });
 	}
 

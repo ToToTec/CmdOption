@@ -2,6 +2,10 @@ package de.tototec.cmdoption;
 
 import static org.testng.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.Charset;
+
 import org.testng.annotations.Test;
 
 public class FinalFieldTest {
@@ -27,10 +31,12 @@ public class FinalFieldTest {
 	public void testField() {
 		final Config config = new Config();
 		final CmdlineParser cp = new CmdlineParser(config);
-		cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
-		final StringBuilder sb = new StringBuilder();
-		cp.usage(sb);
-		assertEquals(sb.toString(), expectedUsage);
+		cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final PrintStream ps = new PrintStream(baos);
+		cp.usage(ps);
+		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+		assertEquals(usage, expectedUsage);
 		assertEquals(config.help, false);
 		cp.parse("--help", "false");
 		assertEquals(config.help, false);
@@ -42,10 +48,13 @@ public class FinalFieldTest {
 	public void testFieldWithDefault() {
 		final ConfigWithDefault config = new ConfigWithDefault();
 		final CmdlineParser cp = new CmdlineParser(config);
-		cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
-		final StringBuilder sb = new StringBuilder();
-		cp.usage(sb);
-		assertEquals(sb.toString(), expectedUsage);
+		cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final PrintStream ps =  new PrintStream(baos);
+		cp.usage(ps);
+		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+		baos.toString();
+		assertEquals(usage, expectedUsage);
 		assertEquals(config.help, false);
 		cp.parse("--help", "false");
 		assertEquals(config.help, false);
@@ -64,9 +73,12 @@ public class FinalFieldTest {
 	public void testFinalFieldWithDefaultFail() {
 		final ConfigWithFinalField config = new ConfigWithFinalField();
 		final CmdlineParser cp = new CmdlineParser(config);
-		final StringBuilder sb = new StringBuilder();
-		cp.usage(sb);
-		assertEquals(sb.toString(), expectedUsage);
+		cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final PrintStream ps = new PrintStream(baos);
+		cp.usage(ps);
+		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+		assertEquals(usage, expectedUsage);
 		assertEquals(config.help, false);
 		cp.parse("--help", "false");
 	}

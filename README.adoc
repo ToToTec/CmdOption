@@ -187,7 +187,7 @@ If a `@CmdOption` annotation without any names attribute is found, this option i
 
 == Commands
 
-CmdOption also supports the notion of *commands*. At most one command can be selected and supports itself options and main parameters. The `@CmdCommand` annotation can be used for classes. 
+CmdOption also supports the notion of *commands*. At most one command can be selected and supports itself options and main parameters. The `@CmdCommand` annotation can be used for classes.
 
 Examples for tools that have command-style command line interfaces: http://git-scm.com/[git], http://subversion.apache.org/[subversion], http://neil.brown.name/blog/mdadm[mdadm], http://www.gentoo.org/[emerge/portage], http://sbuild.org/[SBuild], http://cmvn.tototec.de/[cmvn], ...
 
@@ -197,11 +197,16 @@ Attributes of the `@CmdCommand` annotation:
 * *description*: `String` - The description of the command.
 * *hidden*: `boolean` - If `true`, do not show this command in the usage.
 
-When a command is parsed, all succeeding arguments are parsed into that command (its options, and parameter). It is possible, to have options with the same name in different commands or in a command and the main program. The position of that option decides, which handler is invoked: before the command it is treated as a main options, after the command, its treated as an option of that command. If the main program support main parameters and also has commands, than the main parameters must be given before the command starts.
+When a command is parsed, all succeeding arguments are parsed into that command (its options, and parameter).
+It is possible, to have options with the same name in different commands or in a command and the main program.
+The position of that option decides, which handler is invoked: before the command it is treated as a main options, after the command, its treated as an option of that command.
+If the main program support main parameters and also has commands, than the main parameters must be given before the command starts.
 
-You can access the parsed command through the methods `getParsedCommandName()` or `getParsedCommandObject()` of class `CmdlineParser`. 
+You can access the parsed command through the methods `getParsedCommandName()` or `getParsedCommandObject()` of class `CmdlineParser`.
 
-It is possible, to define a *default command*, that is implicitly assumed when the user does not use a command explicitly. When the commandline parser detects an else unknown option or parameter it will try to parse the rest of the command line as if the default command was issued. You can set the default commend with `setDefaultCommandName()` or `setDefaultCommandClass()` of class `CmdlineParser`.
+It is possible, to define a *default command*, that is implicitly assumed when the user does not use a command explicitly.
+When the commandline parser detects an else unknown option or parameter it will try to parse the rest of the command line as if the default command was issued.
+You can set the default commend with `setDefaultCommandName()` or `setDefaultCommandClass()` of class `CmdlineParser`.
 
 == Composition
 
@@ -223,7 +228,8 @@ The class `CmdlineParser` has various methods to customize the behaviour and the
 
 The `parse` methods of `CmdlineParser` will throw a `CmdlineParserException` when the given cmdline contains validation errors.
 Thus, you always can assume sane and proper initialized config object (according to the configuration).
-If you don't catch the exception, the JVM typically prints the error message and a stack trace to the commandline. Although helpful, it isn't always what you want to be shown to your users.
+If you don't catch the exception, the JVM typically prints the error message and a stack trace to the commandline.
+Although helpful, it isn't always what you want to be shown to your users.
 
 It is highly recommended to surround the call to the `parse` method with a try-catch-block and provide a sane error message and/or if you prefer so a details usage display.
 
@@ -245,14 +251,16 @@ There are two source of messages, that needs localization. Those from CmdOption 
 
 === Localized CmdOption output
 
-CmdOption itself supports localized output. The JVM default locale (country, language, variant) is used. 
+CmdOption itself supports localized output.
+The JVM default locale (country, language, variant) is used.
 
 Currently, CmdOption comes with the following languages:
 
 * English
 * German
 
-If you want to translate CmdOption into another language, we apreciate your contribution! See link:HowToProvideTranslations.adoc for details.
+If you want to translate CmdOption into another language, we apreciate your contribution!
+See link:HowToProvideTranslations.adoc for details.
 
 === Localized options and descriptions
 
@@ -264,7 +272,8 @@ CmdOption also supports the translation of the user-provided strings. Those stri
 * The argument names of an option (`@CmdOption(args={..})`)
 * The main parameter names (`@CmdOption(args={})`)
 
-If you provide a `ResourceBundle`, CmdOption will use that bundle to translate your messages. The JVM default locale is used.
+If you provide a `ResourceBundle`, CmdOption will use that bundle to translate your messages.
+The JVM default locale is used.
 
 You can either create the `ResourceBundle` yourself and set it into the CmdlineParser (`setResourceBundle(ResourceBundle)`), or you can tell the CmdlineParser the name for the message catalog and the classloader (`setResourceBundle(String,ClassLoader)`), that should be used to access the message catalog.
 
@@ -385,7 +394,8 @@ To customize the behavoir of CmdOption, one has some options:
 * Explicitly select a specific `CmdOptionHandler` in the `@CmdOption`-Annotation (which needs to have a default constructor)
 
 Please note, that newly registered `CmdOptionHandler` s will only have an effect for configuration objects that are added after the handler was registered.
-That means, when you want to parse your config with a special set of `CmdOptionHandler` s, you should register them _before_ you add your config object. In this case, you cannot use the convenience constructor of `CmdlineParser` that accepts your config objects, but you need to use the default constructor and add your config objects with `CmdlineParser.addObject(Object...)`.
+That means, when you want to parse your config with a special set of `CmdOptionHandler` s, you should register them _before_ you add your config object.
+In this case, you cannot use the convenience constructor of `CmdlineParser` that accepts your config objects, but you need to use the default constructor and add your config objects with `CmdlineParser.addObject(Object...)`.
 
 .Example:
 [source,java]
@@ -409,7 +419,8 @@ CmdlineParser cp = new CmdlineParser();
 cp.registerHandler(new MyOptionHandler());
 ----
 
-The order of registered handlers is important. The first handler, that will match a declared field or method, will be used to parse it.
+The order of registered handlers is important.
+The first handler, that will match a declared field or method, will be used to parse it.
 To explicitly force a specific handler, use the `handler` parameter of the `@CmdOption` annotation: `@CmdOption(handler = TheSpecificHandler.class)`.
 
 === Pre-registered CmdOptionHandlers
@@ -420,27 +431,40 @@ At construction time CmdlineParser pre-registeres various handlers (see `Cmdline
 ----
 public List<CmdOptionHandler> defaultHandlers() {
     return Arrays.asList(
-        new BooleanOptionHandler(),
-        new BooleanHandler(),
-        new StringFieldHandler(),
-        new PutIntoMapHandler(),
-        new AddToCollectionHandler(),
-        new StringMethodHandler(),
-        new LongHandler(),
-        new IntegerHandler(),
-        new EnumHandler());
+        new BooleanOptionHandler(),     // <1>
+        new BooleanHandler(),           // <2>
+        new StringFieldHandler(),       // <3>
+        new PutIntoMapHandler(),        // <4>
+        new AddToCollectionHandler(),   // <5>
+        new StringMethodHandler(),      // <6>
+        new LongHandler(),              // <7>
+        new IntegerHandler(),           // <8>
+        new EnumHandler());             // <9>
     }
 }
 ----
 
-<1> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/BooleanOptionHandler.java[`BooleanOptionHandler`] -- Apply an zero-arg option to an `Boolean` or `boolean` field. If the option is present, the field will be evaluated to `true`.
-<2> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/BooleanHandler.java[`BooleanHandler`] -- Apply an one-arg option to a `Boolean` or `boolean` field or method. Evaluates the argument to `true` if it is `"true"`, `"on"` or `"1"`.
-<3> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/StringFieldHandler.java[`StringFieldHandler`] -- Apply an one-arg option to a field of type `String`.
-<4> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/PutIntoMapHandler.java[`PutIntoMapHandler`] -- Apply an two-arg option to an mutable `Map`.
-<5> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/AddToCollectionHandler.java[`AddToCollectionHandler`] -- Add an one-arg option argument to a mutable collection of `String`s.
-<6> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/StringMethodHandler.java[`StringMethodHandler`] -- Apply an _n_-arg option to a (setter) method with _n_ parameters of type `String`.
-<7> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/IntegerHandler.java[`IntegerHandler`] -- Apply an one-arg option to a `Integer` or `int` field or method.
-<8> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/EnumHandler.java[`EnumHandler`] -- Parse a Sting to a Enum of the expected type and applies it to a field or a one-arg method. The `Enum.valueOf` method is used.
+<1> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/BooleanOptionHandler.java[`BooleanOptionHandler`] --
+Apply an zero-arg option to an `Boolean` or `boolean` field.
+If the option is present, the field will be evaluated to `true`.
+<2> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/BooleanHandler.java[`BooleanHandler`] --
+Apply an one-arg option to a `Boolean` or `boolean` field or method.
+Evaluates the argument to `true` if it is `"true"`, `"on"` or `"1"`.
+<3> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/StringFieldHandler.java[`StringFieldHandler`] --
+Apply an one-arg option to a field of type `String`.
+<4> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/PutIntoMapHandler.java[`PutIntoMapHandler`] --
+Apply an two-arg option to an mutable `Map`.
+<5> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/AddToCollectionHandler.java[`AddToCollectionHandler`] --
+Add an one-arg option argument to a mutable collection of `String`s.
+<6> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/StringMethodHandler.java[`StringMethodHandler`] --
+Apply an _n_-arg option to a (setter) method with _n_ parameters of type `String`.
+<7> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/LongHandler.java[`LongHandler`] --
+Apply an one-arg option to a `Long` or `long` field or method.
+<8>link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/LongHandler.java[`LongHandler`] --
+Apply an one-arg option to a `Integer` or `int` field or method.
+<9> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/EnumHandler.java[`EnumHandler`] --
+Parse a Sting to a Enum of the expected type and applies it to a field or a one-arg method.
+The `Enum.valueOf` method is used.
 
 
 
@@ -454,7 +478,7 @@ CmdlineParser cp = new CmdlineParser();
 cp.unregisterAllHandler();
 ----
 
-You can also access all pre-registered `CmdOptionHandler` s via `CmdlineParser.defaultHandlers()`. 
+You can also access all pre-registered `CmdOptionHandler` s via `CmdlineParser.defaultHandlers()`.
 This can be useful e.g. to "inject" some handlers before the default ones:
 
 [source,java]
@@ -472,7 +496,8 @@ for(final CmdOptionHandler handler: cp.defaultHandlers()) {
 CmdOption has a fairly detailed set of error messages, that will be thrown as `CmdlineParserException`.
 
 When CmdOption detects the presence of a SLF4J Logger, it will use it to log its internals.
-If no such logger is found on the classpath, CmdOption falls back to log to Java's logging API (Java Util Logging). If both logging output is not available to you, you can still gather some information about what goes on under the hood by using the special command line option `--CMDOPTION_DEBUG`. 
+If no such logger is found on the classpath, CmdOption falls back to log to Java's logging API (Java Util Logging).
+If both logging output is not available to you, you can still gather some information about what goes on under the hood by using the special command line option `--CMDOPTION_DEBUG`.
 When used, CmdOption will display detailed information about the found configurations and the parsing process.
 This might help to understand issues further.
 In most cases, this will help you to resolve your issues. Of course, you can disable this functionality with `CmdlineParser.setDebugModeAllowed(false)`.
@@ -509,7 +534,8 @@ We also accept pull requests.
 
 You can also use our https://gitter.im/ToToTec/CmdOption[Chat on Gitter.im] for discussions and questions.
 
-If you want to show appreciation for the project, please "star" it on https://github.com/ToToTec/CmdOption[GitHub]. That helps me setting my priorities.
+If you want to show appreciation for the project, please "star" it on https://github.com/ToToTec/CmdOption[GitHub].
+That helps me setting my priorities.
 
 == Building CmdOption from Source
 
@@ -527,7 +553,7 @@ The built package can be found under `de.tototec.cmdoption/target/de.tototec.cmd
 
 Have a look at some other projects I'm involved with:
 
-* https://github.com/ToToTec/de.tototec.utils.functional[Functional Utils] - Functional Utility Classes for working with Java 5+ 
+* https://github.com/ToToTec/de.tototec.utils.functional[Functional Utils] - Functional Utility Classes for working with Java 5+
 * https://github.com/lefou/poor-mans-lambda-test/[Poor Mans Lambda Test] - Minimal Java8 Lambda enabled testing for TestNG
 * http://sbuild.org[SBuild] - A Scala-based build tool
 * https://github.com/domino-osgi/domino[Domino] - OSGi dynamics made easy with a Scala DSL
@@ -587,7 +613,7 @@ Have a look at some other projects I'm involved with:
 * Added support for inherited fields and methods.
 * Added new BooleanHandler, which replaces BooleanFieldHandler, but also
   handles methods.
-* Changed SBuild-driven test runner to scalatest, for better commandline 
+* Changed SBuild-driven test runner to scalatest, for better commandline
   output.
 * Added more unit tests.
 * Added Changelog.
@@ -630,4 +656,3 @@ Have a look at some other projects I'm involved with:
 === CmdOption 0.0.4 - 2010-12-16
 
 === CmdOption 0.0.3 - 2010-08-03
-
