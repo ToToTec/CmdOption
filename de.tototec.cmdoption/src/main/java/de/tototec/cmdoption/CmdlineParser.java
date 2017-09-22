@@ -163,6 +163,7 @@ public class CmdlineParser {
 				new PutIntoMapHandler(),
 				new AddToCollectionHandler(),
 				new StringMethodHandler(),
+				new LongHandler(),
 				new IntegerHandler(),
 				new EnumHandler());
 	}

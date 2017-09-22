@@ -414,19 +414,23 @@ To explicitly force a specific handler, use the `handler` parameter of the `@Cmd
 
 === Pre-registered CmdOptionHandlers
 
-At construction time CmdlineParser pre-registeres various handlers like the following snippet:
+At construction time CmdlineParser pre-registeres various handlers (see `CmdlineParser.defaultHandlers()`):
 
 [source,java]
 ----
-CmdlineParser cp = new CmdlineParser();
-cp.registerHandler(new BooleanOptionHandler()); // <1>
-cp.registerHandler(new BooleanHandler()); // <2>
-cp.registerHandler(new StringFieldHandler()); // <3>
-cp.registerHandler(new PutIntoMapHandler()); // <4>
-cp.registerHandler(new AddToCollectionHandler()); // <5>
-cp.registerHandler(new StringMethodHandler()); // <6>
-cp.registerHandler(new IntegerHandler()); // <7>
-cp.registerHandler(new EnumHandler()); // <8>
+public List<CmdOptionHandler> defaultHandlers() {
+    return Arrays.asList(
+        new BooleanOptionHandler(),
+        new BooleanHandler(),
+        new StringFieldHandler(),
+        new PutIntoMapHandler(),
+        new AddToCollectionHandler(),
+        new StringMethodHandler(),
+        new LongHandler(),
+        new IntegerHandler(),
+        new EnumHandler());
+    }
+}
 ----
 
 <1> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/BooleanOptionHandler.java[`BooleanOptionHandler`] -- Apply an zero-arg option to an `Boolean` or `boolean` field. If the option is present, the field will be evaluated to `true`.
