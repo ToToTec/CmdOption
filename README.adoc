@@ -539,15 +539,41 @@ That helps me setting my priorities.
 
 == Building CmdOption from Source
 
-CmdOption is build with http://sbuild.org/[SBuild].
+CmdOption is build with https://maven.apache.org[Apache Maven 3] and the https://github.com/takari/polyglot-maven#overview[polyglot-scala extension].
 
-If you don't have SBuild installed, you can also use the `sbuild-wrapper` script.
+Maven 3.5 is recommended. You also need GNU Gettext installed.
+
+.Build CmdOption from source
+----
+mvn clean install
+----
+
+The built JAR file can be found under `de.tototec.cmdoption/target/de.tototec.cmdoption-{currentversion}.jar`.
+
+
+=== Create or Update translations
+
+You want to create a new or update an existing translation?
+
+CmdOption uses GNU Gettext. The translations are located under `src/main/po`. The message catalog template will be extracted in the compile phase and is located under `target/po/messages.pot`.
+
+To update the translation files under `src/main/po` use the `update-message` profile.
 
 ----
-./sbuild-wrapper all
+mvn -Pupdate-messages clean compile
 ----
 
-The built package can be found under `de.tototec.cmdoption/target/de.tototec.cmdoption-{currentversion}.jar`. The complete dist package under `target/cmdoption-dist-{currentversion}.zip`.
+=== Create `pom.xml` for interoperability, e.g. IDEs
+
+To generate the `pom.xml` use hte `gen-pom-xml` profile.
+
+----
+mvn -Pgen-pom-xml initialize
+----
+
+=== Releases
+
+To build a new release use the `release` profile.
 
 == Other Projects
 
