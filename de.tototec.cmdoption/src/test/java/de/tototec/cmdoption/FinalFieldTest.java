@@ -27,6 +27,7 @@ public class FinalFieldTest {
 	public void testField() {
 		final Config config = new Config();
 		final CmdlineParser cp = new CmdlineParser(config);
+		cp.setUsageFormatter(new DefaultUsageFormatter(true, 80));
 		final StringBuilder sb = new StringBuilder();
 		cp.usage(sb);
 		assertEquals(sb.toString(), expectedUsage);
