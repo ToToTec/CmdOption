@@ -19,7 +19,7 @@ implicit class ImplDependency(d: Dependency) {
 }
 
 Model(
-  gav = "de.tototec" % "de.tototec.cmdoption" % "0.4.3-SNAPSHOT",
+  gav = "de.tototec" % "de.tototec.cmdoption" % "0.5-SNAPSHOT",
   modelVersion = "4.0.0",
   packaging = "jar",
   name = "CmdOption",
