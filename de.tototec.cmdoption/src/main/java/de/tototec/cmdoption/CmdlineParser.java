@@ -30,6 +30,7 @@ import de.tototec.cmdoption.handler.CmdOptionHandler;
 import de.tototec.cmdoption.handler.CmdOptionHandlerException;
 import de.tototec.cmdoption.handler.EnumHandler;
 import de.tototec.cmdoption.handler.IntegerHandler;
+import de.tototec.cmdoption.handler.LongHandler;
 import de.tototec.cmdoption.handler.PutIntoMapHandler;
 import de.tototec.cmdoption.handler.StringFieldHandler;
 import de.tototec.cmdoption.handler.StringMethodHandler;
