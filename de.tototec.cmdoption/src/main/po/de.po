@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CmdOption\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-14 12:12+0100\n"
-"PO-Revision-Date: 2015-03-14 12:16+0100\n"
+"POT-Creation-Date: 2017-09-22 20:39+0200\n"
+"PO-Revision-Date: 2017-09-22 20:41+0200\n"
 "Last-Translator: Tobias Roeser\n"
 "Language-Team: German <>\n"
 "Language: de\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Poedit 1.8.5\n"
 
 #: de/tototec/cmdoption/CmdlineParser.java:258
 #, java-format
@@ -106,44 +106,44 @@ msgstr ""
 msgid "Could not create handler: {0}"
 msgstr "Konnte den Handler ich erzeugen: {0}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:620
-#, java-format
-msgid "Command found without required name in: {0}"
-msgstr "Kommando ohne einen benötigten Name gefunden: {0}"
-
-#: de/tototec/cmdoption/CmdlineParser.java:631
-#: de/tototec/cmdoption/CmdlineParser.java:859
+#: de/tototec/cmdoption/CmdlineParser.java:611
+#: de/tototec/cmdoption/CmdlineParser.java:864
 #, java-format
 msgid "Duplicate command/option name \"{0}\" found in: {1}"
 msgstr "Doppelter Kommando-/Optionsname \"{0}\" gefunden in: {1}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:649
+#: de/tototec/cmdoption/CmdlineParser.java:630
+#, java-format
+msgid "Command found without required name in: {0}"
+msgstr "Kommando ohne einen benötigten Name gefunden: {0}"
+
+#: de/tototec/cmdoption/CmdlineParser.java:648
 #, java-format
 msgid "The option \"{0}\" requires the unknown/missing option \"{1}\"."
 msgstr "Die Option \"{0}\" benötigt die unbekannte/fehlende Option \"{1}\"."
 
-#: de/tototec/cmdoption/CmdlineParser.java:657
+#: de/tototec/cmdoption/CmdlineParser.java:656
 #, java-format
 msgid "Option \"{0}\" is configured to conflicts with itself."
 msgstr ""
 "Option \"{0}\" wurde so konfiguriert, dass sie zu sich selbst in Konflikt "
 "steht."
 
-#: de/tototec/cmdoption/CmdlineParser.java:664
+#: de/tototec/cmdoption/CmdlineParser.java:663
 #, java-format
 msgid "The option \"{0}\" conflicts with a unknown/missing option \"{1}\"."
 msgstr ""
 "Die Option \"{0}\" steht in Konflikt zu einer unbekannten/fehlenden Option "
 "\"{1}\"."
 
-#: de/tototec/cmdoption/CmdlineParser.java:821
+#: de/tototec/cmdoption/CmdlineParser.java:826
 #, java-format
 msgid "No suitable handler found for option(s): {0} ({1} argument(s))"
 msgstr ""
 "Es konnte kein Prozessor für die Option(en) \"{0}\" (mit {1} Argument(en)) "
 "gefunden werden."
 
-#: de/tototec/cmdoption/CmdlineParser.java:831
+#: de/tototec/cmdoption/CmdlineParser.java:836
 #, java-format
 msgid ""
 "More than one parameter definition found. First definition: {0} Second "
@@ -152,7 +152,7 @@ msgstr ""
 "Mehr als eine Parameterdefinition gefunden. Erste Stelle: {0} Zweite Stelle: "
 "{1}"
 
-#: de/tototec/cmdoption/CmdlineParser.java:847
+#: de/tototec/cmdoption/CmdlineParser.java:852
 msgid "Parameter definition must support at least on argument."
 msgstr "Parameterdefinition muss mindestens ein Argument enthalten."
 
@@ -213,16 +213,17 @@ msgstr "Argument {0} konnte nicht als Wahrheitswert gelesen werden."
 #: de/tototec/cmdoption/handler/BooleanFieldHandler.java:96
 #: de/tototec/cmdoption/handler/BooleanHandler.java:108
 #: de/tototec/cmdoption/handler/IntegerHandler.java:61
+#: de/tototec/cmdoption/handler/LongHandler.java:61
 #, java-format
 msgid "Could not apply argument \"{0}\"."
 msgstr "Parameter {0} konnte nicht angewendet werden."
 
-#: de/tototec/cmdoption/handler/EnumHandler.java:54
+#: de/tototec/cmdoption/handler/EnumHandler.java:60
 #, java-format
 msgid "Invalid enum value: \"{0}\". Supported values: {1}"
 msgstr "Ungültiger Wert: \"{0}\". Unterstütze Werte: {1}"
 
-#: de/tototec/cmdoption/handler/EnumHandler.java:60
+#: de/tototec/cmdoption/handler/EnumHandler.java:66
 #: de/tototec/cmdoption/handler/UrlHandler.java:46
 #, java-format
 msgid "Could not apply parameters: {0} to field/method {1}"
@@ -232,6 +233,11 @@ msgstr "Parameter {0} konnte nicht auf Feld/Methode {1} angewendet werden"
 #, java-format
 msgid "Could not read integer value \"{0}\"."
 msgstr "Konnte den Integer-Wert \"{0}\" nicht lesen."
+
+#: de/tototec/cmdoption/handler/LongHandler.java:47
+#, java-format
+msgid "Could not read long value \"{0}\"."
+msgstr "Konnte den Long-Wert \"{0}\" nicht lesen."
 
 #: de/tototec/cmdoption/handler/PutIntoMapHandler.java:28
 #, java-format
