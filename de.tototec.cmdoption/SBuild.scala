@@ -123,11 +123,10 @@ class SBuild(implicit _project: Project) {
   Target(classes) dependsOn "compile"
   propFileTargets.foreach { t => Target(classes) dependsOn t }
 
-  Target(jar) dependsOn classes ~ "LICENSE.txt" ~ "ChangeLog.txt" exec {
+  Target(jar) dependsOn classes ~ "LICENSE.txt" exec {
     AntJar(baseDir = Path("target/classes"), destFile = Path(jar),
       fileSets = Seq(
-        AntFileSet(file = "LICENSE.txt".files.head),
-        AntFileSet(file = "ChangeLog.txt".files.head)
+        AntFileSet(file = "LICENSE.txt".files.head)
       )
     )
   }
@@ -138,12 +137,11 @@ class SBuild(implicit _project: Project) {
       args = Array("install:install-file", "-DgroupId=de.tototec", "-DartifactId=de.tototec.cmdoption", "-Dversion=" + version, "-Dfile=" + jar, "-DgeneratePom=true", "-Dpackaging=jar"))
   } help "Install jar into Maven repository."
 
-  Target(sourcesJar) dependsOn "scan:src/main/java" ~ "scan:src/main/po" ~ "LICENSE.txt" ~ "ChangeLog.txt" exec { ctx: TargetContext =>
+  Target(sourcesJar) dependsOn "scan:src/main/java" ~ "scan:src/main/po" ~ "LICENSE.txt" exec { ctx: TargetContext =>
     AntJar(destFile = ctx.targetFile.get, fileSets = Seq(
       AntFileSet(dir = Path("src/main/java")),
       AntFileSet(dir = Path("src/main/po")),
-      AntFileSet(file = "LICENSE.txt".files.head),
-      AntFileSet(file = "ChangeLog.txt".files.head)
+      AntFileSet(file = "LICENSE.txt".files.head)
     ))
   }
 
