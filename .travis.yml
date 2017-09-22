@@ -11,7 +11,9 @@ addons:
     - gettext
 
 before_script: 
+- mvn -N io.takari:maven:wrapper -Dmaven=3.5.0
 - xgettext --version
-- ./sbuild-wrapper --version
 
-script: "./sbuild-wrapper --keep-going all"
+script: 
+- cd de.tototec.cmdoption
+- ../mvnw clean install -Prelease
