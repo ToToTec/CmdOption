@@ -534,6 +534,10 @@ Have a look at some other projects I'm involved with:
 
 == ChangeLog
 
+=== CmdOption NEXT
+
+* Added new LongHandler which support Long and long fields and setter method.
+
 === CmdOption 0.4.2 - 2015-06-02
 
 * Added new EnumHandler which support parsing of enum values into Java enums.
