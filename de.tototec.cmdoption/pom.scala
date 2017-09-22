@@ -117,32 +117,10 @@ Model(
               ) //< target
             )
           ),
-          // maybe, we should not run this always
-          Execution(
-            id = "merge-messages",
-            phase = "generate-resources",
-            goals = Seq("run"),
-            configuration = Config(
-              target = Config(
-                // run msgmerge on the translation files to update them
-                apply = new Config(Seq(
-                  "@executable" -> Some("msgmerge"),
-                  "@verbose" -> Some("true"),
-                  "@failOnError" -> Some("true"),
-                  // one invocation for each translation files
-                  "@parallel" -> Some("false"),
-                  // ensure, we pass the files relative to their fileset roots
-                  "arg" -> Some(Config(`@value` = "--update")),
-                  "srcfile" -> None,
-                  "fileset" -> Some(Config(`@dir` = "${project.basedir}/src/main/po", `@includes` = "*.po")),
-                  "arg" -> Some(Config(`@value` = "${project.basedir}/target/po/messages.pot"))
-                ))
-              ) //< target
-            )
-          ),
+          // Generate properties files for translations
           Execution(
             id = "generate-properties",
-            phase = "generate-resources",
+            phase = "process-resources",
             goals = Seq("run"),
             configuration = Config(
               target = Config(
@@ -179,6 +157,41 @@ Model(
     )
   ),
   profiles = Seq(
+    Profile(
+      id = "update-messages",
+      build = BuildBase(
+        plugins = Seq(
+          // Update/merge translations with current message catalog
+          Plugin(
+            gav = "org.apache.maven.plugins" % "maven-antrun-plugin" % "1.8",
+            executions = Seq(
+              Execution(
+                id = "merge-messages",
+                phase = "generate-resources",
+                goals = Seq("run"),
+                configuration = Config(
+                  target = Config(
+                    // run msgmerge on the translation files to update them
+                    apply = new Config(Seq(
+                      "@executable" -> Some("msgmerge"),
+                      "@verbose" -> Some("true"),
+                      "@failOnError" -> Some("true"),
+                      // one invocation for each translation files
+                      "@parallel" -> Some("false"),
+                      // ensure, we pass the files relative to their fileset roots
+                      "arg" -> Some(Config(`@value` = "--update")),
+                      "srcfile" -> None,
+                      "fileset" -> Some(Config(`@dir` = "${project.basedir}/src/main/po", `@includes` = "*.po")),
+                      "arg" -> Some(Config(`@value` = "${project.basedir}/target/po/messages.pot"))
+                    ))
+                  ) //< target
+                )
+              )
+            )
+          )
+        )
+      )
+    ),
     Profile(
       id = "release",
       build = BuildBase(
