@@ -94,7 +94,7 @@ Model(
                   `@parallel` = "true",
                   // ensure, we pass the files relative to their fileset roots
                   `@relative` = "true",
-                  arg = Config(`@value` = "-krt"),
+                  arg = Config(`@value` = "-ktr"),
                   arg = Config(`@value` = "-kmarktr"),
                   arg = Config(`@value` = "-kpreparetr"),
                   arg = Config(`@value` = "--sort-by-file"),
