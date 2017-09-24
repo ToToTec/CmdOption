@@ -208,6 +208,14 @@ public class CmdlineParser {
 		this.debugAllowed = debugAllowed;
 	}
 
+	/**
+	 * @deprecated Use {@link #setUsageFormatter(UsageFormatter2)} instead.
+	 */
+	@Deprecated
+	public void setUsageFormatter(final UsageFormatter usageFormatter) {
+		this.usageFormatter = new WrappingUsageFormatter(usageFormatter);
+	}
+
 	public void setUsageFormatter(final UsageFormatter2 usageFormatter) {
 		this.usageFormatter = usageFormatter;
 	}
@@ -921,7 +929,7 @@ public class CmdlineParser {
 	 */
 	@Deprecated
 	public void usage(final StringBuilder output) {
-		new StringBuilderUsageFormatter(usageFormatter).format(output, getCmdlineModel());
+		new WrappingUsageFormatter(usageFormatter).format(output, getCmdlineModel());
 	}
 
 	public void usage(final PrintStream output) {

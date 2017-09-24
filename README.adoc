@@ -589,6 +589,8 @@ Have a look at some other projects I'm involved with:
 === CmdOption NEXT
 
 * Added new LongHandler which support Long and long fields and setter method.
+* New `UsageFormatter2` interface that accepts a `PrintStream` and default implementation `DefaultUsageFormatter2`.
+* Deprecated interface `UsageFormatter` and methods `CmdlineParser.usage(StringBuilder)` and CmdlineParser.setUsageFormatter(UsageFormatter)
 
 === CmdOption 0.4.2 - 2015-06-02
 
