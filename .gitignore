@@ -1,4 +1,6 @@
-.sbuild
+/.mvn/wrapper
+/mvnw
+/mvnw.cmd
 target
 pom.xml
-mvn-deploy-settings.xml
+/mvn-deploy-settings.xml
