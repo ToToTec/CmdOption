@@ -15,5 +15,4 @@ before_script:
 - xgettext --version
 
 script: 
-- cd de.tototec.cmdoption
 - ../mvnw clean install -Prelease
