@@ -35,6 +35,7 @@ import de.tototec.cmdoption.handler.LongHandler;
 import de.tototec.cmdoption.handler.PutIntoMapHandler;
 import de.tototec.cmdoption.handler.StringFieldHandler;
 import de.tototec.cmdoption.handler.StringMethodHandler;
+import de.tototec.cmdoption.internal.F0;
 import de.tototec.cmdoption.internal.F1;
 import de.tototec.cmdoption.internal.FList;
 import de.tototec.cmdoption.internal.I18n;
@@ -113,6 +114,8 @@ public class CmdlineParser {
 	private ResourceBundle resourceBundle;
 
 	private Optional<String> argsFromFilePrefix = Optional.some("@");
+
+	private Optional<String> aggregateShortOptionsWithPrefix = Optional.none();
 
 	protected CmdlineParser(final CmdlineParser parent, final String commandName, final Object commandObject) {
 		this.parent = parent;
@@ -359,9 +362,35 @@ public class CmdlineParser {
 
 		boolean helpDetected = false;
 
-		// Actually iterate over the command line elements
-		for (int index = 0; index < cmdline.length; ++index) {
-			final String param = cmdline[index];
+		final String aggregatePrefix = aggregateShortOptionsWithPrefix.getOrElse(new F0<String>() {
+			@Override
+			public String apply() {
+				return "";
+			}
+		});
+		final LinkedHashMap<String, OptionHandle> shortOptionMap = new LinkedHashMap<String, OptionHandle>();
+		final int aggregatePrefixSize = aggregatePrefix.length();
+		if (aggregateShortOptionsWithPrefix.isDefined()) {
+			final int expectedSize = 1 + aggregatePrefixSize;
+			for (final Entry<String, OptionHandle> oh : quickOptionMap.entrySet()) {
+				if (oh.getKey().startsWith(aggregatePrefix) && oh.getKey().length() == expectedSize) {
+					shortOptionMap.put(oh.getKey().substring(aggregatePrefixSize), oh.getValue());
+				}
+			}
+		}
+
+		int index = -1;
+		String[] rest = cmdline;
+
+		while (rest.length > index + 1) {
+			if (index >= 0) {
+				rest = Arrays.copyOfRange(rest, ++index, rest.length);
+			}
+			index = 0;
+
+			// Actually iterate over the command line elements
+			// for (int index = 0; index < cmdline.length; ++index) {
+			final String param = rest[index];
 			if (parseOptions && stopOption.equals(param)) {
 				parseOptions = false;
 
@@ -380,20 +409,20 @@ public class CmdlineParser {
 					helpDetected = true;
 				}
 
-				if (cmdline.length <= index + optionHandle.getArgsCount()) {
+				if (rest.length <= index + optionHandle.getArgsCount()) {
 					final PreparedI18n msg = i18n.preparetr(
 							"Missing arguments(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}.",
 							FList.mkString(
-									Arrays.asList(optionHandle.getArgs()).subList(cmdline.length - index - 1,
+									Arrays.asList(optionHandle.getArgs()).subList(rest.length - index - 1,
 											optionHandle.getArgsCount()),
 									", "),
 							param, optionHandle
 							.getArgsCount(),
-							cmdline.length - index - 1);
+							rest.length - index - 1);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				// slurp next cmdline arguments into option arguments
-				final String[] optionArgs = Arrays.copyOfRange(cmdline, index + 1,
+				final String[] optionArgs = Arrays.copyOfRange(rest, index + 1,
 						index + 1 + optionHandle.getArgsCount());
 				index += optionHandle.getArgsCount();
 
@@ -427,9 +456,40 @@ public class CmdlineParser {
 				}
 				// Delegate parsing of the rest of the cmdline to the command
 				commandHandle.getCmdlineParser().parse(dryrun, detectHelpAndSkipValidation,
-						Arrays.copyOfRange(cmdline, index + 1, cmdline.length));
+						Arrays.copyOfRange(rest, index + 1, rest.length));
 				// Stop parsing
 				break;
+			} else if (parseOptions
+					&& aggregateShortOptionsWithPrefix.isDefined()
+					&& param.startsWith(aggregatePrefix)
+					&& param.length() > aggregatePrefixSize + 1) {
+				// Found an aggregated short option
+				final char[] singleOptions = param.substring(aggregatePrefixSize).toCharArray();
+				// rewrite the cmdline
+				final List<String> rewritten = new LinkedList<String>();
+				int procCount = 1;
+				for (final char c : singleOptions) {
+					final OptionHandle oh = shortOptionMap.get(String.valueOf(c));
+					if (oh == null) {
+						// FIXME: unsupported aggregation found
+					}
+					if(rest.length < procCount + oh.getArgsCount()) {
+						// FIXME: missing args detected
+					}
+					// add as standalone short option
+					rewritten.add(aggregatePrefix + c);
+					for (int i = 0; i < oh.getArgsCount(); ++i) {
+						// slurp args from cmdline
+						rewritten.add(rest[i + procCount]);
+						++procCount;
+					}
+				}
+				// re-interate parsing with the modified command line
+				final String[] newRest = Arrays.copyOfRange(rest, procCount, rest.length);
+				rewritten.addAll(Arrays.asList(newRest));
+				rest = rewritten.toArray(new String[0]);
+				index = -1;
+				continue;
 
 			} else if (parameter == null && defaultCommandName != null
 					&& quickCommandMap.containsKey(defaultCommandName)) {
@@ -442,7 +502,7 @@ public class CmdlineParser {
 				}
 				// Delegate parsing of the rest of the cmdline to the command
 				commandHandle.getCmdlineParser().parse(dryrun, detectHelpAndSkipValidation,
-						Arrays.copyOfRange(cmdline, index, cmdline.length));
+						Arrays.copyOfRange(rest, index, rest.length));
 				// Stop parsing
 				break;
 
@@ -450,8 +510,8 @@ public class CmdlineParser {
 				// Found a parameter
 				optionCount.put(parameter, optionCount.get(parameter) + 1);
 
-				if (cmdline.length <= index + parameter.getArgsCount() - 1) {
-					final int countOfGivenParams = cmdline.length - index;
+				if (rest.length <= index + parameter.getArgsCount() - 1) {
+					final int countOfGivenParams = rest.length - index;
 					final PreparedI18n msg = i18n.preparetr(
 							"Missing arguments: {0} Parameter requires {1} arguments, but you gave {2}.",
 							Arrays.asList(parameter.getArgs()).subList(countOfGivenParams, parameter.getArgsCount()),
@@ -459,7 +519,7 @@ public class CmdlineParser {
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				// slurp next cmdline arguments into option arguments
-				final String[] optionArgs = Arrays.copyOfRange(cmdline, index, index + parameter.getArgsCount());
+				final String[] optionArgs = Arrays.copyOfRange(rest, index, index + parameter.getArgsCount());
 				// -1, because index gets increased by one at end of for-loop
 				index += parameter.getArgsCount() - 1;
 
@@ -704,6 +764,8 @@ public class CmdlineParser {
 				}
 			}
 		}
+		// TODO: Ensure, there are no long options, starting with the aggregated short
+		// option prefix, and when, disable this feature
 	}
 
 	protected boolean isVisible(final Class<?> baseClass, final Member element) {
@@ -1022,6 +1084,14 @@ public class CmdlineParser {
 			argsFromFilePrefix = Optional.none();
 		} else {
 			argsFromFilePrefix = Optional.some(prefix.trim());
+		}
+	}
+
+	public void setAggregateShortOptionsWithPrefix(final String prefix) {
+		if (prefix == null || prefix.trim().isEmpty()) {
+			aggregateShortOptionsWithPrefix = Optional.none();
+		} else {
+			aggregateShortOptionsWithPrefix = Optional.some(prefix.trim());
 		}
 	}
 
