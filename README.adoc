@@ -589,10 +589,10 @@ Before cutting a new release, you should ensure/do:
 
 Have a look at some other projects I'm involved with:
 
-* https://github.com/ToToTec/de.tototec.utils.functional[Functional Utils] - Functional Utility Classes for working with Java 5+
-* https://github.com/lefou/poor-mans-lambda-test/[Poor Mans Lambda Test] - Minimal Java8 Lambda enabled testing for TestNG
-* http://sbuild.org[SBuild] - A Scala-based build tool
 * https://github.com/domino-osgi/domino[Domino] - OSGi dynamics made easy with a Scala DSL
+* https://github.com/lefou/LambdaTest/[Lambda Test] - Lambda-enabled functional testing on top of JUnit or TestNG
+* https://github.com/ToToTec/de.tototec.utils.functional[Functional Utils] - Functional Utility Classes for working with Java 5+
+* http://sbuild.org[SBuild] - A Scala-based build tool
 
 == ChangeLog
 
@@ -601,6 +601,7 @@ Have a look at some other projects I'm involved with:
 * Added new LongHandler which support Long and long fields and setter method.
 * New `UsageFormatter2` interface that accepts a `PrintStream` and default implementation `DefaultUsageFormatter2`.
 * Deprecated interface `UsageFormatter` and methods `CmdlineParser.usage(StringBuilder)` and CmdlineParser.setUsageFormatter(UsageFormatter)
+* Use Polyglot Maven (Scala) as build system
 
 === CmdOption 0.4.2 - 2015-06-02
 

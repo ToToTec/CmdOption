@@ -1,7 +1,7 @@
 import org.sonatype.maven.polyglot.scala.model._
 import scala.collection.immutable.Seq
 
-#include ../CmdOption.scala
+#include ../mvn-shared.scala
 
 // Extends polyglot API for convenience
 implicit class ImplDependency(d: Dependency) {
