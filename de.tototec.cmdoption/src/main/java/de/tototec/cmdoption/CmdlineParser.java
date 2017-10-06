@@ -258,6 +258,27 @@ public class CmdlineParser {
 				+ FList.mkString(handlerRegistry.entrySet(), "\n" + prefix + "  ", "\n" + prefix + "  ", "");
 	}
 
+	/**
+	 * Parses the given commandline arguments.
+	 *
+	 * If no error were detected and not in dryrun-mode, the result is applied
+	 * to the config object(s).
+	 *
+	 * If any errors where detected, they will be thrown as
+	 * {@link CmdlineParserException}.
+	 *
+	 * @param dryrun
+	 *            If true, only checks for errors.
+	 * @param detectHelpAndSkipValidation
+	 *            If true, the given cmdline is first checked for applied help
+	 *            options. In such a case, no other validation errors will be
+	 *            thrown.
+	 * @param cmdline
+	 *            The commandline argument to be parsed.
+	 *
+	 * @throws CmdlineParserException
+	 *             If any errors were detected.
+	 */
 	public void parse(final boolean dryrun, final boolean detectHelpAndSkipValidation, String... cmdline) {
 		if (log.isDebugEnabled()) {
 			log.debug("About to start parsing. dryrun: " + dryrun + ", detectHelpAndSkipValidation: "
@@ -649,6 +670,10 @@ public class CmdlineParser {
 				commandAnno.hidden());
 	}
 
+	/**
+	 * Do a consistency check for the given cmdoption model (all annotated
+	 * opitons).
+	 */
 	protected void validateOptions() {
 		for (final OptionHandle optionHandle : options) {
 			for (final String reqOptionName : optionHandle.getRequires()) {
