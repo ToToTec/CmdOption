@@ -1,6 +1,8 @@
 import org.sonatype.maven.polyglot.scala.model._
 import scala.collection.immutable.Seq
 
+#include ../CmdOption.scala
+
 // Extends polyglot API for convenience
 implicit class ImplDependency(d: Dependency) {
 
@@ -19,7 +21,7 @@ implicit class ImplDependency(d: Dependency) {
 }
 
 Model(
-  gav = "de.tototec" % "de.tototec.cmdoption" % "0.5-SNAPSHOT",
+  gav = "de.tototec" % "de.tototec.cmdoption" % CmdOption.version,
   modelVersion = "4.0.0",
   packaging = "jar",
   name = "CmdOption",
@@ -190,43 +192,6 @@ Model(
               )
             )
           )
-        )
-      )
-    ),
-    Profile(
-      id = "release",
-      build = BuildBase(
-        plugins = Seq(
-          // build source jar
-          Plugin(
-            gav = "org.apache.maven.plugins" % "maven-source-plugin" % "3.0.1",
-            executions = Seq(
-              Execution(
-                id = "attach-source",
-                goals = Seq("jar-no-fork")
-              )
-            )
-          ),
-          // build javadoc jar
-          Plugin(
-            gav = "org.apache.maven.plugins" % "maven-javadoc-plugin" % "3.0.0-M1",
-            executions = Seq(
-              Execution(
-                id = "attach-javadoc",
-                goals = Seq("jar")
-              )
-            )
-          )
-        // deployment to OSSRH Nexus
-        //          Plugin(
-        //            gav = "org.sonatype.plugins" % "nexus-staging-maven-plugin" % "1.6.8",
-        //            // this enables automatic replacement of default deploy plugin
-        //            extensions = true,
-        //            configuration = Config(
-        //              serverId = "ossrh",
-        //              nexusUrl = "https://oss.sonatype.org/"
-        //            )
-        //          )
         )
       )
     ),

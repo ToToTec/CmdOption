@@ -1,8 +1,10 @@
 import org.sonatype.maven.polyglot.scala.model._
 import scala.collection.immutable.Seq
 
+#include CmdOption.scala
+
 Model(
-  gav = "de.tototec" % "de.tototec.cmdoption-reactor" % "1",
+  gav = "de.tototec" % "de.tototec.cmdoption-reactor" % CmdOption.version,
   modelVersion = "4.0.0",
   packaging = "pom",
   modules = Seq(

@@ -573,7 +573,17 @@ mvn -Pgen-pom-xml initialize
 
 === Releases
 
-To build a new release use the `release` profile.
+To build and deploy new release use the `deploy-maven-central.sh` script.
+
+Before cutting a new release, you should ensure/do:
+
+* All tests have to pass!
+* Update version (at least remove `-SNAPSHOT` suffix)
+* Update Changelog in this `README.adoc`
+* Create a git tag
+* run the deploy script `deploy-maven-central.sh`
+* Stage and release repository in Sonatype Nexus (https://oss.sonatype.org/index.html#stagingRepositories)
+* Update version (increment and add `-SNAPSHOT` suffix)
 
 == Other Projects
 
