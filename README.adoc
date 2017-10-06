@@ -539,6 +539,8 @@ That helps me setting my priorities.
 
 == Building CmdOption from Source
 
+=== Building with Maven
+
 CmdOption is build with https://maven.apache.org[Apache Maven 3] and the https://github.com/takari/polyglot-maven#overview[polyglot-scala extension].
 
 Maven 3.5 is recommended. You also need GNU Gettext installed.
@@ -559,6 +561,7 @@ CmdOption uses GNU Gettext. The translations are located under `src/main/po`. Th
 
 To update the translation files under `src/main/po` use the `update-message` profile.
 
+.Merging all translations with current message catalog
 ----
 mvn -Pupdate-messages clean compile
 ----
@@ -567,9 +570,16 @@ mvn -Pupdate-messages clean compile
 
 To generate the `pom.xml` use hte `gen-pom-xml` profile.
 
+.Creating `pom.xml` files
 ----
 mvn -Pgen-pom-xml initialize
 ----
+
+.Deleting generated `pom.xml` files
+----
+mvn -Pgen-pom-xml clean
+----
+
 
 === Releases
 
