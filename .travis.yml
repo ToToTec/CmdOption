@@ -15,4 +15,4 @@ before_script:
 - xgettext --version
 
 script: 
-- ../mvnw clean package source:jar javadoc:jar install
+- ./mvnw clean package source:jar javadoc:jar install
