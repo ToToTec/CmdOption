@@ -25,5 +25,8 @@ Model(
         )
       )
     )
+  ),
+  profiles = Seq(
+    genPomXmlProfile
   )
 )
