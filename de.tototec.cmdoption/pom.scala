@@ -128,29 +128,29 @@ Model(
               target = Config(
                 mkdir = Config(`@dir` = "${project.basedir}/target/classes/de/tototec/cmdoption"),
                 // run msgmerge on the translation files to generate property files
-                apply = new Config(Seq(
-                  "@executable" -> Some("msgmerge"),
-                  "@verbose" -> Some("true"),
-                  "@failOnError" -> Some("true"),
+                apply = Config(
+                  `@executable` = "msgmerge",
+                  `@verbose` = "true",
+                  `@failOnError` = "true",
                   // one invocation for each translation files
-                  "@parallel" -> Some("false"),
-                  "@dest" -> Some("${project.basedir}/target/classes/de/tototec/cmdoption"),
+                  `@parallel` = "false",
+                  `@dest` = "${project.basedir}/target/classes/de/tototec/cmdoption",
                   // ensure, we pass the files relative to their fileset roots
-                  "arg" -> Some(Config(`@value` = "--output-file")),
+                  arg = Config(`@value` = "--output-file"),
                   // marker for the target file position
-                  "targetfile" -> Some(Config(`@suffix` = "")),
-                  "arg" -> Some(Config(`@value` = "--properties-output")),
+                  targetfile = Config(`@suffix` = ""),
+                  arg = Config(`@value` = "--properties-output"),
                   // marker for the source file position
-                  "srcfile" -> None,
+                  srcfile = Config(`@suffix` = ""),
                   // source files  
-                  "fileset" -> Some(Config(`@dir` = "${project.basedir}/src/main/po", `@includes` = "*.po")),
-                  "arg" -> Some(Config(`@value` = "${project.basedir}/target/po/messages.pot")),
-                  "mapper" -> Some(Config(
+                  fileset = Config(`@dir` = "${project.basedir}/src/main/po", `@includes` = "*.po"),
+                  arg = Config(`@value` = "${project.basedir}/target/po/messages.pot"),
+                  mapper = Config(
                     `@type` = "glob",
                     `@from` = "*.po",
                     `@to` = "Messages_*.properties"
-                  ))
-                ))
+                  )
+                )
               ) //< target
             )
           )
@@ -174,19 +174,19 @@ Model(
                 configuration = Config(
                   target = Config(
                     // run msgmerge on the translation files to update them
-                    apply = new Config(Seq(
-                      "@executable" -> Some("msgmerge"),
-                      "@verbose" -> Some("true"),
-                      "@failOnError" -> Some("true"),
+                    apply = Config(
+                      `@executable` = "msgmerge",
+                      `@verbose` = "true",
+                      `@failOnError` = "true",
                       // one invocation for each translation files
-                      "@parallel" -> Some("false"),
-                      "arg" -> Some(Config(`@value` = "--backup=none")),
+                      `@parallel` = "false",
+                      arg = Config(`@value` = "--backup=none"),
                       // ensure, we pass the files relative to their fileset roots
-                      "arg" -> Some(Config(`@value` = "--update")),
-                      "srcfile" -> None,
-                      "fileset" -> Some(Config(`@dir` = "${project.basedir}/src/main/po", `@includes` = "*.po")),
-                      "arg" -> Some(Config(`@value` = "${project.basedir}/target/po/messages.pot"))
-                    ))
+                      arg = Config(`@value` = "--update"),
+                      srcfile = Config(`@suffix` = ""),
+                      fileset = Config(`@dir` = "${project.basedir}/src/main/po", `@includes` = "*.po"),
+                      arg = Config(`@value` = "${project.basedir}/target/po/messages.pot")
+                    )
                   ) //< target
                 )
               )
