@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 
 import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
-public class ParamsForFileTest extends FreeSpec {
+public class ParamsFromFileTest extends FreeSpec {
 
 	static class Config {
 		@CmdOption(names = "--arg1", args = "arg")
