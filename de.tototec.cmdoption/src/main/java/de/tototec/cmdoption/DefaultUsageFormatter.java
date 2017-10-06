@@ -13,6 +13,10 @@ import de.tototec.cmdoption.internal.FList;
 import de.tototec.cmdoption.internal.I18n;
 import de.tototec.cmdoption.internal.I18nFactory;
 
+/**
+ * @deprecated Use {@link DefaultUsageFormatter2} instead.
+ */
+@Deprecated
 public class DefaultUsageFormatter implements UsageFormatter {
 
 	private final I18n i18n = I18nFactory.getI18n(DefaultUsageFormatter.class);
