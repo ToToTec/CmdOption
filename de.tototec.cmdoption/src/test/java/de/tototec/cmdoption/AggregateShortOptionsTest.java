@@ -35,7 +35,7 @@ public class AggregateShortOptionsTest extends FreeSpec {
 			final Config config = new Config();
 			final CmdlineParser cp = new CmdlineParser(config);
 			cp.setAggregateShortOptionsWithPrefix(null);
-			intercept(CmdlineParserException.class, "Unsupported option or parameter found: -ls", () -> {
+			intercept(CmdlineParserException.class, "\\QUnsupported option or parameter found: -ls\\E", () -> {
 				cp.parse(new String[] { "-ls" });
 			});
 		});
@@ -68,6 +68,15 @@ public class AggregateShortOptionsTest extends FreeSpec {
 			expectTrue(config.formatLong);
 			expectTrue(config.showSize);
 			expectEquals(config.file, "file.txt");
+		});
+
+		test("Comnbining short options with missing args should fail", () -> {
+			final Config config = new Config();
+			final CmdlineParser cp = new CmdlineParser(config);
+			cp.setAggregateShortOptionsWithPrefix("-");
+			intercept(CmdlineParserException.class, "\\QMissing argument(s): FILE. Option \"-f\" requires 1 arguments, but you gave 0.\\E", () -> {
+				cp.parse(new String[] { "-lfs" });
+			});
 		});
 
 

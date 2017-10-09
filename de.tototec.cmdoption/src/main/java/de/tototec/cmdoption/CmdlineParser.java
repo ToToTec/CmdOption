@@ -345,13 +345,13 @@ public class CmdlineParser {
 			validateOptions();
 		}
 
-		// Should be set to false, if an stopOption was found and parsing of
-		// options is no longer allowed
+		// parseOptions - will be set to false, if an stopOption was found
+		// when false, it means: parsing of options is no longer allowed
 		boolean parseOptions = true;
 		final String stopOption = "--";
 
-		// optionCount counts the occurrence for each option handle in the
-		// cmdline
+		// optionCount - counts the occurrence for each option handle in the
+		// cmdline for later validation
 		final Map<OptionHandle, Integer> optionCount = new LinkedHashMap<OptionHandle, Integer>();
 		for (final OptionHandle option : options) {
 			optionCount.put(option, 0);
@@ -360,6 +360,8 @@ public class CmdlineParser {
 			optionCount.put(parameter, 0);
 		}
 
+		// helpDetected - will be set to true, if we detect a help option while
+		// parsing
 		boolean helpDetected = false;
 
 		final String aggregatePrefix = aggregateShortOptionsWithPrefix.getOrElse(new F0<String>() {
@@ -411,7 +413,7 @@ public class CmdlineParser {
 
 				if (rest.length <= index + optionHandle.getArgsCount()) {
 					final PreparedI18n msg = i18n.preparetr(
-							"Missing arguments(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}.",
+							"Missing argument(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}.",
 							FList.mkString(
 									Arrays.asList(optionHandle.getArgs()).subList(rest.length - index - 1,
 											optionHandle.getArgsCount()),
@@ -473,8 +475,17 @@ public class CmdlineParser {
 					if (oh == null) {
 						// FIXME: unsupported aggregation found
 					}
-					if(rest.length < procCount + oh.getArgsCount()) {
+					if (rest.length < procCount + oh.getArgsCount()) {
 						// FIXME: missing args detected
+						final PreparedI18n msg = i18n.preparetr(
+								"Missing argument(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}.",
+								FList.mkString(
+										Arrays.asList(oh.getArgs()).subList(rest.length - procCount,
+												oh.getArgsCount()),
+										", "),
+								aggregatePrefix + c, oh.getArgsCount(),
+								rest.length - procCount);
+						throw new CmdlineParserException(msg.notr(), msg.tr());
 					}
 					// add as standalone short option
 					rewritten.add(aggregatePrefix + c);
@@ -485,6 +496,7 @@ public class CmdlineParser {
 					}
 				}
 				// re-interate parsing with the modified command line
+				// (backtracking)
 				final String[] newRest = Arrays.copyOfRange(rest, procCount, rest.length);
 				rewritten.addAll(Arrays.asList(newRest));
 				rest = rewritten.toArray(new String[0]);
@@ -592,7 +604,7 @@ public class CmdlineParser {
 				if (optionC.getValue() > 0) {
 					final OptionHandle calledOption = optionC.getKey();
 					for (final String required : calledOption.getRequires()) {
-						// check, of an option was called with that name, if
+						// check, if an option was called with that name, if
 						// not, this is an error
 						final OptionHandle reqOptionHandle = quickOptionMap.get(required);
 						if (reqOptionHandle == null) {
@@ -764,7 +776,8 @@ public class CmdlineParser {
 				}
 			}
 		}
-		// TODO: Ensure, there are no long options, starting with the aggregated short
+		// TODO: Ensure, there are no long options, starting with the aggregated
+		// short
 		// option prefix, and when, disable this feature
 	}
 
@@ -936,16 +949,12 @@ public class CmdlineParser {
 							parameter.getElement(), element);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
-				// TODO: should we ignore the help parameter?
-				final OptionHandle paramHandle = new OptionHandle(new String[] {}, anno.description(), handler,
-						object, element, anno.args(), anno.minCount(), anno.maxCount(), false /*
-						 * cannot
-						 * be
-						 * a
-						 * help
-						 * option
-						 */, anno.hidden(),
-						 anno.requires(), anno.conflictsWith());
+				// TODO: should we ignore the help parameter? Currently we do!
+				final OptionHandle paramHandle = new OptionHandle(
+						new String[] {}, anno.description(), handler,
+						object, element, anno.args(), anno.minCount(), anno.maxCount(),
+						false /* cannot be a help option */,
+						anno.hidden(), anno.requires(), anno.conflictsWith());
 
 				if (paramHandle.getArgsCount() <= 0) {
 					final PreparedI18n msg = i18n.preparetr("Parameter definition must support at least on argument.");
