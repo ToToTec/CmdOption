@@ -314,11 +314,11 @@ The JVM default locale (country, language, variant) is used.
 
 Currently, CmdOption comes with the following languages:
 
-* English
-* German
+* English (via source code)
+* German (via included translation)
 
 If you want to translate CmdOption into another language, we apreciate your contribution!
-See link:HowToProvideTranslations.adoc for details.
+See section <<CreateOrUpdateTranslations>> for details.
 
 === Localized options and descriptions
 
@@ -580,13 +580,14 @@ The arguments of that options, if any, must match the arguments of that method.
 In the body of such a method the option can now immediatly processed.
 Typically, minCount and maxCount of the options are unconstrained, as the validity is dependent on the context.
 
+[[License]]
 == License
 
 CmdOption is developed and released under the *Apache License, Version 2*.
 
 == Contributing / Support
 
-Your contributions are much apreciated and are assumed to be published under the terms of the link:#license[project license] if not stated otherwise.
+Your contributions are much apreciated and are assumed to be published under the terms of the <<License, project license>> if not stated otherwise.
 
 If you found a bug or have a feature request, please open a {githubUrl}/issues[new issue on GitHub].
 We also accept pull requests.
@@ -612,6 +613,7 @@ mvn clean install
 The built JAR file can be found under `de.tototec.cmdoption/target/de.tototec.cmdoption-{currentversion}.jar`.
 
 
+[[CreateOrUpdateTranslations,Create or Update translations]]
 === Create or Update translations
 
 You want to create a new or update an existing translation?
