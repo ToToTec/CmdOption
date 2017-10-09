@@ -620,7 +620,9 @@ To update the translation files under `src/main/po` use the `update-message` pro
 mvn -Pupdate-messages clean compile
 ----
 
-After that, edit the translation files and update the fuzzy or newly added messages. ``*.po` files are normal text files, but using a po-Editor like e.g. poedit might be more convenient.
+After that, edit the translation files and update the fuzzy or newly added messages.
+The `*.po` files are just normal text files, so you can use any editor you want.
+Using a special po-Editor like e.g. https://poedit.net/[Poedit] might add additional convenience.
 
 If you update the translation please open a {githubUrl}/pulls[pull-request] with the new translation.
 
