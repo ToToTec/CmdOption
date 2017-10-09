@@ -2,7 +2,9 @@
 :toc:
 :toc-placement: preamble
 :currentversion: 0.4.2
-:wikiUrl:  https://github.com/ToToTec/CmdOption/wiki
+:githubUrl: https://github.com/ToToTec/CmdOption
+:wikiUrl:  {githubUrl}/wiki
+:gitterUrl: https://gitter.im/ToToTec/CmdOption
 
 image:https://travis-ci.org/ToToTec/CmdOption.svg?branch=master["Build Status", link="https://travis-ci.org/ToToTec/CmdOption"]
 image:https://www.codacy.com/project/badge/e3f730346034401281fa8e3fe4802afd["Codacy Badge", link="https://www.codacy.com/p/3189/dashboard"]
@@ -553,12 +555,13 @@ When used, CmdOption will display detailed information about the found configura
 This might help to understand issues further.
 In most cases, this will help you to resolve your issues. Of course, you can disable this functionality with `CmdlineParser.setDebugModeAllowed(false)`.
 
-If you have issues you can not solve, do not hessitate to https://github.com/ToToTec/CmdOption/issues/new[open a support ticket] or search for other (open) issues in the https://github.com/ToToTec/CmdOption/issues[CmdOption ticket system].
+If you have issues you can not solve, do not hessitate to https://github.com/ToToTec/CmdOption/issues/new[open a support ticket] or search for other (open) issues in the {githubUrl}/issues[CmdOption ticket system].
+You can also start a chat in our {gitterUrl}[Gitter room].
 
 == Creating a streaming command line interface
 
 Normally, CmdOption parses a complete command line, populates the config object(s) and ensures, that the config is valid, according to the configuration.
-Only, if the config is checked and ok, the parse method returns.
+Only, if the config is checked and ok, the parse method returns normally.
 
 In some cases, a streaming command line interface is more appropriate than the typical static approach.
 In a streaming command line interface each option and parameter is immediatly evaluated before the next option or parameter is read.
@@ -580,12 +583,12 @@ CmdOption is developed and released under the *Apache License, Version 2*.
 
 Your contributions are much apreciated and are assumed to be published under the terms of the link:#license[project license] if not stated otherwise.
 
-If you found a bug or have a feature request, please open a https://github.com/ToToTec/CmdOption/issues[new issue on GitHub].
+If you found a bug or have a feature request, please open a {githubUrl}/issues[new issue on GitHub].
 We also accept pull requests.
 
-You can also use our https://gitter.im/ToToTec/CmdOption[Chat on Gitter.im] for discussions and questions.
+You can also use our {gitterUrl}[Chat on Gitter.im] for discussions and questions.
 
-If you want to show appreciation for the project, please "star" it on https://github.com/ToToTec/CmdOption[GitHub].
+If you want to show appreciation for the project, please "star" it on {githubUrl}[GitHub].
 That helps me setting my priorities.
 
 == Building CmdOption from Source
@@ -608,7 +611,7 @@ The built JAR file can be found under `de.tototec.cmdoption/target/de.tototec.cm
 
 You want to create a new or update an existing translation?
 
-CmdOption uses GNU Gettext. The translations are located under `src/main/po`. The message catalog template will be extracted in the compile phase and is located under `target/po/messages.pot`.
+CmdOption uses GNU Gettext. The translations are located under `src/main/po`. The message catalog template will be extracted in the compile phase (`mvn clean compile`) and is located under `target/po/messages.pot`.
 
 To update the translation files under `src/main/po` use the `update-message` profile.
 
@@ -616,6 +619,11 @@ To update the translation files under `src/main/po` use the `update-message` pro
 ----
 mvn -Pupdate-messages clean compile
 ----
+
+After that, edit the translation files and update the fuzzy or newly added messages. ``*.po` files are normal text files, but using a po-Editor like e.g. poedit might be more convenient.
+
+If you update the translation please open a {githubUrl}/pulls[pull-request] with the new translation.
+
 
 === Create `pom.xml` for interoperability, e.g. IDEs
 
