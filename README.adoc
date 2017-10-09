@@ -2,6 +2,7 @@
 :toc:
 :toc-placement: preamble
 :currentversion: 0.5.0
+:documentedVersion: 0.5.0
 :githubUrl: https://github.com/ToToTec/CmdOption
 :wikiUrl:  {githubUrl}/wiki
 :gitterUrl: https://gitter.im/ToToTec/CmdOption
@@ -10,9 +11,8 @@ image:https://travis-ci.org/ToToTec/CmdOption.svg?branch=master["Build Status", 
 image:https://www.codacy.com/project/badge/e3f730346034401281fa8e3fe4802afd["Codacy Badge", link="https://www.codacy.com/p/3189/dashboard"]
 image:https://badges.gitter.im/Join%20Chat.svg["Gitter", link="https://gitter.im/ToToTec/CmdOption"]
 
-The latest released version is CmdOption {currentversion}.
 
-_Please note, that this page might contain information about not yet released features._
+Documentation of CmdOption {documentedVersion}.
 
 == Overview
 
@@ -151,7 +151,7 @@ the parser will scan all commandline arguments that are not detected as options 
 
 === Stop option detecting with `--`
 
-The special option `--` is supported, to stop CmdOption from parsing any succeeding arguement as option or command.
+The special option `--` is supported, to stop CmdOption from parsing any succeeding argument as option or command.
 That way, you can force succeeding argument to be parsed as parameters.
 E.g. To delete a file with the name "-r" with the Unix tool `rm` you can use `rm -- -r`, otherwise `rm` would interpret `-r` as option but not as filename.
 
@@ -274,8 +274,11 @@ The class `CmdlineParser` has various methods to customize the behaviour and the
 * *setProgramName(String)* - The name used in the usage display. If not specified, `<main class>` is used.
 * *setAboutLine(String)* - Additional text displayed in the usage output.
 * *usage()* - Format and print the usage display to STDOUT.
-* *usage(StringBuilder)* - Format and print the usage display to the given `StringBuilder`.
-* *setUsageFormatter(UsageFormatter)* - Register a custom `UsageFormatter` that is used to format the usage display. If not changed, the `DefaultUsageFormatter` is used. Please note, that `DefaultUsageFormatter` already has some configuration options on it's own which you should try first, before writing you own usage formatter implementation.
+* *usage(PrintStream)* - Format and print the usage display to the given `PrintStream`.
+* *setUsageFormatter(UsageFormatter2)* - Register a custom `UsageFormatter2` that is used to format the usage display. If not changed, the `DefaultUsageFormatter2` is used. Please note, that `DefaultUsageFormatter2` already has some configuration options on it's own which you should try first, before writing you own usage formatter implementation.
+
+* *usage(StringBuilder)* - _DEPRECATED._ Just for backwards compatibility.
+* *setUsageFormatter(UsageFormatter)* - _DEPRECATED._ Just for backwards compatibility.
 
 == Exception Handling
 
@@ -294,6 +297,8 @@ try {
   cp.parse(args);
 } catch (CmdlineParserException e) {
   System.err.println("Error: " + e.getMessage() + "\nRun myprogram --help for help.");
+  // if you prefer, you can print the help screen directly here
+  // cp.usage(System.err)
   System.exit(1);
 }
 ----
