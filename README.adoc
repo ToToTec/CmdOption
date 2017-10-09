@@ -611,20 +611,23 @@ The built JAR file can be found under `de.tototec.cmdoption/target/de.tototec.cm
 
 You want to create a new or update an existing translation?
 
-CmdOption uses GNU Gettext. The translations are located under `src/main/po`. The message catalog template will be extracted in the compile phase (`mvn clean compile`) and is located under `target/po/messages.pot`.
+CmdOption uses GNU Gettext.
+The translations for the currently supported languages are located under `src/main/po`.
+The message catalog template will be extracted in the compile phase (`mvn clean compile`) and is located under `target/po/messages.pot` and can be used as template for a new language.
 
-To update the translation files under `src/main/po` use the `update-message` profile.
+To update all translation files under `src/main/po` use the following Maven command:
 
-.Merging all translations with current message catalog
+.Updating translations with extracted strings
 ----
-mvn -Pupdate-messages clean compile
+mvn antrun:run@update-translations
 ----
 
-After that, edit the translation files and update the fuzzy or newly added messages.
+After that, edit the updated translation files and update the fuzzy or newly added messages.
 The `*.po` files are just normal text files, so you can use any editor you want.
 Using a special po-Editor like e.g. https://poedit.net/[Poedit] might add additional convenience.
 
-If you update the translation please open a {githubUrl}/pulls[pull-request] with the new translation.
+If you updated or added a translation, please open a {githubUrl}/pulls[pull-request] with the new translation.
+Your contribution is greatly apreciated!
 
 
 === Create `pom.xml` for interoperability, e.g. IDEs
