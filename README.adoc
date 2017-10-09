@@ -145,7 +145,7 @@ If the found argumemt is detected as command, than CmdOptions switches into the 
 After CmdOption switched into command mode once, all succeeding arguments are only parsed into the scope of that command.
 
 If the application supports parameters (non-options, declared with a `@CmdOption` annotation without a `names` parameter)
-the parser will scan all commandline arguemnts that are not detected as options or commands into that parameter.
+the parser will scan all commandline arguments that are not detected as options or commands into that parameter.
 
 === Stop option detecting with `--`
 
@@ -165,6 +165,57 @@ This can be useful in various situations including:
 If desired, you can change the prefix with `CmdlineParser.setReadArgsFromFilePrefix(String)`.
 The given string must be at least one character long.
 With an empty string or `null` you can disable that feature completely.
+
+=== Aggregation of short options
+
+_By principle, CmdOption does not enforce any type of option format.
+But nevertheless, the most common variants for Java applications are the Java-style options (starting with a single dash ("-")) and GNU-style options (long options starting with a double dash ("--") and short options starting with a single dash ("-"))._
+
+_A typical convenience feature of GNU-style parsers is to support aggreated short options.
+That means, instead of declaring each option separately as in `ls -l -a` you can write them as one `ls -la`.
+You can do the same with CmdOption._
+
+If you tell CmdOption which prefix starts a short option (an option with consists of only a single character after the prefix), CmdOption can parse all those option also when given in an aggreated way.
+By default, this feature is disabled.
+
+To enable aggregation of short options use `CmdlineParser.setAggregateShortOptionsWithPrefix(String)`.
+An argument of `null` or the empty string disables this feature.
+
+.Example for aggregated options
+[source,java]
+----
+import de.tototec.cmdoption.CmdOption;
+import de.tototec.cmdoption.CmdlineParser;
+
+public class Config {
+  @CmdOption(names = { "-f", "--file" }, args = { "FILE" })
+  String file = null;
+
+  @CmdOption(names = { "-l" })
+  boolean formatLong = false;
+
+  @CmdOption(names = { "-s", "--size" })
+  boolean showSize = false;
+}
+
+public class Main {
+  public static void main(String[] args) {
+    final Config config = new Config();
+    final CmdlineParser cp = new CmdlineParser(config);
+
+    cp.setAggregateShortOptionsWithPrefix("-"); //<1>
+
+    // demo of parsing aggregated options
+    cp.parse(new String[] { "-lfs", "file.txt" });
+    assert config.formatLong == true;
+    assert "file.txt".equals(config.file);
+    assert config.showSize == true;
+  }
+}
+----
+<1> This line enabled aggregation of short options starting with a dash ("-").
+
+As you can see, aggregated short options can also have any number of arguments.
 
 == Options and Parameters
 
@@ -612,6 +663,7 @@ Have a look at some other projects I'm involved with:
 * New `UsageFormatter2` interface that accepts a `PrintStream` and default implementation `DefaultUsageFormatter2`.
 * Deprecated interface `UsageFormatter` and methods `CmdlineParser.usage(StringBuilder)` and CmdlineParser.setUsageFormatter(UsageFormatter)
 * Use Polyglot Maven (Scala) as build system
+* Added support for aggregated short options via new method `CmdlineParser.setAggregateShortOptionsWithPrefix(String)`
 
 === CmdOption 0.4.2 - 2015-06-02
 
