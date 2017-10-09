@@ -653,7 +653,7 @@ Before cutting a new release, you should ensure/do:
 
 * All tests have to pass!
 * Update version (at least remove `-SNAPSHOT` suffix)
-* Update Changelog in this `README.adoc`
+* Update Changelog in this `README.adoc` (add changes, add proper version and date)
 * Create a git tag
 * run the deploy script `deploy-maven-central.sh`
 * Stage and release repository in Sonatype Nexus (https://oss.sonatype.org/index.html#stagingRepositories)
@@ -670,7 +670,7 @@ Have a look at some other projects I'm involved with:
 
 == ChangeLog
 
-=== CmdOption NEXT
+=== CmdOption 0.5.0 - 2017-10-09
 
 * Added new LongHandler which support Long and long fields and setter method.
 * New `UsageFormatter2` interface that accepts a `PrintStream` and default implementation `DefaultUsageFormatter2`.
