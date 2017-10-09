@@ -4,6 +4,22 @@ object CmdOption {
 
 }
 
+// Extends polyglot API for convenience
+implicit class ImplDependency(d: Dependency) {
+
+  def copy(gav: Gav = d.gav,
+    `type`: String = d.`type`,
+    classifier: String = d.classifier.orNull,
+    scope: String = d.scope.orNull,
+    systemPath: String = d.systemPath.orNull,
+    exclusions: Seq[GroupArtifactId] = d.exclusions,
+    optional: Boolean = d.optional) = {
+    new Dependency(gav, `type`, Option(classifier), Option(scope), Option(systemPath), exclusions, optional)
+  }
+
+  def pure: Dependency = d.copy(exclusions = Seq("*" % "*"))
+}
+
 val genPomXmlProfile = Profile(
   id = "gen-pom-xml",
   build = BuildBase(
