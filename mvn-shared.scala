@@ -77,6 +77,7 @@ object Gettext {
       `@failOnError` = "true",
       // one invocation for each translation files
       `@parallel` = "false",
+      arg = Config(`@value` = "-v"),
       arg = Config(`@value` = "--backup=none"),
       // ensure, we pass the files relative to their fileset roots
       arg = Config(`@value` = "--update"),
@@ -96,6 +97,7 @@ object Gettext {
       // one invocation for each translation files
       `@parallel` = "false",
       `@dest` = "${project.basedir}/target/classes/de/tototec/cmdoption",
+      arg = Config(`@value` = "-v"),
       // ensure, we pass the files relative to their fileset roots
       arg = Config(`@value` = "--output-file"),
       // marker for the target file position
