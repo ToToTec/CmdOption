@@ -19,6 +19,11 @@ public class AggregateShortOptionsTest extends FreeSpec {
 		boolean showSize = false;
 	}
 
+	public static class Param {
+		@CmdOption(args = { "PARAMETER" })
+		String param;
+	}
+
 	public AggregateShortOptionsTest() {
 
 		test("Setting all short options separate should work (reference test)", () -> {
@@ -74,11 +79,34 @@ public class AggregateShortOptionsTest extends FreeSpec {
 			final Config config = new Config();
 			final CmdlineParser cp = new CmdlineParser(config);
 			cp.setAggregateShortOptionsWithPrefix("-");
-			intercept(CmdlineParserException.class, "\\QMissing argument(s): FILE. Option \"-f\" requires 1 arguments, but you gave 0.\\E", () -> {
-				cp.parse(new String[] { "-lfs" });
+			intercept(CmdlineParserException.class,
+					"\\QMissing argument(s): FILE. Option \"-f\" requires 1 arguments, but you gave 0.\\E", () -> {
+						cp.parse(new String[] { "-lfs" });
+					});
+		});
+
+		test("Comnbining unknown short options should fail", () -> {
+			final Config config = new Config();
+			final CmdlineParser cp = new CmdlineParser(config);
+			cp.setAggregateShortOptionsWithPrefix("-");
+			intercept(CmdlineParserException.class, "\\QUnsupported option or parameter found: -lsa\\E", () -> {
+				// "-a" is an unknown option
+				cp.parse(new String[] { "-lsa" });
 			});
 		});
 
+		test("Comnbining unknown short options should result in combined options parsed as main parameter", () -> {
+			final Config config = new Config();
+			final Param param = new Param();
+			final CmdlineParser cp = new CmdlineParser(config, param);
+			cp.setAggregateShortOptionsWithPrefix("-");
+			// "-a" is an unknown option
+			cp.parse(new String[] { "-lsa" });
+			expectFalse(config.formatLong);
+			expectFalse(config.showSize);
+			expectEquals(config.file, null);
+			expectEquals(param.param, "-lsa");
+		});
 
 	}
 

@@ -401,7 +401,7 @@ public class CmdlineParser {
 					debugMode = true;
 					debug("Enabled debug mode\n" + debugState(""));
 				}
-
+				continue;
 			} else if (parseOptions && quickOptionMap.containsKey(param)) {
 				// Found an option
 				final OptionHandle optionHandle = quickOptionMap.get(param);
@@ -450,6 +450,7 @@ public class CmdlineParser {
 						throw new CmdlineParserException(msg.notr(), e, msg.tr());
 					}
 				}
+				continue;
 			} else if (parseOptions && quickCommandMap.containsKey(param)) {
 				// Found a command
 				final CommandHandle commandHandle = quickCommandMap.get(param);
@@ -461,11 +462,19 @@ public class CmdlineParser {
 						Arrays.copyOfRange(rest, index + 1, rest.length));
 				// Stop parsing
 				break;
-			} else if (parseOptions
+			}
+
+			if (parseOptions
 					&& aggregateShortOptionsWithPrefix.isDefined()
 					&& param.startsWith(aggregatePrefix)
 					&& param.length() > aggregatePrefixSize + 1) {
+
 				// Found an aggregated short option
+
+				// if true, the match is not a valid option aggrgation and
+				// should later be handled as normal parameter
+				boolean failed = false;
+
 				final char[] singleOptions = param.substring(aggregatePrefixSize).toCharArray();
 				// rewrite the cmdline
 				final List<String> rewritten = new LinkedList<String>();
@@ -473,7 +482,9 @@ public class CmdlineParser {
 				for (final char c : singleOptions) {
 					final OptionHandle oh = shortOptionMap.get(String.valueOf(c));
 					if (oh == null) {
-						// FIXME: unsupported aggregation found
+						// unsupported aggregation found
+						failed = true;
+						break;
 					}
 					if (rest.length < procCount + oh.getArgsCount()) {
 						// FIXME: missing args detected
@@ -495,15 +506,18 @@ public class CmdlineParser {
 						++procCount;
 					}
 				}
-				// re-interate parsing with the modified command line
-				// (backtracking)
-				final String[] newRest = Arrays.copyOfRange(rest, procCount, rest.length);
-				rewritten.addAll(Arrays.asList(newRest));
-				rest = rewritten.toArray(new String[0]);
-				index = -1;
-				continue;
+				if (!failed) {
+					// re-interate parsing with the modified command line
+					// (backtracking)
+					final String[] newRest = Arrays.copyOfRange(rest, procCount, rest.length);
+					rewritten.addAll(Arrays.asList(newRest));
+					rest = rewritten.toArray(new String[0]);
+					index = -1;
+					continue;
+				}
+			}
 
-			} else if (parameter == null && defaultCommandName != null
+			if (parameter == null && defaultCommandName != null
 					&& quickCommandMap.containsKey(defaultCommandName)) {
 				// Assume a default command inserted here
 				debug("Unsupported option '" + param + "' found, assuming default command: " + defaultCommandName);
