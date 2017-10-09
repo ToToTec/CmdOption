@@ -1,7 +1,7 @@
 = CmdOption - Command line parsing has never been easier
 :toc:
 :toc-placement: preamble
-:currentversion: 0.4.2
+:currentversion: 0.5.0
 :githubUrl: https://github.com/ToToTec/CmdOption
 :wikiUrl:  {githubUrl}/wiki
 :gitterUrl: https://gitter.im/ToToTec/CmdOption
