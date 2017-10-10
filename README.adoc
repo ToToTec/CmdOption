@@ -497,7 +497,8 @@ public List<CmdOptionHandler> defaultHandlers() {
         new StringMethodHandler(),      // <6>
         new LongHandler(),              // <7>
         new IntegerHandler(),           // <8>
-        new EnumHandler());             // <9>
+        new ByteHandler(),              // <9>
+        new EnumHandler());             // <10>
     }
 }
 ----
@@ -519,8 +520,10 @@ Apply an _n_-arg option to a (setter) method with _n_ parameters of type `String
 <7> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/LongHandler.java[`LongHandler`] --
 Apply an one-arg option to a `Long` or `long` field or method.
 <8> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/LongHandler.java[`LongHandler`] --
-Apply an one-arg option to a `Integer` or `int` field or method.
-<9> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/EnumHandler.java[`EnumHandler`] --
+Apply an one-arg option to an `Integer` or `int` field or method.
+<9> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/ByteHandler.java[`ByteHandler`] --
+Apply an one-arg option to a `Byte` or `byte` field or method.
+<10> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/EnumHandler.java[`EnumHandler`] --
 Parse a Sting to a Enum of the expected type and applies it to a field or a one-arg method.
 The `Enum.valueOf` method is used.
 
@@ -706,10 +709,11 @@ Have a look at some other projects I'm involved with:
 
 * Added `CmdlineParser.validate()` to detect configuration errors
 * Extended documentation
+* Added new ByteHandler which supports Byte and byte fields and setter methods.
 
 === CmdOption 0.5.0 - 2017-10-09
 
-* Added new LongHandler which support Long and long fields and setter method.
+* Added new LongHandler which supports Long and long fields and setter method.
 * New `UsageFormatter2` interface that accepts a `PrintStream` and default implementation `DefaultUsageFormatter2`.
 * Deprecated interface `UsageFormatter` and methods `CmdlineParser.usage(StringBuilder)` and CmdlineParser.setUsageFormatter(UsageFormatter)
 * Use Polyglot Maven (Scala) as build system
