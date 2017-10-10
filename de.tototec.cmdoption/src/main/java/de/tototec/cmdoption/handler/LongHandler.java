@@ -13,7 +13,7 @@ import de.tototec.cmdoption.internal.I18nFactory;
  * Apply an one-arg option to a {@link Long} (or <code>long</code>) field or
  * method.
  *
- * @since 0.4.3
+ * @since 0.5.0
  */
 public class LongHandler implements CmdOptionHandler {
 
