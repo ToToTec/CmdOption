@@ -2,7 +2,7 @@
 :toc:
 :toc-placement: preamble
 :currentversion: 0.5.0
-:documentedVersion: 0.5.0
+:documentedVersion: 0.5.1-SNAPSHOT
 :githubUrl: https://github.com/ToToTec/CmdOption
 :wikiUrl:  {githubUrl}/wiki
 :gitterUrl: https://gitter.im/ToToTec/CmdOption
@@ -563,6 +563,31 @@ In most cases, this will help you to resolve your issues. Of course, you can dis
 If you have issues you can not solve, do not hessitate to https://github.com/ToToTec/CmdOption/issues/new[open a support ticket] or search for other (open) issues in the {githubUrl}/issues[CmdOption ticket system].
 You can also start a chat in our {gitterUrl}[Gitter room].
 
+== Testing
+
+Since annotations are evaluated at runtime and not at compile time, CmdOption is predestinated to fail at runtime, if the configuration is invalid or inconsistent.
+Especially, when you create or change the configuration, but also when you refactor it or when you change the version of CmdOption, there is a risk of introducing new configuration errors.
+There is a not so slight chance that those errors stay undetected until you run or release your application.
+
+Therefore we strongly urge you to create at least one unit test in which you setup the parser with your configuration classes and call the `CmdlineParser.validate()` method.
+Such a test case will find those problems and you can fix them before you release your application.
+
+.Example TestNG test to validate your commandline parsing
+[source,java]
+----
+import org.testng.Test
+
+public class CmdlineTest {
+  @Test
+  public void testCmdline() {
+    // Here you need to place YOUR specific setup!
+    CmdlineParser cp = new CmdlineParser(/* your config */);
+    cp.validate();
+  }
+}
+----
+
+
 == Creating a streaming command line interface
 
 Normally, CmdOption parses a complete command line, populates the config object(s) and ensures, that the config is valid, according to the configuration.
@@ -676,6 +701,11 @@ Have a look at some other projects I'm involved with:
 * http://sbuild.org[SBuild] - A Scala-based build tool
 
 == ChangeLog
+
+=== CmdOption NEXT
+
+* Added `CmdlineParser.validate()` to detect configuration errors
+* Extended documentation
 
 === CmdOption 0.5.0 - 2017-10-09
 

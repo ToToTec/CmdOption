@@ -757,16 +757,51 @@ public class CmdlineParser {
 	}
 
 	/**
+	 * Check validity of the given configutaion classes. You should call this
+	 * method from a unit test to detect errors and inconsistencies in your
+	 * configuration.
+	 *
+	 * @throws CmdlineParserException
+	 *             if the configutation is not valid.
+	 */
+	public void validate() {
+		validateOptions();
+		for (final CommandHandle command : commands) {
+			command.getCmdlineParser().validate();
+		}
+	}
+
+	/**
 	 * Do a consistency check for the given cmdoption model (all annotated
 	 * opitons).
+	 *
+	 * @throws CmdlineParserException
+	 *             if the configutation is not valid.
+	 *
 	 */
 	protected void validateOptions() {
+		int noNameCount = 0;
+
 		for (final OptionHandle optionHandle : options) {
+
+			final String optionName;
+			if (optionHandle.getNames() == null) {
+				optionName = "<no name>";
+				++noNameCount;
+			} else {
+				optionName = optionHandle.getNames()[0];
+			}
+
+			if (optionHandle.getMaxCount() >= 0 && optionHandle.getMaxCount() < optionHandle.getMinCount()) {
+				final PreparedI18n msg = i18n.preparetr(
+						"The option \"{0}\" has inconsistent min..max count configuration (min={1}, max={2}).",
+						optionName, optionHandle.getMinCount(), optionHandle.getMaxCount());
+				throw new CmdlineParserException(msg.notr(), msg.tr());
+			}
+
 			for (final String reqOptionName : optionHandle.getRequires()) {
 				if (quickOptionMap.get(reqOptionName) == null) {
 					// required option does not exists
-					final String optionName = optionHandle.getNames() == null ? "<no name>"
-							: optionHandle.getNames()[0];
 					final PreparedI18n msg = i18n.preparetr(
 							"The option \"{0}\" requires the unknown/missing option \"{1}\".", optionName,
 							reqOptionName);
@@ -774,7 +809,6 @@ public class CmdlineParser {
 				}
 			}
 			for (final String conflictOptionName : optionHandle.getConflictsWith()) {
-				final String optionName = optionHandle.getNames() == null ? "<no name>" : optionHandle.getNames()[0];
 				if (Arrays.asList(optionHandle.getNames()).contains(conflictOptionName)) {
 					final PreparedI18n msg = i18n.preparetr("Option \"{0}\" is configured to conflicts with itself.",
 							optionName);
@@ -790,6 +824,12 @@ public class CmdlineParser {
 				}
 			}
 		}
+
+		if (noNameCount > 1) {
+			final PreparedI18n msg = i18n.preparetr("More than one main parameter detected ({0}).", noNameCount);
+			throw new CmdlineParserException(msg.notr(), msg.tr());
+		}
+
 		// TODO: Ensure, there are no long options, starting with the aggregated
 		// short
 		// option prefix, and when, disable this feature
