@@ -728,7 +728,7 @@ public class CmdlineParser {
 	 * Add an additional configuration object containing CmdOption-specific
 	 * annotations to the configuration.
 	 *
-	 * Classed annotated with {@link Command} are registered as commands, and
+	 * Classed annotated with {@link CmdCommand} are registered as commands, and
 	 * all found options and parameters are registered to the command.
 	 *
 	 * @param objects
