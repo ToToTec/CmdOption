@@ -972,13 +972,17 @@ public class CmdlineParser {
 				debug("Found delegate object at: {0}", element);
 				try {
 					final boolean origAccessibleFlag = element.isAccessible();
-					if (!origAccessibleFlag) {
-						element.setAccessible(true);
-					}
-					final Object delegate = ((Field) element).get(object);
-					if (!origAccessibleFlag) {
-						// do not leave doors open
-						element.setAccessible(origAccessibleFlag);
+					final Object delegate;
+					try {
+						if (!origAccessibleFlag) {
+							element.setAccessible(true);
+						}
+						delegate = ((Field) element).get(object);
+					} finally {
+						if (!origAccessibleFlag) {
+							// do not leave doors open
+							element.setAccessible(origAccessibleFlag);
+						}
 					}
 					if (delegate != null) {
 						scanOptions(delegate);
