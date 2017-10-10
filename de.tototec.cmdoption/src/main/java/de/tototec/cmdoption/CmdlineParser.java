@@ -677,6 +677,15 @@ public class CmdlineParser {
 		}
 	}
 
+	/**
+	 * Find a {@link CmdOptionHandler} for the given element, argument count and
+	 * requested handler type.
+	 *
+	 * @return The found {@link CmdOptionHandler} or <code>null</code>.
+	 *
+	 * @throws CmdlineParserException
+	 *             in case an error occured.
+	 */
 	protected CmdOptionHandler findHandler(final AccessibleObject element, final int argsCount,
 			final Class<? extends CmdOptionHandler> cmdOptionHandlerType) {
 		CmdOptionHandler handler = null;
@@ -719,7 +728,15 @@ public class CmdlineParser {
 	 * Add an additional configuration object containing CmdOption-specific
 	 * annotations to the configuration.
 	 *
+	 * Classed annotated with {@link Command} are registered as commands, and
+	 * all found options and parameters are registered to the command.
+	 *
 	 * @param objects
+	 *
+	 * @throws CmdlineParserException
+	 *             if the given objects contain configutation errors or are
+	 *             inconsistent.
+	 *
 	 */
 	public void addObject(final Object... objects) {
 		for (final Object object : objects) {
