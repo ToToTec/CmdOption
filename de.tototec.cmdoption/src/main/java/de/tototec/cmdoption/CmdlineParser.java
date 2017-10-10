@@ -27,6 +27,7 @@ import java.util.Set;
 import de.tototec.cmdoption.handler.AddToCollectionHandler;
 import de.tototec.cmdoption.handler.BooleanHandler;
 import de.tototec.cmdoption.handler.BooleanOptionHandler;
+import de.tototec.cmdoption.handler.ByteHandler;
 import de.tototec.cmdoption.handler.CmdOptionHandler;
 import de.tototec.cmdoption.handler.CmdOptionHandlerException;
 import de.tototec.cmdoption.handler.EnumHandler;
@@ -170,6 +171,7 @@ public class CmdlineParser {
 				new StringMethodHandler(),
 				new LongHandler(),
 				new IntegerHandler(),
+				new ByteHandler(),
 				new EnumHandler());
 	}
 
