@@ -780,6 +780,8 @@ public class CmdlineParser {
 	 *
 	 * @throws CmdlineParserException
 	 *             if the configutation is not valid.
+	 *
+	 * @since 0.5.1
 	 */
 	public void validate() {
 		validateOptions();
