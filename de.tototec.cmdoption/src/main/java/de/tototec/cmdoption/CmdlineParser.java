@@ -76,7 +76,7 @@ public class CmdlineParser {
 	/**
 	 * The option handle handling the main parameter(s) of the command line.
 	 */
-	private OptionHandle parameter = null;
+	private Optional<OptionHandle> parameter = Optional.none();
 	/**
 	 * List of all recognized option handles.
 	 */
@@ -135,11 +135,11 @@ public class CmdlineParser {
 
 	/**
 	 * Create a new commandline parser instance and scan all given object for
-	 * supported options, parameters and commands using the pre-registered
-	 * default handlers. Please note that if you want to use a custom set of
-	 * option handlers, you should not give your config objects here but use the
-	 * {@link #addObject(Object...)} method after you registered the desired set
-	 * of handlers.
+	 * supported options, parameters and commands using the pre-registered default
+	 * handlers. Please note that if you want to use a custom set of option
+	 * handlers, you should not give your config objects here but use the
+	 * {@link #addObject(Object...)} method after you registered the desired set of
+	 * handlers.
 	 *
 	 * @param objects
 	 *            The configuration objects containing supported annotations.
@@ -252,22 +252,22 @@ public class CmdlineParser {
 	}
 
 	private String debugState(final String prefix) {
-		return prefix + "Parameter: " + parameter
-				+ "\n" + prefix + "Options: "
-				+ FList.mkString(options, "\n" + prefix + "  ", ",\n" + prefix + "  ", "")
-				+ "\n" + prefix + "Commands: "
-				+ FList.mkString(commands, "\n" + prefix + "  ", ",\n" + prefix + "  ", "")
-				+ "\n" + prefix + "ResourceBundle: " + resourceBundle
-				+ "\n" + prefix + "Locale: " + (resourceBundle == null ? null : resourceBundle.getLocale())
-				+ "\n" + prefix + "CmdOptionHandlers: "
-				+ FList.mkString(handlerRegistry.entrySet(), "\n" + prefix + "  ", "\n" + prefix + "  ", "");
+		return prefix + "Parameter: " + parameter.orNull() + "\n" +
+				prefix + "Options: " +
+				FList.mkString(options, "\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
+				prefix + "Commands: " +
+				FList.mkString(commands, "\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
+				prefix + "ResourceBundle: " + resourceBundle + "\n" +
+				prefix + "Locale: " + (resourceBundle == null ? null : resourceBundle.getLocale()) + "\n" +
+				prefix + "CmdOptionHandlers: " +
+				FList.mkString(handlerRegistry.entrySet(), "\n" + prefix + "  ", "\n" + prefix + "  ", "");
 	}
 
 	/**
 	 * Parses the given commandline arguments.
 	 *
-	 * If no error were detected and not in dryrun-mode, the result is applied
-	 * to the config object(s).
+	 * If no error were detected and not in dryrun-mode, the result is applied to
+	 * the config object(s).
 	 *
 	 * If any errors where detected, they will be thrown as
 	 * {@link CmdlineParserException}.
@@ -358,8 +358,8 @@ public class CmdlineParser {
 		for (final OptionHandle option : options) {
 			optionCount.put(option, 0);
 		}
-		if (parameter != null) {
-			optionCount.put(parameter, 0);
+		if (parameter.isDefined()) {
+			optionCount.put(parameter.get(), 0);
 		}
 
 		// helpDetected - will be set to true, if we detect a help option while
@@ -367,7 +367,6 @@ public class CmdlineParser {
 		boolean helpDetected = false;
 
 		final String aggregatePrefix = aggregateShortOptionsWithPrefix.getOrElse(new F0<String>() {
-			@Override
 			public String apply() {
 				return "";
 			}
@@ -519,7 +518,7 @@ public class CmdlineParser {
 				}
 			}
 
-			if (parameter == null && defaultCommandName != null
+			if (parameter.isEmpty() && defaultCommandName != null
 					&& quickCommandMap.containsKey(defaultCommandName)) {
 				// Assume a default command inserted here
 				debug("Unsupported option '" + param + "' found, assuming default command: " + defaultCommandName);
@@ -534,25 +533,27 @@ public class CmdlineParser {
 				// Stop parsing
 				break;
 
-			} else if (parameter != null) {
+			} else if (parameter.isDefined()) {
+				final OptionHandle paramHandle = parameter.get();
 				// Found a parameter
-				optionCount.put(parameter, optionCount.get(parameter) + 1);
+				optionCount.put(paramHandle, optionCount.get(paramHandle) + 1);
 
-				if (rest.length <= index + parameter.getArgsCount() - 1) {
+				if (rest.length <= index + paramHandle.getArgsCount() - 1) {
 					final int countOfGivenParams = rest.length - index;
 					final PreparedI18n msg = i18n.preparetr(
 							"Missing arguments: {0} Parameter requires {1} arguments, but you gave {2}.",
-							Arrays.asList(parameter.getArgs()).subList(countOfGivenParams, parameter.getArgsCount()),
-							parameter.getArgsCount(), countOfGivenParams);
+							Arrays.asList(paramHandle.getArgs()).subList(countOfGivenParams,
+									paramHandle.getArgsCount()),
+							paramHandle.getArgsCount(), countOfGivenParams);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				// slurp next cmdline arguments into option arguments
-				final String[] optionArgs = Arrays.copyOfRange(rest, index, index + parameter.getArgsCount());
+				final String[] optionArgs = Arrays.copyOfRange(rest, index, index + paramHandle.getArgsCount());
 				// -1, because index gets increased by one at end of for-loop
-				index += parameter.getArgsCount() - 1;
+				index += paramHandle.getArgsCount() - 1;
 
-				final AccessibleObject element = parameter.getElement();
-				final CmdOptionHandler handler = parameter.getCmdOptionHandler();
+				final AccessibleObject element = paramHandle.getElement();
+				final CmdOptionHandler handler = paramHandle.getCmdOptionHandler();
 
 				if (!dryrun) {
 					try {
@@ -561,7 +562,7 @@ public class CmdlineParser {
 						if (!origAccessibleFlag) {
 							element.setAccessible(true);
 						}
-						handler.applyParams(parameter.getObject(), element, optionArgs, param);
+						handler.applyParams(paramHandle.getObject(), element, optionArgs, param);
 						if (!origAccessibleFlag) {
 							// do not leave doors open
 							element.setAccessible(origAccessibleFlag);
@@ -730,8 +731,8 @@ public class CmdlineParser {
 	 * Add an additional configuration object containing CmdOption-specific
 	 * annotations to the configuration.
 	 *
-	 * Classed annotated with {@link CmdCommand} are registered as commands, and
-	 * all found options and parameters are registered to the command.
+	 * Classed annotated with {@link CmdCommand} are registered as commands, and all
+	 * found options and parameters are registered to the command.
 	 *
 	 * @param objects
 	 *
@@ -776,9 +777,8 @@ public class CmdlineParser {
 	}
 
 	/**
-	 * Check validity of the given configutaion classes. You should call this
-	 * method from a unit test to detect errors and inconsistencies in your
-	 * configuration.
+	 * Check validity of the given configutaion classes. You should call this method
+	 * from a unit test to detect errors and inconsistencies in your configuration.
 	 *
 	 * @throws CmdlineParserException
 	 *             if the configutation is not valid.
@@ -793,8 +793,7 @@ public class CmdlineParser {
 	}
 
 	/**
-	 * Do a consistency check for the given cmdoption model (all annotated
-	 * opitons).
+	 * Do a consistency check for the given cmdoption model (all annotated opitons).
 	 *
 	 * @throws CmdlineParserException
 	 *             if the configutation is not valid.
@@ -1022,10 +1021,10 @@ public class CmdlineParser {
 
 			if (names == null || names.length == 0) {
 				// No names means this is the ONLY parameter
-				if (parameter != null) {
+				if (parameter.isDefined()) {
 					final PreparedI18n msg = i18n.preparetr(
 							"More than one parameter definition found. First definition: {0} Second definition: {1}",
-							parameter.getElement(), element);
+							parameter.get().getElement(), element);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				// TODO: should we ignore the help parameter? Currently we do!
@@ -1039,7 +1038,7 @@ public class CmdlineParser {
 					final PreparedI18n msg = i18n.preparetr("Parameter definition must support at least on argument.");
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
-				parameter = paramHandle;
+				parameter = Optional.some(paramHandle);
 
 			} else {
 				final OptionHandle option = new OptionHandle(names, anno.description(), handler, object,
@@ -1071,8 +1070,8 @@ public class CmdlineParser {
 	}
 
 	/**
-	 * Register a new CmdOptionHandler. Please note: The newly registered
-	 * handlers will only have an effect to succeeding calls to
+	 * Register a new CmdOptionHandler. Please note: The newly registered handlers
+	 * will only have an effect to succeeding calls to
 	 * {@link #addObject(Object...)}.
 	 */
 	public void registerHandler(final CmdOptionHandler handler) {
@@ -1117,7 +1116,7 @@ public class CmdlineParser {
 			// We are a command
 			programName = parent.programName + " " + programName;
 		}
-		return new CmdlineModel(programName, options, commands, parameter, aboutLine, resourceBundle);
+		return new CmdlineModel(programName, options, commands, parameter.orNull(), aboutLine, resourceBundle);
 	}
 
 	/**
@@ -1157,8 +1156,8 @@ public class CmdlineParser {
 
 	/**
 	 * Set the argument prefix used to mark a cmdline argument as file which
-	 * contains more commandline parameters. If not changed, this is by default
-	 * the <code>"@"</code> sign. You can also disable this feature by setting
+	 * contains more commandline parameters. If not changed, this is by default the
+	 * <code>"@"</code> sign. You can also disable this feature by setting
 	 * <code>null</code> or the empty string.
 	 *
 	 * The file contains additional arguments, each one on a new line.
