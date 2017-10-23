@@ -9,41 +9,48 @@ import java.nio.charset.Charset;
 
 import org.testng.annotations.Test;
 
-public class ParserTest {
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
-	@Test
-	public void testParseEmptyConfig() {
-		class Config {}
-		final CmdlineParser cp = new CmdlineParser(new Config());
-		cp.parse();
-	}
+public class ParserTest extends FreeSpec {
 
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Unsupported option or parameter found: --help")
-	public void testParseHelpFail() {
-		class Config {}
-		final CmdlineParser cp = new CmdlineParser(new Config());
-		// should fail because we have no option --help defined
-		cp.parse(new String[] { "--help" });
+	public ParserTest() {
+
+		test("Parse empty config", () -> {
+			class Config {}
+			final CmdlineParser cp = new CmdlineParser(new Config());
+			cp.parse();
+		});
+
+		test("Parse unsupported help option should fail", () -> {
+			class Config {}
+			final CmdlineParser cp = new CmdlineParser(new Config());
+			intercept(CmdlineParserException.class, "\\QUnsupported option or parameter found: --help\\E", () -> {
+				// should fail because we have no option --help defined
+				cp.parse(new String[] { "--help" });
+			});
+		});
+
+		test("Parse help", () ->{
+			final Config3 config = new Config3();
+			assertEquals(config.help, false);
+			final CmdlineParser cp = new CmdlineParser(config);
+			cp.parse(new String[] { "--help" });
+			assertEquals(config.help, true);
+		});
+
+
+		test("Parse unsupported help option should fail", () -> {
+			final CmdlineParser cp = new CmdlineParser(new Config3());
+			intercept(CmdlineParserException.class, "\\QUnsupported option or parameter found: true\\E", () -> {
+				cp.parse(new String[] { "--help", "true" });
+			});
+		});
+
 	}
 
 	public static class Config3 {
 		@CmdOption(names = "--help")
 		public boolean help;
-	}
-
-	@Test
-	public void testParseHelp() {
-		final Config3 config = new Config3();
-		assertEquals(config.help, false);
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.parse(new String[] { "--help" });
-		assertEquals(config.help, true);
-	}
-
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Unsupported option or parameter found: true")
-	public void testOptionWithOrphanArgFail() {
-		final CmdlineParser cp = new CmdlineParser(new Config3());
-		cp.parse(new String[] { "--help", "true" });
 	}
 
 	@Test
