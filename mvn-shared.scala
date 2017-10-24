@@ -1,13 +1,30 @@
 object CmdOption {
-
+  val groupId = "de.tototec"
   val version = "0.5.1-SNAPSHOT"
+}
 
+object Plugins {
+  val antrun = "org.apache.maven.plugins" % "maven-antrun-plugin" % "1.8"
+  val clean = "org.apache.maven.plugins" % "maven-clean-plugin" % "3.0.0"
+  val dependencyCheck = "org.owasp" % "dependency-check-maven" % "3.0.1"
+  val deploy = "org.apache.maven.plugins" % "maven-deploy-plugin" % "2.8.2"
+  val install = "org.apache.maven.plugins" % "maven-install-plugin" % "2.5.2"
+  val surefire = "org.apache.maven.plugins" % "maven-surefire-plugin" % "2.20.1"
+  val translate = "io.takari.polyglot" % "polyglot-translate-plugin" % "0.2.1"
+}
+
+object Deps {
+  val jcommander = "com.beust" % "jcommander" % "1.72" // transitive dep of testng
+  val lambdatest = "de.tototec" % "de.tobiasroeser.lambdatest" % "0.2.4"
+  val slf4j = "org.slf4j" % "slf4j-api" % "1.7.25"
+  val testng = "org.testng" % "testng" % "6.11"
 }
 
 // Extends polyglot API for convenience
 implicit class ImplDependency(d: Dependency) {
 
-  def copy(gav: Gav = d.gav,
+  def copy(
+    gav: Gav = d.gav,
     `type`: String = d.`type`,
     classifier: String = d.classifier.orNull,
     scope: String = d.scope.orNull,
@@ -26,7 +43,7 @@ val genPomXmlProfile = Profile(
     plugins = Seq(
       // Generate pom.xml from pom.scala
       Plugin(
-        gav = "io.takari.polyglot" % "polyglot-translate-plugin" % "0.2.1",
+        gav = Plugins.translate,
         executions = Seq(
           Execution(
             id = "pom-scala-to-pom-xml",
@@ -34,29 +51,20 @@ val genPomXmlProfile = Profile(
             goals = Seq("translate-project"),
             configuration = Config(
               input = "pom.scala",
-              output = "pom.xml"
-            )
-          )
-        )
-      ),
+              output = "pom.xml")))),
       // Clean generated pom.xml
       Plugin(
-        gav = "org.apache.maven.plugins" % "maven-clean-plugin" % "3.0.0",
+        gav = Plugins.clean,
         configuration = Config(
           filesets = Config(
             fileset = Config(
               directory = "${basedir}",
               includes = Config(
-                include = "pom.xml"
-              )
-            )
-          )
-        )
-      )
-    )
-  )
-)
+                include = "pom.xml"))))))))
 
+/**
+ * Handle gettext related build scripts
+ */
 object Gettext {
 
   def extractMessagesTarget: Config = Config(
@@ -81,9 +89,7 @@ object Gettext {
       arg = Config(`@value` = "--output"),
       arg = Config(`@value` = "messages.pot"),
       // the source files to scan
-      fileset = Config(`@dir` = "${project.basedir}/src/main/java")
-    )
-  )
+      fileset = Config(`@dir` = "${project.basedir}/src/main/java")))
 
   def mergeMessagesTarget: Config = Config(
     // run msgmerge on the translation files to update them
@@ -99,9 +105,7 @@ object Gettext {
       arg = Config(`@value` = "--update"),
       srcfile = Config(`@suffix` = ""),
       fileset = Config(`@dir` = "${project.basedir}/src/main/po", `@includes` = "*.po"),
-      arg = Config(`@value` = "${project.basedir}/target/po/messages.pot")
-    )
-  )
+      arg = Config(`@value` = "${project.basedir}/target/po/messages.pot")))
 
   def generatePropertiesTarget: Config = Config(
     mkdir = Config(`@dir` = "${project.basedir}/target/classes/de/tototec/cmdoption"),
@@ -121,14 +125,11 @@ object Gettext {
       arg = Config(`@value` = "--properties-output"),
       // marker for the source file position
       srcfile = Config(`@suffix` = ""),
-      // source files  
+      // source files
       fileset = Config(`@dir` = "${project.basedir}/src/main/po", `@includes` = "*.po"),
       arg = Config(`@value` = "${project.basedir}/target/po/messages.pot"),
       mapper = Config(
         `@type` = "glob",
         `@from` = "*.po",
-        `@to` = "Messages_*.properties"
-      )
-    )
-  )
+        `@to` = "Messages_*.properties")))
 }

@@ -4,7 +4,7 @@ import scala.collection.immutable.Seq
 #include ../mvn-shared.scala
 
 Model(
-  gav = "de.tototec" % "de.tototec.cmdoption" % CmdOption.version,
+  gav = CmdOption.groupId % "de.tototec.cmdoption" % CmdOption.version,
   modelVersion = "4.0.0",
   packaging = "jar",
   name = "CmdOption",
@@ -41,13 +41,13 @@ Model(
   dependencies = Seq[Dependency](
     // We detect SLF4J at runtime, but it is not required
     Dependency(
-      gav = "org.slf4j" % "slf4j-api" % "1.7.25",
+      gav = Deps.slf4j,
       scope = "provided",
       optional = true
     ),
-    "org.testng" % "testng" % "6.11" % "test",
-    "com.beust" % "jcommander" % "1.72" % "test",
-    "de.tototec" % "de.tobiasroeser.lambdatest" % "0.2.4" % "test"
+    Deps.testng % "test",
+    Deps.jcommander % "test",
+    Deps.lambdatest % "test"
   ).map(_.pure),
   build = Build(
     resources = Seq(
@@ -61,14 +61,14 @@ Model(
     ),
     plugins = Seq(
       Plugin(
-        gav = "org.apache.maven.plugins" % "maven-surefire-plugin" % "2.20.1",
+        gav = Plugins.surefire,
         configuration = Config(
           // Avoid string differences in tests because of locale-dependent translations
           argLine = "-Duser.country=EN -Duser.language=en -Duser.variant="
         )
       ),
       Plugin(
-        gav = "org.apache.maven.plugins" % "maven-antrun-plugin" % "1.8",
+        gav = Plugins.antrun,
         executions = Seq(
           Execution(
             id = "extract-messages",
@@ -86,8 +86,8 @@ Model(
             goals = Seq("run"),
             configuration = Config(
               target = new Config(
-                  Gettext.extractMessagesTarget.elements ++ Gettext.mergeMessagesTarget.elements
-                )
+                Gettext.extractMessagesTarget.elements ++ Gettext.mergeMessagesTarget.elements
+              )
             )
           ),
           // Generate properties files for translations
@@ -98,6 +98,14 @@ Model(
             configuration = Config(
               target = Gettext.generatePropertiesTarget
             )
+          )
+        )
+      ),
+      Plugin(
+        gav = Plugins.dependencyCheck,
+        executions = Seq(
+          Execution(
+            goals = Seq("check")
           )
         )
       )

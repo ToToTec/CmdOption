@@ -4,7 +4,7 @@ import scala.collection.immutable.Seq
 #include mvn-shared.scala
 
 Model(
-  gav = "de.tototec" % "de.tototec.cmdoption-reactor" % CmdOption.version,
+  gav = CmdOption.groupId % "de.tototec.cmdoption-reactor" % CmdOption.version,
   modelVersion = "4.0.0",
   packaging = "pom",
   modules = Seq(
@@ -13,13 +13,13 @@ Model(
   build = Build(
     plugins = Seq(
       Plugin(
-        gav = "org.apache.maven.plugins" % "maven-install-plugin",
+        gav = Plugins.install,
         configuration = Config(
           skip = true
         )
       ),
       Plugin(
-        gav = "org.apache.maven.plugins" % "maven-deploy-plugin",
+        gav = Plugins.deploy,
         configuration = Config(
           skip = true
         )
