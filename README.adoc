@@ -1,8 +1,8 @@
 = CmdOption - Command line parsing has never been easier
 :toc:
 :toc-placement: preamble
-:currentversion: 0.5.0
-:documentedVersion: 0.5.1-SNAPSHOT
+:currentversion: 0.6.0
+:documentedVersion: 0.6.0
 :githubUrl: https://github.com/ToToTec/CmdOption
 :wikiUrl:  {githubUrl}/wiki
 :gitterUrl: https://gitter.im/ToToTec/CmdOption
@@ -686,10 +686,11 @@ To build and deploy new release use the `deploy-maven-central.sh` script.
 
 Before cutting a new release, you should ensure/do:
 
-* All tests have to pass!
 * Update version (at least remove `-SNAPSHOT` suffix)
-* Update Changelog in this `README.adoc` (add changes, add proper version and date)
-* Create a git tag
+* Update or add `@since` annotation in source code
+* Do a full build - *All tests have to pass!*
+* Update asciidoc-attributes and Changelog and in this `README.adoc` (add changes, add proper version and date)
+* Commit and create a git tag
 * run the deploy script `deploy-maven-central.sh`
 * Stage and release repository in Sonatype Nexus (https://oss.sonatype.org/index.html#stagingRepositories)
 * Update version (increment and add `-SNAPSHOT` suffix)
@@ -705,7 +706,7 @@ Have a look at some other projects I'm involved with:
 
 == ChangeLog
 
-=== CmdOption NEXT
+=== CmdOption 0.6.0 - 2017-10-24
 
 * Added `CmdlineParser.validate()` to detect configuration errors
 * Extended documentation

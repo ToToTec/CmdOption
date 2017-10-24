@@ -13,7 +13,7 @@ import de.tototec.cmdoption.internal.I18nFactory;
  * Apply an one-arg option to a {@link Byte} (or <code>byte</code>) field or
  * method.
  *
- * @since 0.5.1
+ * @since 0.6.0
  */
 public class ByteHandler implements CmdOptionHandler {
 
