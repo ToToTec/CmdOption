@@ -3,10 +3,13 @@ import scala.collection.immutable.Seq
 
 #include ../mvn-shared.scala
 
+val namespace = "de.tototec.cmdoption"
+val artifactId = namespace
+
 Model(
-  gav = CmdOption.groupId % "de.tototec.cmdoption" % CmdOption.version,
+  gav = CmdOption.groupId % artifactId % CmdOption.version,
   modelVersion = "4.0.0",
-  packaging = "jar",
+  packaging = "bundle",
   name = "CmdOption",
   description = "CmdOption is a simple annotation-driven command line parser toolkit for Java 5 applications that is configured through annotations.",
   url = "https://github.com/ToToTec/CmdOption",
@@ -60,6 +63,22 @@ Model(
       )
     ),
     plugins = Seq(
+      Plugin(
+        gav = Plugins.bundle,
+        extensions = true,
+        configuration = Config(
+          instructions = new Config(Seq(
+            "Bundle-SymbolicName" -> Some(artifactId),
+            "Export-Package" -> Some(Seq(
+              namespace,
+              namespace + ".handler"
+            ).mkString(",")),
+            "Private-Package" -> Some(Seq(
+              namespace + ".internal"
+            ).mkString(","))
+          ))
+        )
+      ),
       Plugin(
         gav = Plugins.surefire,
         configuration = Config(

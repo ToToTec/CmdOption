@@ -709,7 +709,8 @@ Have a look at some other projects I'm involved with:
 
 * Added `CmdlineParser.validate()` to detect configuration errors
 * Extended documentation
-* Added new ByteHandler which supports Byte and byte fields and setter methods.
+* Added new ByteHandler which supports `Byte` and `byte` fields and setter methods.
+* Added OSGi Manifest
 
 === CmdOption 0.5.0 - 2017-10-09
 
