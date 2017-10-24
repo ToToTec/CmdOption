@@ -77,6 +77,11 @@ Model(
               namespace + ".internal"
             ).mkString(","))
           ))
+        ),
+        executions = Seq(
+          Execution(
+            goals = Seq("baseline")
+          )
         )
       ),
       Plugin(

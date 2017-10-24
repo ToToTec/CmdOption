@@ -5,7 +5,7 @@ object CmdOption {
 
 object Plugins {
   val antrun = "org.apache.maven.plugins" % "maven-antrun-plugin" % "1.8"
-  val bundle = "org.apache.felix" % "maven-bundle-plugin" % "3.2.0"
+  val bundle = "org.apache.felix" % "maven-bundle-plugin" % "3.3.0"
   val clean = "org.apache.maven.plugins" % "maven-clean-plugin" % "3.0.0"
   val dependencyCheck = "org.owasp" % "dependency-check-maven" % "3.0.1"
   val deploy = "org.apache.maven.plugins" % "maven-deploy-plugin" % "2.8.2"
