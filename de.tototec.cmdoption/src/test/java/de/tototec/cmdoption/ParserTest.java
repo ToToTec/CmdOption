@@ -1,17 +1,46 @@
 package de.tototec.cmdoption;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 
-import org.testng.annotations.Test;
-
 import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
 public class ParserTest extends FreeSpec {
+
+	public static class Config3 {
+		@CmdOption(names = "--help")
+		public boolean help;
+	}
+
+	public static class Config3d {
+		@CmdOption(names = "--help", minCount = 1)
+		public boolean help;
+	}
+
+	public static class Config4 {
+		@CmdOption(names = "--help", args = "true|false")
+		public boolean help;
+	}
+
+	public static class Config5 {
+		@CmdOption(names = "--opt", requires = { "--reqA", "--reqB" })
+		public boolean opt;
+
+		@CmdOption(names = "--reqA")
+		public boolean reqA;
+	}
+
+	public static class Config6 {
+		@CmdOption(names = "--opt", requires = { "--reqA" })
+		public boolean opt;
+
+		@CmdOption(names = "--reqA")
+		public boolean reqA;
+	}
 
 	public ParserTest() {
 
@@ -30,14 +59,13 @@ public class ParserTest extends FreeSpec {
 			});
 		});
 
-		test("Parse help", () ->{
+		test("Parse help", () -> {
 			final Config3 config = new Config3();
-			assertEquals(config.help, false);
+			expectEquals(config.help, false);
 			final CmdlineParser cp = new CmdlineParser(config);
 			cp.parse(new String[] { "--help" });
-			assertEquals(config.help, true);
+			expectEquals(config.help, true);
 		});
-
 
 		test("Parse unsupported help option should fail", () -> {
 			final CmdlineParser cp = new CmdlineParser(new Config3());
@@ -46,137 +74,125 @@ public class ParserTest extends FreeSpec {
 			});
 		});
 
-	}
+		test("Print unsage contains some characters", () -> {
+			final CmdlineParser cp = new CmdlineParser(new Config3());
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final PrintStream ps = new PrintStream(baos);
+			cp.usage(ps);
+			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			System.out.println(usage);
+			expectTrue(usage.length() > 10);
+		});
 
-	public static class Config3 {
-		@CmdOption(names = "--help")
-		public boolean help;
-	}
+		test("Parse optional help twice should fail", () -> {
+			final CmdlineParser cp = new CmdlineParser(new Config3());
+			intercept(CmdlineParserException.class,
+					"\\QOption \"--help\" was given 2 times, but must be given between 0 and 1 times\\E",
+					() -> {
+						cp.parse(new String[] { "--help", "--help" });
+					});
+		});
 
-	@Test
-	public void testPrintUsageContainsSomeCharacters() {
-		final CmdlineParser cp = new CmdlineParser(new Config3());
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final PrintStream ps = new PrintStream(baos);
-		cp.usage(ps);
-		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-		System.out.println(usage);
-		assertTrue(usage.length() > 10);
-	}
+		test("Parse required help twice should fail", () -> {
+			final CmdlineParser cp = new CmdlineParser(new Config3d());
+			intercept(CmdlineParserException.class,
+					"\\QOption \"--help\" was given 2 times, but must be given exactly 1 times\\E",
+					() -> {
+						cp.parse(new String[] { "--help", "--help" });
+					});
+		});
 
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Option \"--help\" was given 2 times, but must be given between 0 and 1 times")
-	public void testParseOptionalHelpTwiceFail() {
-		final CmdlineParser cp = new CmdlineParser(new Config3());
-		cp.parse(new String[] { "--help", "--help" });
-	}
+		test("Parse required help missing should fail", () -> {
+			final CmdlineParser cp = new CmdlineParser(new Config3d());
+			intercept(CmdlineParserException.class,
+					"\\QOption \"--help\" was given 0 times, but must be given exactly 1 times\\E",
+					() -> {
+						cp.parse(new String[] {});
+					});
+		});
 
-	public static class Config3d {
-		@CmdOption(names = "--help", minCount = 1)
-		public boolean help;
-	}
+		test("Changed help field after parse", () -> {
+			final Config4 config = new Config4();
+			expectEquals(config.help, false);
+			final CmdlineParser cp = new CmdlineParser(config);
+			cp.parse(new String[] { "--help", "true" });
+			expectEquals(config.help, true);
+		});
 
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Option \"--help\" was given 2 times, but must be given exactly 1 times")
-	public void testParseRequiredHelpTwiceFail() {
-		final CmdlineParser cp = new CmdlineParser(new Config3d());
-		cp.parse(new String[] { "--help", "--help" });
-	}
+		test("Parse one arg option without arg should fail", () -> {
+			final CmdlineParser cp = new CmdlineParser(new Config4());
+			intercept(CmdlineParserException.class, () -> {
+				cp.parse(new String[] { "--help" });
+			});
+		});
 
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Option \"--help\" was given 0 times, but must be given exactly 1 times")
-	public void testParseRequiredHelpMissingFail() {
-		final CmdlineParser cp = new CmdlineParser(new Config3d());
-		cp.parse(new String[] {});
-	}
+		test("Print usage and parse help", () -> {
+			final Config4 config = new Config4();
+			final CmdlineParser cp = new CmdlineParser(config);
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final PrintStream ps = new PrintStream(baos);
+			cp.usage(ps);
+			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			System.out.println(usage);
+			expectTrue(usage.length() > 10);
+			cp.parse(new String[] { "--help", "true" });
+			expectEquals(config.help, true);
+		});
 
-	public static class Config4 {
-		@CmdOption(names = "--help", args = "true|false")
-		public boolean help;
-	}
+		test("Parse help twice should fail", () -> {
+			final CmdlineParser cp = new CmdlineParser(new Config4());
+			intercept(CmdlineParserException.class,
+					"\\QCould not parse argument \"--help\" as boolean parameter.\\E",
+					() -> {
+						cp.parse(new String[] { "--help", "--help" });
+					});
+		});
 
-	@Test
-	public void testChangedHelpFieldAfterParse() {
-		final Config4 config = new Config4();
-		assertEquals(config.help, false);
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.parse(new String[] { "--help", "true" });
-		assertEquals(config.help, true);
-	}
+		test("Parse two option which requires two but one is missing should fail", () -> {
+			final Config5 config = new Config5();
+			final CmdlineParser cp = new CmdlineParser(config);
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final PrintStream ps = new PrintStream(baos);
+			cp.usage(ps);
+			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			expectTrue(usage.length() > 10);
+			intercept(CmdlineParserException.class,
+					"^\\QThe option \"--opt\" requires the unknown/missing option \"--reqB\".\\E$",
+					() -> {
+						cp.parse(new String[] { "--opt", "--reqA" });
+					});
+		});
 
-	@Test(expectedExceptions = CmdlineParserException.class)
-	public void testParseOneArgOptionWithoutArgFail() {
-		final CmdlineParser cp = new CmdlineParser(new Config4());
-		cp.parse(new String[] { "--help" });
-	}
+		test("Parse two option which requires two others but one is missing should fail", () -> {
+			final Config5 config = new Config5();
+			final CmdlineParser cp = new CmdlineParser(config);
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final PrintStream ps = new PrintStream(baos);
+			cp.usage(ps);
+			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			expectTrue(usage.length() > 10);
+			intercept(CmdlineParserException.class,
+					"^\\QThe option \"--opt\" requires the unknown/missing option \"--reqB\".\\E$",
+					() -> {
+						cp.parse(new String[] { "--opt" });
+					});
+		});
 
-	@Test
-	public void testPrintUsageAndParseHelp() {
-		final Config4 config = new Config4();
-		final CmdlineParser cp = new CmdlineParser(config);
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final PrintStream ps = new PrintStream(baos);
-		cp.usage(ps);
-		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-		System.out.println(usage);
-		assertTrue(usage.length() > 10);
-		cp.parse(new String[] { "--help", "true" });
-		assertEquals(config.help, true);
-	}
+		test("Parse option which requires another one should fail", () -> {
+			final Config6 config = new Config6();
+			final CmdlineParser cp = new CmdlineParser(config);
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final PrintStream ps = new PrintStream(baos);
+			cp.usage(ps);
+			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			expectTrue(usage.length() > 10);
+			intercept(CmdlineParserException.class,
+					"^\\QWhen using option \"--opt\" also option \"--reqA\" must be given.\\E$",
+					() -> {
+						cp.parse(new String[] { "--opt" });
+					});
+		});
 
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "Could not parse argument \"--help\" as boolean parameter.")
-	public void testParseHelpTwiceFail() {
-		final CmdlineParser cp = new CmdlineParser(new Config4());
-		cp.parse(new String[] { "--help", "--help" });
-	}
-
-	public static class Config5 {
-		@CmdOption(names = "--opt", requires = { "--reqA", "--reqB" })
-		public boolean opt;
-
-		@CmdOption(names = "--reqA")
-		public boolean reqA;
-	}
-
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "^The option \"--opt\" requires the unknown/missing option \"--reqB\".$")
-	public void testParseTwoOptionWhichRequiresTwoOtherButOneIsMissingFail() {
-		final Config5 config = new Config5();
-		final CmdlineParser cp = new CmdlineParser(config);
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final PrintStream ps = new PrintStream(baos);
-		cp.usage(ps);
-		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-		assertTrue(usage.length() > 10);
-		cp.parse(new String[] { "--opt", "--reqA" });
-	}
-
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "^The option \"--opt\" requires the unknown/missing option \"--reqB\".$")
-	public void testParseOneOptionWhichRequiresTwoOthersButOneIsMissingFail() {
-		final Config5 config = new Config5();
-		final CmdlineParser cp = new CmdlineParser(config);
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final PrintStream ps = new PrintStream(baos);
-		cp.usage(ps);
-		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-		assertTrue(usage.length() > 10);
-		cp.parse(new String[] { "--opt" });
-	}
-
-	public static class Config6 {
-		@CmdOption(names = "--opt", requires = { "--reqA" })
-		public boolean opt;
-
-		@CmdOption(names = "--reqA")
-		public boolean reqA;
-	}
-
-	@Test(expectedExceptions = CmdlineParserException.class, expectedExceptionsMessageRegExp = "^When using option \"--opt\" also option \"--reqA\" must be given.$")
-	public void testParseOptionWhichRequiresAnotherOneFail() {
-		final Config6 config = new Config6();
-		final CmdlineParser cp = new CmdlineParser(config);
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final PrintStream ps = new PrintStream(baos);
-		cp.usage(ps);
-		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-		assertTrue(usage.length() > 10);
-		cp.parse(new String[] { "--opt" });
 	}
 
 }
