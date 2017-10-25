@@ -1027,7 +1027,14 @@ public class CmdlineParser {
 							parameter.get().getElement(), element);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
-				// TODO: should we ignore the help parameter? Currently we do!
+
+				if (anno.isHelp()) {
+					debug("Warning: Found annotation for the main parameter with enabled isHelp=true. The isHelp will be ignored.");
+				}
+				if (anno.maxCount() == 0) {
+					debug("Warning: Found annotation for the main parameter with maxCount=0. This is interpreted as unconstrained.");
+				}
+
 				final OptionHandle paramHandle = new OptionHandle(
 						new String[] {}, anno.description(), handler,
 						object, element, anno.args(), anno.minCount(), anno.maxCount(),
@@ -1041,6 +1048,11 @@ public class CmdlineParser {
 				parameter = Optional.some(paramHandle);
 
 			} else {
+				if (anno.maxCount() == 0) {
+					debug("Warning: Found annotation for option [{0}] with maxCount=0. This is interpreted as unconstrained.",
+							FList.mkString(names, ","));
+				}
+
 				final OptionHandle option = new OptionHandle(names, anno.description(), handler, object,
 						element, anno.args(), anno.minCount(), anno.maxCount(), anno.isHelp(), anno.hidden(),
 						anno.requires(), anno.conflictsWith());
