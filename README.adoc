@@ -524,7 +524,7 @@ Apply an one-arg option to an `Integer` or `int` field or method.
 <9> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/ByteHandler.java[`ByteHandler`] --
 Apply an one-arg option to a `Byte` or `byte` field or method.
 <10> link:de.tototec.cmdoption/src/main/java/de/tototec/cmdoption/handler/EnumHandler.java[`EnumHandler`] --
-Parse a Sting to a Enum of the expected type and applies it to a field or a one-arg method.
+Parse a String to a Enum of the expected type and applies it to a field or a one-arg method.
 The `Enum.valueOf` method is used.
 
 
