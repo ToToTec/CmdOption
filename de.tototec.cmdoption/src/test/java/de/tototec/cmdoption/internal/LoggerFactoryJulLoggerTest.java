@@ -1,6 +1,7 @@
 package de.tototec.cmdoption.internal;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
+
 import de.tobiasroeser.lambdatest.testng.FreeSpec;
 import de.tototec.cmdoption.internal.LoggerFactory.JavaUtilLogger;
 
@@ -29,7 +30,7 @@ public class LoggerFactoryJulLoggerTest extends FreeSpec {
 			final Object... args) {
 		final JavaUtilLogger logger = new LoggerFactory.JavaUtilLogger(getClass());
 		test("format: " + msg + " with " + FList.mkString(args, ","), () -> {
-			assertEquals(
+			expectEquals(
 					logger.formattedMsgAndCause(msg, args),
 					new Object[] { expectedMsg, expectedCause }
 					);

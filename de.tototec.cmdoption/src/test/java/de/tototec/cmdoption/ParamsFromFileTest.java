@@ -1,9 +1,8 @@
 package de.tototec.cmdoption;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 
 import java.io.File;
-
 import java.io.PrintWriter;
 
 import de.tobiasroeser.lambdatest.testng.FreeSpec;
@@ -29,8 +28,8 @@ public class ParamsFromFileTest extends FreeSpec {
 			final CmdlineParser cp = new CmdlineParser(config);
 			cp.parse("--arg1", "abc", "@" + file.getAbsolutePath());
 
-			assertEquals(config.arg1, "abc");
-			assertEquals(config.arg2, "def");
+			expectEquals(config.arg1, "abc");
+			expectEquals(config.arg2, "def");
 		});
 
 	}

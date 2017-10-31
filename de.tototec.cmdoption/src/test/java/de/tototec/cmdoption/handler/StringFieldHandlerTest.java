@@ -1,6 +1,7 @@
 package de.tototec.cmdoption.handler;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
+
 import de.tobiasroeser.lambdatest.testng.FreeSpec;
 import de.tototec.cmdoption.CmdOption;
 import de.tototec.cmdoption.CmdlineParser;
@@ -28,12 +29,12 @@ public class StringFieldHandlerTest extends FreeSpec {
 	{
 		test("String field", () -> {
 			final ConfigStringField config = new ConfigStringField();
-			assertEquals(config.string1, null);
+			expectEquals(config.string1, null);
 
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("--string1", "abc");
-			assertEquals(config.string1, "abc");
+			expectEquals(config.string1, "abc");
 		});
 		test("String final field fail", () -> {
 			final ConfigFinalStringField config = new ConfigFinalStringField();

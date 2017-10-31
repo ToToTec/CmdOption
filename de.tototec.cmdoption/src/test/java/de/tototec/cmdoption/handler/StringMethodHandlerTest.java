@@ -1,6 +1,7 @@
 package de.tototec.cmdoption.handler;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
+
 import de.tobiasroeser.lambdatest.testng.FreeSpec;
 import de.tototec.cmdoption.CmdOption;
 import de.tototec.cmdoption.CmdlineParser;
@@ -46,38 +47,38 @@ public class StringMethodHandlerTest extends FreeSpec {
 	{
 		test("String method", () -> {
 			final ConfigStringMethod config = new ConfigStringMethod();
-			assertEquals(config.string1, null);
+			expectEquals(config.string1, null);
 
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("--string1", "abc");
-			assertEquals(config.string1, "abc");
+			expectEquals(config.string1, "abc");
 		});
 
 		test("String method with 2 params", () -> {
 			final ConfigStringMethod config = new ConfigStringMethod();
-			assertEquals(config.string2a, null);
-			assertEquals(config.string2b, null);
+			expectEquals(config.string2a, null);
+			expectEquals(config.string2b, null);
 
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("--string2", "abc", "def");
-			assertEquals(config.string2a, "abc");
-			assertEquals(config.string2b, "def");
+			expectEquals(config.string2a, "abc");
+			expectEquals(config.string2b, "def");
 		});
 
 		test("String method with 3 params", () -> {
 			final ConfigStringMethod config = new ConfigStringMethod();
-			assertEquals(config.string3a, null);
-			assertEquals(config.string3b, null);
-			assertEquals(config.string3c, null);
+			expectEquals(config.string3a, null);
+			expectEquals(config.string3b, null);
+			expectEquals(config.string3c, null);
 
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("--string3", "abc", "def", "ghi");
-			assertEquals(config.string3a, "abc");
-			assertEquals(config.string3b, "def");
-			assertEquals(config.string3c, "ghi");
+			expectEquals(config.string3a, "abc");
+			expectEquals(config.string3b, "def");
+			expectEquals(config.string3c, "ghi");
 
 		});
 	}

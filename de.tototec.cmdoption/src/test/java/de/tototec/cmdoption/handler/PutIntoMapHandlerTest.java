@@ -1,6 +1,6 @@
 package de.tototec.cmdoption.handler;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class PutIntoMapHandlerTest extends FreeSpec {
 	{
 		test("Config1: map1", () -> {
 			final Config1 config = new Config1();
-			assertEquals(config.map1.isEmpty(), true);
+			expectEquals(config.map1.isEmpty(), true);
 
 			final CmdlineParser cp = new CmdlineParser();
 			cp.unregisterAllHandler();
@@ -27,8 +27,8 @@ public class PutIntoMapHandlerTest extends FreeSpec {
 			cp.addObject(config);
 
 			cp.parse("--map1", "k", "v");
-			assertEquals(config.map1.isEmpty(), false);
-			assertEquals(config.map1.get("k"), "v");
+			expectEquals(config.map1.isEmpty(), false);
+			expectEquals(config.map1.get("k"), "v");
 		});
 	}
 }

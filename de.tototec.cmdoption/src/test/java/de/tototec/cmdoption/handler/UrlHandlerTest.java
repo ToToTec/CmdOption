@@ -1,6 +1,6 @@
 package de.tototec.cmdoption.handler;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 
 import java.net.URL;
 
@@ -44,8 +44,8 @@ public class UrlHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("--url-one", "http://cmdoption.tototec.de");
-			assertEquals(config.getUrlOne(), new URL("http://cmdoption.tototec.de"));
-			assertEquals(config.getUrlTwo(), null);
+			expectEquals(config.getUrlOne(), new URL("http://cmdoption.tototec.de"));
+			expectEquals(config.getUrlTwo(), null);
 		});
 
 		test("URL field fail with invalid URL", () -> {
@@ -62,8 +62,8 @@ public class UrlHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("--url-two", "http://cmdoption.tototec.de");
-			assertEquals(config.getUrlTwo(), new URL("http://cmdoption.tototec.de"));
-			assertEquals(config.getUrlOne(), null);
+			expectEquals(config.getUrlTwo(), new URL("http://cmdoption.tototec.de"));
+			expectEquals(config.getUrlOne(), null);
 		});
 
 		test("URL method fail with invalid URL", () -> {

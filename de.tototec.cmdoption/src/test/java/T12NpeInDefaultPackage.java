@@ -1,4 +1,4 @@
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -34,7 +34,7 @@ public class T12NpeInDefaultPackage extends FreeSpec {
 			final Config config = new Config();
 			final CmdlineParser cp = new CmdlineParser(config);
 			cp.parse("-h");
-			assertEquals(config.help, true);
+			expectEquals(config.help, true);
 		});
 	}
 

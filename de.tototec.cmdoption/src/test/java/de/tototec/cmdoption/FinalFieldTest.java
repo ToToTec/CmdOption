@@ -1,6 +1,6 @@
 package de.tototec.cmdoption;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -36,12 +36,12 @@ public class FinalFieldTest {
 		final PrintStream ps = new PrintStream(baos);
 		cp.usage(ps);
 		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-		assertEquals(usage, expectedUsage);
-		assertEquals(config.help, false);
+		expectEquals(usage, expectedUsage);
+		expectEquals(config.help, false);
 		cp.parse("--help", "false");
-		assertEquals(config.help, false);
+		expectEquals(config.help, false);
 		cp.parse("--help", "true");
-		assertEquals(config.help, true);
+		expectEquals(config.help, true);
 	}
 
 	@Test
@@ -50,16 +50,16 @@ public class FinalFieldTest {
 		final CmdlineParser cp = new CmdlineParser(config);
 		cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final PrintStream ps =  new PrintStream(baos);
+		final PrintStream ps = new PrintStream(baos);
 		cp.usage(ps);
 		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
 		baos.toString();
-		assertEquals(usage, expectedUsage);
-		assertEquals(config.help, false);
+		expectEquals(usage, expectedUsage);
+		expectEquals(config.help, false);
 		cp.parse("--help", "false");
-		assertEquals(config.help, false);
+		expectEquals(config.help, false);
 		cp.parse("--help", "true");
-		assertEquals(config.help, true);
+		expectEquals(config.help, true);
 	}
 
 	@Test(expectedExceptions = CmdlineParserException.class)
@@ -78,8 +78,8 @@ public class FinalFieldTest {
 		final PrintStream ps = new PrintStream(baos);
 		cp.usage(ps);
 		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-		assertEquals(usage, expectedUsage);
-		assertEquals(config.help, false);
+		expectEquals(usage, expectedUsage);
+		expectEquals(config.help, false);
 		cp.parse("--help", "false");
 	}
 

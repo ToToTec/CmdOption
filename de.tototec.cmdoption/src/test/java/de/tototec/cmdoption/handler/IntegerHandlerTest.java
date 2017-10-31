@@ -1,6 +1,7 @@
 package de.tototec.cmdoption.handler;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
+
 import de.tobiasroeser.lambdatest.testng.FreeSpec;
 import de.tototec.cmdoption.CmdOption;
 import de.tototec.cmdoption.CmdlineParser;
@@ -61,8 +62,8 @@ public class IntegerHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-a", "1");
-			assertEquals(config.getA(), Integer.valueOf(1));
-			assertEquals(config.getB(), null);
+			expectEquals(config.getA(), Integer.valueOf(1));
+			expectEquals(config.getB(), null);
 		});
 
 		test("Integer field fail with non-integer", () -> {
@@ -72,8 +73,8 @@ public class IntegerHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read integer value \"a\".", () -> {
 				cp.parse("-a", "a");
 			});
-			assertEquals(config.getA(), null);
-			assertEquals(config.getB(), null);
+			expectEquals(config.getA(), null);
+			expectEquals(config.getB(), null);
 		});
 
 		test("Integer method", () -> {
@@ -81,8 +82,8 @@ public class IntegerHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-b", "1");
-			assertEquals(config.getA(), null);
-			assertEquals(config.getB(), Integer.valueOf(1));
+			expectEquals(config.getA(), null);
+			expectEquals(config.getB(), Integer.valueOf(1));
 		});
 
 		test("Integer method fail with non-integer", () -> {
@@ -92,8 +93,8 @@ public class IntegerHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read integer value \"b\".", () -> {
 				cp.parse("-b", "b");
 			});
-			assertEquals(config.getA(), null);
-			assertEquals(config.getB(), null);
+			expectEquals(config.getA(), null);
+			expectEquals(config.getB(), null);
 		});
 
 		test("Int field", () -> {
@@ -101,8 +102,8 @@ public class IntegerHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-a", "1");
-			assertEquals(config.getA(), 1);
-			assertEquals(config.getB(), 0);
+			expectEquals(config.getA(), 1);
+			expectEquals(config.getB(), 0);
 		});
 		test("Int field fail with non-integer", () -> {
 			final IntConfig config = new IntConfig();
@@ -111,8 +112,8 @@ public class IntegerHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read integer value \"a\".", () -> {
 				cp.parse("-a", "a");
 			});
-			assertEquals(config.getA(), 0);
-			assertEquals(config.getB(), 0);
+			expectEquals(config.getA(), 0);
+			expectEquals(config.getB(), 0);
 		});
 
 		test("Int method", () -> {
@@ -120,8 +121,8 @@ public class IntegerHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-b", "1");
-			assertEquals(config.getA(), 0);
-			assertEquals(config.getB(), 1);
+			expectEquals(config.getA(), 0);
+			expectEquals(config.getB(), 1);
 		});
 		test("Int method fail with non-integer", () -> {
 			final IntConfig config = new IntConfig();
@@ -130,8 +131,8 @@ public class IntegerHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read integer value \"b\".", () -> {
 				cp.parse("-b", "b");
 			});
-			assertEquals(config.getA(), 0);
-			assertEquals(config.getB(), 0);
+			expectEquals(config.getA(), 0);
+			expectEquals(config.getB(), 0);
 		});
 	}
 

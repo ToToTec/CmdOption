@@ -1,14 +1,18 @@
 package de.tototec.cmdoption;
 
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectFalse;
+import static de.tobiasroeser.lambdatest.Expect.expectNull;
+import static de.tobiasroeser.lambdatest.Expect.expectTrue;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class ExampleSemVerTest extends Assert {
+public class ExampleSemVerTest {
 
 	static class Config {
 		@CmdOption(names = { "--help", "-h" }, description = "Show this help and exit.", isHelp = true)
@@ -73,20 +77,20 @@ public class ExampleSemVerTest extends Assert {
 
 		cmdlineParser.parse(args);
 
-		assertTrue(config.diff);
+		expectTrue(config.diff);
 
-		assertFalse(config.check);
-		assertFalse(config.infer);
-		assertFalse(config.validate);
+		expectFalse(config.check);
+		expectFalse(config.infer);
+		expectFalse(config.validate);
 
-		assertEquals(config.baseJar, baseJar);
-		assertEquals(config.newJar, newJar);
+		expectEquals(config.baseJar, baseJar);
+		expectEquals(config.newJar, newJar);
 
-		assertNull(config.baseVersion);
-		assertNull(config.newVersion);
+		expectNull(config.baseVersion);
+		expectNull(config.newVersion);
 
-		assertEquals(config.includes, Collections.emptySet());
-		assertEquals(config.excludes, Collections.emptySet());
+		expectEquals(config.includes, Collections.emptySet());
+		expectEquals(config.excludes, Collections.emptySet());
 	}
 
 }

@@ -1,6 +1,6 @@
 package de.tototec.cmdoption;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -47,7 +47,7 @@ public class ArgPlaceholderTest extends FreeSpec {
 			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
 			cp.usage(ps);
 			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-			assertEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
+			expectEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a  A\n\n"
 					+ "Parameter:\n"
@@ -60,7 +60,7 @@ public class ArgPlaceholderTest extends FreeSpec {
 			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
 			cp.usage(ps);
 			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-			assertEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
+			expectEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a 1  A\n\n"
 					+ "Parameter:\n"
@@ -73,7 +73,7 @@ public class ArgPlaceholderTest extends FreeSpec {
 			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
 			cp.usage(ps);
 			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-			assertEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
+			expectEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a 1  A with arg 1\n\n"
 					+ "Parameter:\n"
@@ -121,7 +121,7 @@ public class ArgPlaceholderTest extends FreeSpec {
 			cp.setResourceBundle(rb);
 			cp.usage(ps);
 			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-			assertEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
+			expectEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a one  A with arg one\n\n"
 					+ "Parameter:\n"

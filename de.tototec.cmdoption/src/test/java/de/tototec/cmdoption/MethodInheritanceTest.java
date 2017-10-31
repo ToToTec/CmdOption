@@ -1,9 +1,10 @@
 package de.tototec.cmdoption;
 
-import org.testng.Assert;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
+
 import org.testng.annotations.Test;
 
-public class MethodInheritanceTest extends Assert {
+public class MethodInheritanceTest {
 
 	public static class PublicBaseCfg {
 		private Boolean firstFlag = Boolean.FALSE;
@@ -36,8 +37,8 @@ public class MethodInheritanceTest extends Assert {
 		final PublicChildCfg cfg = new PublicChildCfg();
 		final CmdlineParser parser = new CmdlineParser(cfg);
 		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		assertEquals(cfg.getFirstFlag(), Boolean.TRUE);
-		assertEquals(cfg.getSecondFlag(), Boolean.FALSE);
+		expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
+		expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
 	}
 
 	public static class ProtectedBaseCfg {
@@ -71,8 +72,8 @@ public class MethodInheritanceTest extends Assert {
 		final ProtectedChildCfg cfg = new ProtectedChildCfg();
 		final CmdlineParser parser = new CmdlineParser(cfg);
 		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		assertEquals(cfg.getFirstFlag(), Boolean.TRUE);
-		assertEquals(cfg.getSecondFlag(), Boolean.FALSE);
+		expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
+		expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
 	}
 
 	public static class PackagePrivateBaseCfg {
@@ -106,8 +107,8 @@ public class MethodInheritanceTest extends Assert {
 		final PackagePrivateChildCfg cfg = new PackagePrivateChildCfg();
 		final CmdlineParser parser = new CmdlineParser(cfg);
 		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		assertEquals(cfg.getFirstFlag(), Boolean.TRUE);
-		assertEquals(cfg.getSecondFlag(), Boolean.FALSE);
+		expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
+		expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
 	}
 
 	public static class PrivateBaseCfg {
@@ -141,8 +142,8 @@ public class MethodInheritanceTest extends Assert {
 		final PrivateChildCfg cfg = new PrivateChildCfg();
 		final CmdlineParser parser = new CmdlineParser(cfg);
 		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		assertEquals(cfg.getFirstFlag(), Boolean.TRUE);
-		assertEquals(cfg.getSecondFlag(), Boolean.FALSE);
+		expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
+		expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
 	}
 
 }
