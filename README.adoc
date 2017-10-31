@@ -667,7 +667,7 @@ Your contribution is greatly apreciated!
 
 === Create `pom.xml` for interoperability, e.g. IDEs
 
-To generate the `pom.xml` use hte `gen-pom-xml` profile.
+To generate the `pom.xml` use the `gen-pom-xml` profile.
 
 .Creating `pom.xml` files
 ----
