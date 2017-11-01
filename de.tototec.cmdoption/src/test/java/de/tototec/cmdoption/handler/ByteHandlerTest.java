@@ -1,6 +1,7 @@
 package de.tototec.cmdoption.handler;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
+
 import de.tobiasroeser.lambdatest.testng.FreeSpec;
 import de.tototec.cmdoption.CmdOption;
 import de.tototec.cmdoption.CmdlineParser;
@@ -61,8 +62,8 @@ public class ByteHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-a", "1");
-			assertEquals(config.getA(), Byte.valueOf((byte) 1));
-			assertEquals(config.getB(), null);
+			expectEquals(config.getA(), Byte.valueOf((byte) 1));
+			expectEquals(config.getB(), null);
 		});
 
 		test("Byte field fail with non-integer", () -> {
@@ -72,8 +73,8 @@ public class ByteHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read byte value \"a\".", () -> {
 				cp.parse("-a", "a");
 			});
-			assertEquals(config.getA(), null);
-			assertEquals(config.getB(), null);
+			expectEquals(config.getA(), null);
+			expectEquals(config.getB(), null);
 		});
 
 		test("Byte method", () -> {
@@ -81,8 +82,8 @@ public class ByteHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-b", "1");
-			assertEquals(config.getA(), null);
-			assertEquals(config.getB(), Byte.valueOf((byte) 1));
+			expectEquals(config.getA(), null);
+			expectEquals(config.getB(), Byte.valueOf((byte) 1));
 		});
 
 		test("Byte method fail with non-integer", () -> {
@@ -92,8 +93,8 @@ public class ByteHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read byte value \"b\".", () -> {
 				cp.parse("-b", "b");
 			});
-			assertEquals(config.getA(), null);
-			assertEquals(config.getB(), null);
+			expectEquals(config.getA(), null);
+			expectEquals(config.getB(), null);
 		});
 
 		test("byte field", () -> {
@@ -101,8 +102,8 @@ public class ByteHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-a", "1");
-			assertEquals(config.getA(), 1);
-			assertEquals(config.getB(), 0);
+			expectEquals(config.getA(), (byte) 1);
+			expectEquals(config.getB(), (byte) 0);
 		});
 		test("byte field fail with non-integer", () -> {
 			final PByteConfig config = new PByteConfig();
@@ -111,8 +112,8 @@ public class ByteHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read byte value \"a\".", () -> {
 				cp.parse("-a", "a");
 			});
-			assertEquals(config.getA(), 0);
-			assertEquals(config.getB(), 0);
+			expectEquals(config.getA(), (byte) 0);
+			expectEquals(config.getB(), (byte) 0);
 		});
 
 		test("byte method", () -> {
@@ -120,8 +121,8 @@ public class ByteHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-b", "1");
-			assertEquals(config.getA(), 0);
-			assertEquals(config.getB(), 1);
+			expectEquals(config.getA(), (byte) 0);
+			expectEquals(config.getB(), (byte) 1);
 		});
 		test("byte method fail with non-integer", () -> {
 			final PByteConfig config = new PByteConfig();
@@ -130,8 +131,8 @@ public class ByteHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read byte value \"b\".", () -> {
 				cp.parse("-b", "b");
 			});
-			assertEquals(config.getA(), 0);
-			assertEquals(config.getB(), 0);
+			expectEquals(config.getA(), (byte) 0);
+			expectEquals(config.getB(), (byte) 0);
 		});
 	}
 

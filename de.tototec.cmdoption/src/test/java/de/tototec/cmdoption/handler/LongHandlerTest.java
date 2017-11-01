@@ -1,6 +1,7 @@
 package de.tototec.cmdoption.handler;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
+
 import de.tobiasroeser.lambdatest.testng.FreeSpec;
 import de.tototec.cmdoption.CmdOption;
 import de.tototec.cmdoption.CmdlineParser;
@@ -61,8 +62,8 @@ public class LongHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-a", "1");
-			assertEquals(config.getA(), Long.valueOf(1));
-			assertEquals(config.getB(), null);
+			expectEquals(config.getA(), Long.valueOf(1));
+			expectEquals(config.getB(), null);
 		});
 
 		test("Long field fail with non-integer", () -> {
@@ -72,8 +73,8 @@ public class LongHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read long value \"a\".", () -> {
 				cp.parse("-a", "a");
 			});
-			assertEquals(config.getA(), null);
-			assertEquals(config.getB(), null);
+			expectEquals(config.getA(), null);
+			expectEquals(config.getB(), null);
 		});
 
 		test("Long method", () -> {
@@ -81,8 +82,8 @@ public class LongHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-b", "1");
-			assertEquals(config.getA(), null);
-			assertEquals(config.getB(), Long.valueOf(1));
+			expectEquals(config.getA(), null);
+			expectEquals(config.getB(), Long.valueOf(1));
 		});
 
 		test("Long method fail with non-integer", () -> {
@@ -92,8 +93,8 @@ public class LongHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read long value \"b\".", () -> {
 				cp.parse("-b", "b");
 			});
-			assertEquals(config.getA(), null);
-			assertEquals(config.getB(), null);
+			expectEquals(config.getA(), null);
+			expectEquals(config.getB(), null);
 		});
 
 		test("long field", () -> {
@@ -101,8 +102,8 @@ public class LongHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-a", "1");
-			assertEquals(config.getA(), 1);
-			assertEquals(config.getB(), 0);
+			expectEquals(config.getA(), 1L);
+			expectEquals(config.getB(), 0L);
 		});
 		test("long field fail with non-integer", () -> {
 			final PLongConfig config = new PLongConfig();
@@ -111,8 +112,8 @@ public class LongHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read long value \"a\".", () -> {
 				cp.parse("-a", "a");
 			});
-			assertEquals(config.getA(), 0);
-			assertEquals(config.getB(), 0);
+			expectEquals(config.getA(), 0L);
+			expectEquals(config.getB(), 0L);
 		});
 
 		test("long method", () -> {
@@ -120,8 +121,8 @@ public class LongHandlerTest extends FreeSpec {
 			final CmdlineParser cp = cp();
 			cp.addObject(config);
 			cp.parse("-b", "1");
-			assertEquals(config.getA(), 0);
-			assertEquals(config.getB(), 1);
+			expectEquals(config.getA(), 0L);
+			expectEquals(config.getB(), 1L);
 		});
 		test("long method fail with non-integer", () -> {
 			final PLongConfig config = new PLongConfig();
@@ -130,8 +131,8 @@ public class LongHandlerTest extends FreeSpec {
 			intercept(CmdlineParserException.class, "Could not read long value \"b\".", () -> {
 				cp.parse("-b", "b");
 			});
-			assertEquals(config.getA(), 0);
-			assertEquals(config.getB(), 0);
+			expectEquals(config.getA(), 0L);
+			expectEquals(config.getB(), 0L);
 		});
 	}
 

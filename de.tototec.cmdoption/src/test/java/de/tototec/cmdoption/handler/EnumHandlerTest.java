@@ -1,6 +1,7 @@
 package de.tototec.cmdoption.handler;
 
-import static org.testng.Assert.assertEquals;
+import static de.tobiasroeser.lambdatest.Expect.expectEquals;
+
 import de.tobiasroeser.lambdatest.testng.FreeSpec;
 import de.tototec.cmdoption.CmdOption;
 import de.tototec.cmdoption.CmdlineParser;
@@ -45,14 +46,14 @@ public class EnumHandlerTest extends FreeSpec {
 				final CmdlineParser cp = cp();
 				cp.addObject(config);
 				cp.parse("--my-enum", e.name());
-				assertEquals(config.myEnum, e);
+				expectEquals(config.myEnum, e);
 			});
 			test("Parse enum method " + e, () -> {
 				final ConfigMethod config = new ConfigMethod();
 				final CmdlineParser cp = cp();
 				cp.addObject(config);
 				cp.parse("--my-enum", e.name());
-				assertEquals(config.getMyEnum(), e);
+				expectEquals(config.getMyEnum(), e);
 			});
 		});
 
