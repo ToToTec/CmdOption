@@ -48,8 +48,6 @@ Model(
       scope = "provided",
       optional = true
     ).pure,
-//    Deps.testng % "test",
-//    Deps.jcommander % "test",
     Deps.junit % "test",
     Deps.lambdatest % "test"
   ),

@@ -15,11 +15,9 @@ object Plugins {
 }
 
 object Deps {
-  val jcommander = "com.beust" % "jcommander" % "1.72" // transitive dep of testng
   val junit = "junit" % "junit" % "4.12"
   val lambdatest = "de.tototec" % "de.tobiasroeser.lambdatest" % "0.3.0"
   val slf4j = "org.slf4j" % "slf4j-api" % "1.7.25"
-  val testng = "org.testng" % "testng" % "6.11"
 }
 
 // Extends polyglot API for convenience
