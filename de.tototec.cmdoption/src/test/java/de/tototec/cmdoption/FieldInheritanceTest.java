@@ -2,9 +2,9 @@ package de.tototec.cmdoption;
 
 import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 
-import org.testng.annotations.Test;
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
-public class FieldInheritanceTest {
+public class FieldInheritanceTest extends FreeSpec {
 
 	public static class PublicBaseCfg {
 		@CmdOption(names = { "-f1" }, args = "BOOLEAN", description = "First Flag", minCount = 0, maxCount = 1)
@@ -14,15 +14,6 @@ public class FieldInheritanceTest {
 	public static class PublicChildCfg extends PublicBaseCfg {
 		@CmdOption(names = { "-f2" }, args = "BOOLEAN", description = "Second Flag", minCount = 0, maxCount = 1)
 		public Boolean secondFlag = Boolean.FALSE;
-	}
-
-	@Test
-	public void testInheritancePublicFields() {
-		final PublicChildCfg cfg = new PublicChildCfg();
-		final CmdlineParser parser = new CmdlineParser(cfg);
-		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		expectEquals(cfg.firstFlag, Boolean.TRUE);
-		expectEquals(cfg.secondFlag, Boolean.FALSE);
 	}
 
 	public static class ProtectedBaseCfg {
@@ -35,15 +26,6 @@ public class FieldInheritanceTest {
 		protected Boolean secondFlag = Boolean.FALSE;
 	}
 
-	@Test
-	public void testInheritanceProtectedFields() {
-		final ProtectedChildCfg cfg = new ProtectedChildCfg();
-		final CmdlineParser parser = new CmdlineParser(cfg);
-		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		expectEquals(cfg.firstFlag, Boolean.TRUE);
-		expectEquals(cfg.secondFlag, Boolean.FALSE);
-	}
-
 	public static class PackagePrivateBaseCfg {
 		@CmdOption(names = { "-f1" }, args = "BOOLEAN", description = "First Flag", minCount = 0, maxCount = 1)
 		Boolean firstFlag = Boolean.FALSE;
@@ -52,15 +34,6 @@ public class FieldInheritanceTest {
 	public static class PackagePrivateChildCfg extends PackagePrivateBaseCfg {
 		@CmdOption(names = { "-f2" }, args = "BOOLEAN", description = "Second Flag", minCount = 0, maxCount = 1)
 		Boolean secondFlag = Boolean.FALSE;
-	}
-
-	@Test
-	public void testInheritancePackagePrivateFields() {
-		final PackagePrivateChildCfg cfg = new PackagePrivateChildCfg();
-		final CmdlineParser parser = new CmdlineParser(cfg);
-		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		expectEquals(cfg.firstFlag, Boolean.TRUE);
-		expectEquals(cfg.secondFlag, Boolean.FALSE);
 	}
 
 	public static class PrivateBaseCfg {
@@ -77,13 +50,37 @@ public class FieldInheritanceTest {
 		private Boolean secondFlag = Boolean.FALSE;
 	}
 
-	@Test
-	public void testInheritancePrivateFields() {
-		final PrivateChildCfg cfg = new PrivateChildCfg();
-		final CmdlineParser parser = new CmdlineParser(cfg);
-		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
-		expectEquals(cfg.secondFlag, Boolean.FALSE);
-	}
+	public FieldInheritanceTest() {
+		test("Inheritance of public fields", () -> {
+			final PublicChildCfg cfg = new PublicChildCfg();
+			final CmdlineParser parser = new CmdlineParser(cfg);
+			parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
+			expectEquals(cfg.firstFlag, Boolean.TRUE);
+			expectEquals(cfg.secondFlag, Boolean.FALSE);
+		});
 
+		test("Inheritance of protected fields", () -> {
+			final ProtectedChildCfg cfg = new ProtectedChildCfg();
+			final CmdlineParser parser = new CmdlineParser(cfg);
+			parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
+			expectEquals(cfg.firstFlag, Boolean.TRUE);
+			expectEquals(cfg.secondFlag, Boolean.FALSE);
+		});
+
+		test("Inheritance of package private fields", () -> {
+			final PackagePrivateChildCfg cfg = new PackagePrivateChildCfg();
+			final CmdlineParser parser = new CmdlineParser(cfg);
+			parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
+			expectEquals(cfg.firstFlag, Boolean.TRUE);
+			expectEquals(cfg.secondFlag, Boolean.FALSE);
+		});
+
+		test("Inheritance of private fields", () -> {
+			final PrivateChildCfg cfg = new PrivateChildCfg();
+			final CmdlineParser parser = new CmdlineParser(cfg);
+			parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
+			expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
+			expectEquals(cfg.secondFlag, Boolean.FALSE);
+		});
+	}
 }

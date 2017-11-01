@@ -3,10 +3,7 @@ package de.tototec.cmdoption;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-
-import org.testng.annotations.Test;
 
 public class TranslationTutorialMain {
 
@@ -17,7 +14,8 @@ public class TranslationTutorialMain {
 		@CmdOption(names = { "--verbose", "-v" }, description = "Be more verbose.")
 		private boolean verbose;
 
-		@CmdOption(names = { "--options", "-o" }, args = { "name", "value" }, maxCount = -1, description = "Additional options when processing names.")
+		@CmdOption(names = { "--options", "-o" }, args = { "name",
+		"value" }, maxCount = -1, description = "Additional options when processing names.")
 		private final Map<String, String> options = new LinkedHashMap<String, String>();
 
 		@CmdOption(args = { "file" }, description = "Names to process.", minCount = 1, maxCount = -1)
@@ -48,25 +46,4 @@ public class TranslationTutorialMain {
 		// ...
 	}
 
-	@Test
-	public void testDefaultLocale() {
-		final Locale defaultLocale = Locale.getDefault();
-		try {
-			Locale.setDefault(Locale.ROOT);
-			TranslationTutorialMain.main(new String[] { "--help" });
-		} finally {
-			Locale.setDefault(defaultLocale);
-		}
-	}
-
-	@Test
-	public void testGermanLocale() {
-		final Locale defaultLocale = Locale.getDefault();
-		try {
-			Locale.setDefault(Locale.GERMANY);
-			TranslationTutorialMain.main(new String[] { "--help" });
-		} finally {
-			Locale.setDefault(defaultLocale);
-		}
-	}
 }

@@ -6,9 +6,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 
-import org.testng.annotations.Test;
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
-public class FinalFieldTest {
+public class FinalFieldTest extends FreeSpec {
 
 	public static class Config {
 		@CmdOption(names = "--help", args = "true|false")
@@ -27,60 +27,49 @@ public class FinalFieldTest {
 
 	private final String expectedUsage = "Usage: <main class> [options]\n\nOptions:\n  --help true|false  \n";
 
-	@Test
-	public void testField() {
-		final Config config = new Config();
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final PrintStream ps = new PrintStream(baos);
-		cp.usage(ps);
-		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-		expectEquals(usage, expectedUsage);
-		expectEquals(config.help, false);
-		cp.parse("--help", "false");
-		expectEquals(config.help, false);
-		cp.parse("--help", "true");
-		expectEquals(config.help, true);
-	}
+	public FinalFieldTest() {
 
-	@Test
-	public void testFieldWithDefault() {
-		final ConfigWithDefault config = new ConfigWithDefault();
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final PrintStream ps = new PrintStream(baos);
-		cp.usage(ps);
-		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-		baos.toString();
-		expectEquals(usage, expectedUsage);
-		expectEquals(config.help, false);
-		cp.parse("--help", "false");
-		expectEquals(config.help, false);
-		cp.parse("--help", "true");
-		expectEquals(config.help, true);
-	}
+		test("non-final private field, uninitialized", () -> {
+			final Config config = new Config();
+			final CmdlineParser cp = new CmdlineParser(config);
+			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final PrintStream ps = new PrintStream(baos);
+			cp.usage(ps);
+			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			expectEquals(usage, expectedUsage);
+			expectEquals(config.help, false);
+			cp.parse("--help", "false");
+			expectEquals(config.help, false);
+			cp.parse("--help", "true");
+			expectEquals(config.help, true);
+		});
 
-	@Test(expectedExceptions = CmdlineParserException.class)
-	public void testFinalFieldWithDefault() {
-		final ConfigWithFinalField config = new ConfigWithFinalField();
-		@SuppressWarnings("unused")
-		final CmdlineParser cp = new CmdlineParser(config);
-	}
+		test("non-final private field, initialized", () -> {
+			final ConfigWithDefault config = new ConfigWithDefault();
+			final CmdlineParser cp = new CmdlineParser(config);
+			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final PrintStream ps = new PrintStream(baos);
+			cp.usage(ps);
+			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			baos.toString();
+			expectEquals(usage, expectedUsage);
+			expectEquals(config.help, false);
+			cp.parse("--help", "false");
+			expectEquals(config.help, false);
+			cp.parse("--help", "true");
+			expectEquals(config.help, true);
+		});
 
-	@Test(expectedExceptions = CmdlineParserException.class)
-	public void testFinalFieldWithDefaultFail() {
-		final ConfigWithFinalField config = new ConfigWithFinalField();
-		final CmdlineParser cp = new CmdlineParser(config);
-		cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final PrintStream ps = new PrintStream(baos);
-		cp.usage(ps);
-		final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-		expectEquals(usage, expectedUsage);
-		expectEquals(config.help, false);
-		cp.parse("--help", "false");
-	}
+		test("final private field, uninitialized", () -> {
 
+			final ConfigWithFinalField config = new ConfigWithFinalField();
+			intercept(CmdlineParserException.class, () -> {
+				@SuppressWarnings("unused")
+				final CmdlineParser cp = new CmdlineParser(config);
+			});
+		});
+
+	}
 }

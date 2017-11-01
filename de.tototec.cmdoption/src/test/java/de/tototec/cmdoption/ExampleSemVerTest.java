@@ -10,18 +10,20 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.testng.annotations.Test;
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
-public class ExampleSemVerTest {
+public class ExampleSemVerTest extends FreeSpec {
 
 	static class Config {
 		@CmdOption(names = { "--help", "-h" }, description = "Show this help and exit.", isHelp = true)
 		boolean help;
 
-		@CmdOption(names = { "--diff", "-d" }, conflictsWith = { "--check", "--infer", "--validate" }, description = "Show the differences between two jars.")
+		@CmdOption(names = { "--diff", "-d" }, conflictsWith = { "--check", "--infer",
+		"--validate" }, description = "Show the differences between two jars.")
 		public boolean diff;
 
-		@CmdOption(names = { "--check", "-c" }, conflictsWith = { "--diff", "--infer", "--validate" }, description = "Check the compatibility of two jars.")
+		@CmdOption(names = { "--check", "-c" }, conflictsWith = { "--diff", "--infer",
+		"--validate" }, description = "Check the compatibility of two jars.")
 		public boolean check;
 
 		@CmdOption(names = { "--infer", "-i" }, requires = { "--base-version" }, conflictsWith = { "--diff", "--check",
@@ -29,7 +31,8 @@ public class ExampleSemVerTest {
 		public boolean infer;
 
 		@CmdOption(names = { "--validate", "-v" }, requires = { "--base-version", "--new-version" }, conflictsWith = {
-				"--diff", "--check", "--infer" }, description = "Validate that the versions of two jars fulfil the semver specification.")
+				"--diff", "--check",
+		"--infer" }, description = "Validate that the versions of two jars fulfil the semver specification.")
 		public boolean validate;
 
 		@CmdOption(names = { "--base-jar" }, args = { "JAR" }, minCount = 1, description = "The base jar.")
@@ -40,7 +43,8 @@ public class ExampleSemVerTest {
 
 		final Set<String> includes = new LinkedHashSet<String>();
 
-		@CmdOption(names = { "--includes" }, args = { "INCLUDE;..." }, description = "Semicolon separated list of full qualified class names to be included.")
+		@CmdOption(names = { "--includes" }, args = {
+		"INCLUDE;..." }, description = "Semicolon separated list of full qualified class names to be included.")
 		public void setIncludes(final String includes) {
 			if (includes != null) {
 				this.includes.addAll(Arrays.asList(includes.split(";")));
@@ -49,48 +53,54 @@ public class ExampleSemVerTest {
 
 		final Set<String> excludes = new LinkedHashSet<String>();
 
-		@CmdOption(names = { "--excludes" }, args = { "EXCLUDE;..." }, description = "Semicolon separated list of full qualified class names to be excluded.")
+		@CmdOption(names = { "--excludes" }, args = {
+		"EXCLUDE;..." }, description = "Semicolon separated list of full qualified class names to be excluded.")
 		public void setExcludes(final String excludes) {
 			if (excludes != null) {
 				this.excludes.addAll(Arrays.asList(excludes.split(";")));
 			}
 		}
 
-		@CmdOption(names = { "--base-version" }, args = { "VERSION" }, description = "Version of the base jar (given with --base-jar).")
+		@CmdOption(names = { "--base-version" }, args = {
+		"VERSION" }, description = "Version of the base jar (given with --base-jar).")
 		public String baseVersion;
 
-		@CmdOption(names = { "--new-version" }, args = { "VERSION" }, description = "Version of the new jar (given with --new-jar).")
+		@CmdOption(names = { "--new-version" }, args = {
+		"VERSION" }, description = "Version of the new jar (given with --new-jar).")
 		public String newVersion;
 	}
 
-	@Test
-	public void testParseExampleSemVer() {
-		final Config config = new Config();
-		final CmdlineParser cmdlineParser = new CmdlineParser(config);
-		cmdlineParser.setProgramName("semver");
-		cmdlineParser.setAboutLine("Semantic Version validator version 0.9.16-SNAPSHOT.");
+	public ExampleSemVerTest() {
+		setExpectFailFast(false);
 
-		final String baseJar = "api/target/api-0.9.16-SNAPSHOT.jar";
-		final String newJar = "api/target/api-0.9.16-SNAPSHOT.jar";
+		test("Parse commandline from semver version 0.9.16-SNAPSHOT", () -> {
+			final Config config = new Config();
+			final CmdlineParser cmdlineParser = new CmdlineParser(config);
+			cmdlineParser.setProgramName("semver");
+			cmdlineParser.setAboutLine("Semantic Version validator version 0.9.16-SNAPSHOT.");
 
-		final String[] args = { "--diff", "--base-jar", baseJar, "--new-jar", newJar };
+			final String baseJar = "api/target/api-0.9.16-SNAPSHOT.jar";
+			final String newJar = "api/target/api-0.9.16-SNAPSHOT.jar";
 
-		cmdlineParser.parse(args);
+			final String[] args = { "--diff", "--base-jar", baseJar, "--new-jar", newJar };
 
-		expectTrue(config.diff);
+			cmdlineParser.parse(args);
 
-		expectFalse(config.check);
-		expectFalse(config.infer);
-		expectFalse(config.validate);
+			expectTrue(config.diff);
 
-		expectEquals(config.baseJar, baseJar);
-		expectEquals(config.newJar, newJar);
+			expectFalse(config.check);
+			expectFalse(config.infer);
+			expectFalse(config.validate);
 
-		expectNull(config.baseVersion);
-		expectNull(config.newVersion);
+			expectEquals(config.baseJar, baseJar);
+			expectEquals(config.newJar, newJar);
 
-		expectEquals(config.includes, Collections.emptySet());
-		expectEquals(config.excludes, Collections.emptySet());
+			expectNull(config.baseVersion);
+			expectNull(config.newVersion);
+
+			expectEquals(config.includes, Collections.emptySet());
+			expectEquals(config.excludes, Collections.emptySet());
+		});
 	}
 
 }
