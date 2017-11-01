@@ -2,7 +2,7 @@ package de.tototec.cmdoption;
 
 import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 
-import de.tobiasroeser.lambdatest.testng.FreeSpec;
+import de.tobiasroeser.lambdatest.junit.FreeSpec;
 
 public class FieldInheritanceTest extends FreeSpec {
 

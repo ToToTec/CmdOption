@@ -3,7 +3,7 @@ package de.tototec.cmdoption;
 import static de.tobiasroeser.lambdatest.Expect.expectFalse;
 import static de.tobiasroeser.lambdatest.Expect.expectTrue;
 
-import de.tobiasroeser.lambdatest.testng.FreeSpec;
+import de.tobiasroeser.lambdatest.junit.FreeSpec;
 
 public class DelegateTest extends FreeSpec {
 

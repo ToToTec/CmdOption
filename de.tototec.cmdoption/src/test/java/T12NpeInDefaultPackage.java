@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.tobiasroeser.lambdatest.testng.FreeSpec;
+import de.tobiasroeser.lambdatest.junit.FreeSpec;
 import de.tototec.cmdoption.CmdOption;
 import de.tototec.cmdoption.CmdlineParser;
 

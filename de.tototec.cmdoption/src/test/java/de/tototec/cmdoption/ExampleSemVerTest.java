@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import de.tobiasroeser.lambdatest.testng.FreeSpec;
+import de.tobiasroeser.lambdatest.junit.FreeSpec;
 
 public class ExampleSemVerTest extends FreeSpec {
 

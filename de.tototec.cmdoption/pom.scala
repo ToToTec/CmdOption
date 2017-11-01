@@ -47,11 +47,12 @@ Model(
       gav = Deps.slf4j,
       scope = "provided",
       optional = true
-    ),
-    Deps.testng % "test",
-    Deps.jcommander % "test",
+    ).pure,
+//    Deps.testng % "test",
+//    Deps.jcommander % "test",
+    Deps.junit % "test",
     Deps.lambdatest % "test"
-  ).map(_.pure),
+  ),
   build = Build(
     resources = Seq(
       Resource(

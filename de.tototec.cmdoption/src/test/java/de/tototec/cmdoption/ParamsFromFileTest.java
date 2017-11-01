@@ -5,7 +5,7 @@ import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 import java.io.File;
 import java.io.PrintWriter;
 
-import de.tobiasroeser.lambdatest.testng.FreeSpec;
+import de.tobiasroeser.lambdatest.junit.FreeSpec;
 
 public class ParamsFromFileTest extends FreeSpec {
 

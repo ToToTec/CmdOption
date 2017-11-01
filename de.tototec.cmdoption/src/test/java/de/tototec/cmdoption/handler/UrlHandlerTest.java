@@ -4,7 +4,7 @@ import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 
 import java.net.URL;
 
-import de.tobiasroeser.lambdatest.testng.FreeSpec;
+import de.tobiasroeser.lambdatest.junit.FreeSpec;
 import de.tototec.cmdoption.CmdOption;
 import de.tototec.cmdoption.CmdlineParser;
 import de.tototec.cmdoption.CmdlineParserException;
