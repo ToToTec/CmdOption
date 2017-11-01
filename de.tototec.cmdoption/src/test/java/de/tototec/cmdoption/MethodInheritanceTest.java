@@ -2,9 +2,9 @@ package de.tototec.cmdoption;
 
 import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 
-import org.testng.annotations.Test;
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
-public class MethodInheritanceTest {
+public class MethodInheritanceTest extends FreeSpec {
 
 	public static class PublicBaseCfg {
 		private Boolean firstFlag = Boolean.FALSE;
@@ -30,15 +30,6 @@ public class MethodInheritanceTest {
 		public Boolean getSecondFlag() {
 			return secondFlag;
 		}
-	}
-
-	@Test
-	public void testPublicMethodInheritance() {
-		final PublicChildCfg cfg = new PublicChildCfg();
-		final CmdlineParser parser = new CmdlineParser(cfg);
-		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
-		expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
 	}
 
 	public static class ProtectedBaseCfg {
@@ -67,15 +58,6 @@ public class MethodInheritanceTest {
 		}
 	}
 
-	@Test
-	public void testProtectedMethodInheritance() {
-		final ProtectedChildCfg cfg = new ProtectedChildCfg();
-		final CmdlineParser parser = new CmdlineParser(cfg);
-		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
-		expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
-	}
-
 	public static class PackagePrivateBaseCfg {
 		private Boolean firstFlag = Boolean.FALSE;
 
@@ -100,15 +82,6 @@ public class MethodInheritanceTest {
 		public Boolean getSecondFlag() {
 			return secondFlag;
 		}
-	}
-
-	@Test
-	public void testPackagePrivateMethodInheritance() {
-		final PackagePrivateChildCfg cfg = new PackagePrivateChildCfg();
-		final CmdlineParser parser = new CmdlineParser(cfg);
-		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
-		expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
 	}
 
 	public static class PrivateBaseCfg {
@@ -137,13 +110,40 @@ public class MethodInheritanceTest {
 		}
 	}
 
-	@Test
-	public void testPrivateMethodInheritance() {
-		final PrivateChildCfg cfg = new PrivateChildCfg();
-		final CmdlineParser parser = new CmdlineParser(cfg);
-		parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
-		expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
-		expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
+	public MethodInheritanceTest() {
+
+		test("Inheritance of public methods", () -> {
+			final PublicChildCfg cfg = new PublicChildCfg();
+			final CmdlineParser parser = new CmdlineParser(cfg);
+			parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
+			expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
+			expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
+		});
+
+		test("Inheritance of protected methods", () -> {
+			final ProtectedChildCfg cfg = new ProtectedChildCfg();
+			final CmdlineParser parser = new CmdlineParser(cfg);
+			parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
+			expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
+			expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
+		});
+
+		test("Inheritance of package private methods", () -> {
+			final PackagePrivateChildCfg cfg = new PackagePrivateChildCfg();
+			final CmdlineParser parser = new CmdlineParser(cfg);
+			parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
+			expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
+			expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
+		});
+
+		test("Inheritance of private methods", () -> {
+			final PrivateChildCfg cfg = new PrivateChildCfg();
+			final CmdlineParser parser = new CmdlineParser(cfg);
+			parser.parse(new String[] { "-f1", "TRUE", "-f2", "FALSE" });
+			expectEquals(cfg.getFirstFlag(), Boolean.TRUE);
+			expectEquals(cfg.getSecondFlag(), Boolean.FALSE);
+		});
+
 	}
 
 }
