@@ -440,7 +440,7 @@ Parameter:
 
 [NOTE]
 --
-You can find the example application above under link:de.tototec.cmdoption/src/test/java/de/tototec/cmdopton/TranslationTutorialMain.java[TranslationTutorialMain.java].
+You can find the example application above under link:de.tototec.cmdoption/src/test/java/de/tototec/cmdoption/TranslationTutorialMain.java[TranslationTutorialMain.java].
 
 To execute it directly from the repository root, run:
 
