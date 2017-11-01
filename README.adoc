@@ -399,10 +399,11 @@ We will use a properties files to provide the translations into German.
 Show\ this\ help.=Zeigt diese Hilfe an.
 Be\ more\ verbose.=Sei ausf\u00fchrlicher.
 Additional\ options\ when\ processing\ names=Zus\u00e4tzliche Optionen bei der Namensverarbeitung.
-Names\ to\ process=Zu verarbeitende Namen.
+Names\ to\ process.=Zu verarbeitende Namen.
 Example\ names\ processor\ v1.0=Beispiel Namensprozessor v1.0
 name=Name
 value=Wert
+file=DATEI
 ----
 
 .Output of the program without any locale:
@@ -434,8 +435,19 @@ Optionen:
   --verbose,-v             Sei ausführlicher.
 
 Parameter:
-  file  Zu verarbeitende Namen.
+  DATEI  Zu verarbeitende Namen.
 ----
+
+[NOTE]
+--
+You can find the example application above under link:de.tototec.cmdoption/src/test/java/de/tototec/cmdopton/TranslationTutorialMain.java[TranslationTutorialMain.java].
+
+To execute it directly from the repository root, run:
+
+----
+mvn test -Dtest=TranslationTutorialTest
+----
+--
 
 == CmdOptionHandler
 
