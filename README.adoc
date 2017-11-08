@@ -1,6 +1,5 @@
 = CmdOption - Command line parsing has never been easier
 :toc:
-:toc-placement: preamble
 :currentversion: 0.6.0
 :documentedVersion: 0.6.0
 :githubUrl: https://github.com/ToToTec/CmdOption
