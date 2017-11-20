@@ -641,7 +641,7 @@ public class CmdlineParser {
 						}
 					}
 					for (final String conflict : calledOption.getConflictsWith()) {
-						// check, of an option was called with that name, if
+						// check, if an option was called with that name, if
 						// not, this is an error
 						final OptionHandle conflictOptionHandle = quickOptionMap.get(conflict);
 						if (conflictOptionHandle == null) {

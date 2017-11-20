@@ -718,6 +718,10 @@ Have a look at some other projects I'm involved with:
 
 == ChangeLog
 
+=== CmdOption NEXT
+
+* Improved test suite
+
 === CmdOption 0.6.0 - 2017-10-24
 
 * Added `CmdlineParser.validate()` to detect configuration errors
