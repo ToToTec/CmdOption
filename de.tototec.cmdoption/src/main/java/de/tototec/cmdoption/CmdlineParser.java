@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -117,6 +118,8 @@ public class CmdlineParser {
 	private Optional<String> argsFromFilePrefix = Optional.some("@");
 
 	private Optional<String> aggregateShortOptionsWithPrefix = Optional.none();
+
+	private List<String> optionPrefixes = Collections.emptyList();
 
 	protected CmdlineParser(final CmdlineParser parent, final String commandName, final Object commandObject) {
 		this.parent = parent;
@@ -532,6 +535,10 @@ public class CmdlineParser {
 						Arrays.copyOfRange(rest, index, rest.length));
 				// Stop parsing
 				break;
+			} else if (matchPrefix(param)) {
+				// This starts with an option prefix and cannot be parsed as an parameter
+				final PreparedI18n msg = i18n.preparetr("Unsupported option found: {0}", param);
+				throw new CmdlineParserException(msg.notr(), msg.tr());
 
 			} else if (parameter.isDefined()) {
 				final OptionHandle paramHandle = parameter.get();
@@ -664,6 +671,17 @@ public class CmdlineParser {
 			}
 		}
 
+	}
+
+	private boolean matchPrefix(final String param) {
+		if (optionPrefixes.isEmpty()) {
+			return false;
+		}
+		return FList.exists(optionPrefixes, new F1<String, Boolean>() {
+			public Boolean apply(final String p) {
+				return param.startsWith(p);
+			}
+		});
 	}
 
 	public String getParsedCommandName() {
@@ -1191,6 +1209,21 @@ public class CmdlineParser {
 			aggregateShortOptionsWithPrefix = Optional.none();
 		} else {
 			aggregateShortOptionsWithPrefix = Optional.some(prefix.trim());
+		}
+	}
+
+	/**
+	 * Set the option prefixes, which will effectively prohibit them to be parsed as
+	 * main parameters.
+	 *
+	 * @param prefixes
+	 *            The prefixes that start an option.
+	 */
+	public void setOptionPrefixes(final String... prefixes) {
+		if (prefixes != null) {
+			this.optionPrefixes = Arrays.asList(prefixes);
+		} else {
+			this.optionPrefixes = Collections.emptyList();
 		}
 	}
 
