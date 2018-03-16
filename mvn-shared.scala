@@ -7,7 +7,7 @@ object Plugins {
   val antrun = "org.apache.maven.plugins" % "maven-antrun-plugin" % "1.8"
   val bundle = "org.apache.felix" % "maven-bundle-plugin" % "3.3.0"
   val clean = "org.apache.maven.plugins" % "maven-clean-plugin" % "3.0.0"
-  val dependencyCheck = "org.owasp" % "dependency-check-maven" % "3.0.1"
+  val dependencyCheck = "org.owasp" % "dependency-check-maven" % "3.1.1"
   val deploy = "org.apache.maven.plugins" % "maven-deploy-plugin" % "2.8.2"
   val install = "org.apache.maven.plugins" % "maven-install-plugin" % "2.5.2"
   val surefire = "org.apache.maven.plugins" % "maven-surefire-plugin" % "2.20.1"
