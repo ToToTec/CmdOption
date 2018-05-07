@@ -1,6 +1,6 @@
 object CmdOption {
   val groupId = "de.tototec"
-  val version = "0.6.1-SNAPSHOT"
+  val version = "0.7-SNAPSHOT"
 }
 
 object Plugins {
