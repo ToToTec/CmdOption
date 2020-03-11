@@ -112,7 +112,7 @@ object cmdoption extends MavenModule with GettextJavaModule with PublishModule {
       developers = Seq(Developer("TobiasRoeser", "Tobias Roeser", "https.//github.com/lefou"))
     )
   }
-  override def javacOptions = Seq("-source", "1.5", "-target", "1.5", "-encoding", "UTF-8")
+  override def javacOptions = Seq("-source", "1.6", "-target", "1.6", "-encoding", "UTF-8")
   override def compileIvyDeps = Agg(Deps.slf4j.optional(true))
   override def sources = T.sources(millSourcePath / "src" / "main" / "java")
   override def generatePropertiesPackage: Target[String] = "de.tototec.cmdoption"
