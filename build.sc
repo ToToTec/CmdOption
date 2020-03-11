@@ -9,7 +9,7 @@ val baseDir = build.millSourcePath
 object Deps {
   val junit = ivy"junit:junit:4.12"
   val junitInterface = ivy"com.novocode:junit-interface:0.11"
-  val lambdatest = ivy"de.tototec:de.tobiasroeser.lambdatest:0.3.0"
+  val lambdatest = ivy"de.tototec:de.tobiasroeser.lambdatest:0.7.0"
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.25"
 }
 
@@ -119,11 +119,12 @@ object cmdoption extends MavenModule with GettextJavaModule with PublishModule {
 
   object test extends Tests {
     def testFrameworks = Seq("com.novocode.junit.JUnitFramework")
-    def ivyDeps = Agg(
+    override def ivyDeps = Agg(
+      Deps.junit,
       Deps.junitInterface,
       Deps.lambdatest
     )
-  def javacOptions = Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8")
+  override def javacOptions = Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8")
   }
 
 }

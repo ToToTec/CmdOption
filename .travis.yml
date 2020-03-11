@@ -3,16 +3,13 @@ sudo: false
 language: java
 
 jdk:
-  - oraclejdk8
+  - openjdk8
+  - openjdk11
 
 addons:
   apt:
     packages:
-    - gettext
-
-before_script: 
-- mvn -N io.takari:maven:0.4.3:wrapper -Dmaven=3.5.0
-- xgettext --version
+      - gettext
 
 script: 
-- ./mvnw clean package source:jar javadoc:jar install
+  - ./millw -i "{__.compile,__.test}"
