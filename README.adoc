@@ -2,7 +2,7 @@
 :toc:
 :toc-placement: preamble
 :currentversion: 0.6.0
-:documentedVersion: 0.6.0
+:documentedVersion: 0.6.1-SNAPSHOT
 :githubUrl: https://github.com/ToToTec/CmdOption
 :wikiUrl:  {githubUrl}/wiki
 :gitterUrl: https://gitter.im/ToToTec/CmdOption
@@ -42,11 +42,11 @@ Maven users can use the following dependency declaration:
 </dependency>
 ----
 
-http://sbuild.org[SBuild] users can use the following dependency:
+https://github.com/lihaoyi/mill[Mill] users can use the following dependency:
 
 [source,scala,subs="attributes"]
 ----
-"mvn:de.tototec:de.tototec.cmdoption:{currentversion}"
+ivy"de.tototec:de.tototec.cmdoption:{currentversion}"
 ----
 
 == Example
@@ -627,7 +627,8 @@ CmdOption is developed and released under the *Apache License, Version 2*.
 
 == Contributing / Support
 
-Your contributions are much apreciated and are assumed to be published under the terms of the <<License, project license>> if not stated otherwise.
+Your contributions are much appreciated and are assumed to be published under the terms of the <<License, project license>>
+if not stated otherwise.
 
 If you found a bug or have a feature request, please open a {githubUrl}/issues[new issue on GitHub].
 We also accept pull requests.
@@ -637,20 +638,20 @@ You can also use our {gitterUrl}[Chat on Gitter.im] for discussions and question
 If you want to show appreciation for the project, please "star" it on {githubUrl}[GitHub].
 That helps me setting my priorities.
 
+You can also support me via https://github.com/sponsors/lefou[GitHub Sponsors].
+
 == Building CmdOption from Source
 
 === Building with Maven
 
-CmdOption is build with https://maven.apache.org[Apache Maven 3] and the https://github.com/takari/polyglot-maven#overview[polyglot-scala extension].
-
-Maven 3.5 is recommended. You also need GNU Gettext installed.
+CmdOption is build with the https://github.com/lihaoyi/mill[Mill build tool]. You also need GNU Gettext installed.
 
 .Build CmdOption from source
 ----
-mvn clean install
+mill cmdoption.jar
 ----
 
-The built JAR file can be found under `de.tototec.cmdoption/target/de.tototec.cmdoption-{currentversion}.jar`.
+The built JAR file can be found under `out/cmdoption/jar/dest/out.jar`.
 
 
 [[CreateOrUpdateTranslations,Create or Update translations]]
@@ -659,14 +660,15 @@ The built JAR file can be found under `de.tototec.cmdoption/target/de.tototec.cm
 You want to create a new or update an existing translation?
 
 CmdOption uses GNU Gettext.
-The translations for the currently supported languages are located under `src/main/po`.
-The message catalog template will be extracted in the compile phase (`mvn clean compile`) and is located under `target/po/messages.pot` and can be used as template for a new language.
+The translations for the currently supported languages are located under `de.tototec.cmdoption/src/main/po`.
+The message catalog template will be extracted in the compile phase
+and is located under `out/cmdoption/msgCatalog/dest/messages.pot` and can be used as template for a new language.
 
-To update all translation files under `src/main/po` use the following Maven command:
+To update all translation files under `de.tototec.cmdoption/src/main/po` use the following command:
 
 .Updating translations with extracted strings
 ----
-mvn antrun:run@update-translations
+mill cmdoption.updateTranslations
 ----
 
 After that, edit the updated translation files and update the fuzzy or newly added messages.
@@ -676,25 +678,17 @@ Using a special po-Editor like e.g. https://poedit.net/[Poedit] might add additi
 If you updated or added a translation, please open a {githubUrl}/pulls[pull-request] with the new translation.
 Your contribution is greatly apreciated!
 
+=== IDE: IntelliJ IDEA
 
-=== Create `pom.xml` for interoperability, e.g. IDEs
+To generate the IDEA project files, run:
 
-To generate the `pom.xml` use the `gen-pom-xml` profile.
-
-.Creating `pom.xml` files
 ----
-mvn -Pgen-pom-xml initialize
+mill mill.scalalib.GenIdea/idea
 ----
-
-.Deleting generated `pom.xml` files
-----
-mvn -Pgen-pom-xml clean
-----
-
 
 === Releases
 
-To build and deploy new release use the `deploy-maven-central.sh` script.
+To build and deploy new release use the command `mill cmdoption.publish`.
 
 Before cutting a new release, you should ensure/do:
 
@@ -703,8 +697,7 @@ Before cutting a new release, you should ensure/do:
 * Do a full build - *All tests have to pass!*
 * Update asciidoc-attributes and Changelog and in this `README.adoc` (add changes, add proper version and date)
 * Commit and create a git tag
-* run the deploy script `deploy-maven-central.sh`
-* Stage and release repository in Sonatype Nexus (https://oss.sonatype.org/index.html#stagingRepositories)
+* run `mill cmdoption.publish --sonatypeCreds <your-creds> --relase true`
 * Update version (increment and add `-SNAPSHOT` suffix)
 
 == Other Projects
@@ -714,7 +707,7 @@ Have a look at some other projects I'm involved with:
 * https://github.com/domino-osgi/domino[Domino] - OSGi dynamics made easy with a Scala DSL
 * https://github.com/lefou/LambdaTest/[Lambda Test] - Lambda-enabled functional testing on top of JUnit or TestNG
 * https://github.com/ToToTec/de.tototec.utils.functional[Functional Utils] - Functional Utility Classes for working with Java 5+
-* http://sbuild.org[SBuild] - A Scala-based build tool
+* https://github.com/lihaoyi/mill[Mill build tool] - a Scala-based open source build tool.
 
 == ChangeLog
 
