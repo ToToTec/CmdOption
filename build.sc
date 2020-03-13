@@ -4,7 +4,12 @@ import mill.define.{Source, Target}
 import mill.scalalib._
 import mill.scalalib.publish._
 
+import $ivy.`de.tototec::de.tobiasroeser.mill.osgi:0.2.0`
+import de.tobiasroeser.mill.osgi._
+
+
 val baseDir = build.millSourcePath
+val cmdOptionVersion = "0.6.1-SNAPSHOT"
 
 object Deps {
   val junit = ivy"junit:junit:4.12"
@@ -98,10 +103,11 @@ trait GettextJavaModule extends JavaModule {
 }
 
 
-object cmdoption extends MavenModule with GettextJavaModule with PublishModule {
+object cmdoption extends MavenModule with GettextJavaModule with OsgiBundleModule with PublishModule {
   override def millSourcePath = super.millSourcePath / os.up / "de.tototec.cmdoption"
-  override def artifactName = "de.tototec.cmdoption"
-  override def publishVersion = "0.6.1-SNAPSHOT"
+  val namespace = "de.tototec.cmdoption"
+  override def artifactName = namespace
+  override def publishVersion = cmdOptionVersion
   def pomSettings = T {
     PomSettings(
       description = "CmdOption is a simple annotation-driven command line parser toolkit for Java 5 applications that is configured through annotations",
@@ -116,6 +122,20 @@ object cmdoption extends MavenModule with GettextJavaModule with PublishModule {
   override def compileIvyDeps = Agg(Deps.slf4j.optional(true))
   override def sources = T.sources(millSourcePath / "src" / "main" / "java")
   override def generatePropertiesPackage: Target[String] = "de.tototec.cmdoption"
+
+  override def osgiHeaders = T { super.osgiHeaders().copy(
+    `Bundle-SymbolicName` = namespace,
+    `Bundle-Name` = Some(s"CmdOption ${publishVersion()}"),
+    `Export-Package` = Seq(
+      namespace,
+      s"$namespace.handler"
+    ),
+    `Import-Package` = Seq(
+        "org.slf4j.*;resolution:=optional",
+        "*"
+    )
+  )}
+
 
   object test extends Tests {
     def testFrameworks = Seq("com.novocode.junit.JUnitFramework")
