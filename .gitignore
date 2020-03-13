@@ -4,3 +4,11 @@
 target
 pom.xml
 /mvn-deploy-settings.xml
+
+# Mill
+/out/
+
+# Idea
+/.idea/
+/.idea_modules/
+

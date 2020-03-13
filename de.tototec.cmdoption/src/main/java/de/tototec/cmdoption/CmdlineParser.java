@@ -118,6 +118,8 @@ public class CmdlineParser {
 
 	private Optional<String> aggregateShortOptionsWithPrefix = Optional.none();
 
+	private boolean stopAcceptOptionAfterParameterIsSet = false;
+
 	protected CmdlineParser(final CmdlineParser parent, final String commandName, final Object commandObject) {
 		this.parent = parent;
 		debugAllowed = parent.debugAllowed;
@@ -230,6 +232,10 @@ public class CmdlineParser {
 	// public void parseHelp(String... cmdline) {
 	//
 	// }
+
+	public void setStopAcceptOptionsAfterParameterIsSet(boolean stopAcceptOptionAfterParameterIsSet) {
+		this.stopAcceptOptionAfterParameterIsSet = stopAcceptOptionAfterParameterIsSet;
+	}
 
 	public void setDefaultCommandName(final String defaultCommandName) {
 		this.defaultCommandName = defaultCommandName;
@@ -347,7 +353,8 @@ public class CmdlineParser {
 			validateOptions();
 		}
 
-		// parseOptions - will be set to false, if an stopOption was found
+		// parseOptions - will be set to false, if an stopOption was found or
+		// when stopAcceptOptionAfterParameterIsSet is true and an parameter was parsed.
 		// when false, it means: parsing of options is no longer allowed
 		boolean parseOptions = true;
 		final String stopOption = "--";
@@ -395,6 +402,7 @@ public class CmdlineParser {
 			// for (int index = 0; index < cmdline.length; ++index) {
 			final String param = rest[index];
 			if (parseOptions && stopOption.equals(param)) {
+				debug("Found \"" + stopOption + "\". Disabling parsing subsequent options.");
 				parseOptions = false;
 
 			} else if (debugAllowed && param.equals("--CMDOPTION_DEBUG")) {
@@ -537,6 +545,11 @@ public class CmdlineParser {
 				final OptionHandle paramHandle = parameter.get();
 				// Found a parameter
 				optionCount.put(paramHandle, optionCount.get(paramHandle) + 1);
+
+				if(stopAcceptOptionAfterParameterIsSet && parseOptions) {
+					debug("Found a parameter and stopAcceptOptionAfterParameterIsSet is enabled. Disabling parsing subsequent options.");
+					parseOptions = false;
+				}
 
 				if (rest.length <= index + paramHandle.getArgsCount() - 1) {
 					final int countOfGivenParams = rest.length - index;
