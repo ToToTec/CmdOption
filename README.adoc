@@ -219,6 +219,13 @@ public class Main {
 
 As you can see, aggregated short options can also have any number of arguments.
 
+=== Stop parsing options after the first parameter was found
+
+Sometime, you want to parse options only if they come before the first parameter.
+This can be enabled/diabled with `CmdlineParser.setStopAcceptOptionsAfterParameterIsSet(boolean)`.
+Set it to `true` to enable it, `false` is the default.
+
+
 == Options and Parameters
 
 The `@CmdOption` annotation can be used to declare fields and methods as options.
@@ -713,7 +720,10 @@ Have a look at some other projects I'm involved with:
 
 === CmdOption NEXT
 
-* Improved test suite
+* Stop parsing options after a parameter was set with new method `CmdlineParser.setStopAcceptOptionsAfterParameterIsSet(boolean)`.
+* Improved the test suite
+* Use mill as build tool
+* Removed Support for Java 5. CmdOption now requires at least Java 6.
 
 === CmdOption 0.6.0 - 2017-10-24
 
