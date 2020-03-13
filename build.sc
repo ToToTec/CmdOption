@@ -9,7 +9,7 @@ import de.tobiasroeser.mill.osgi._
 
 
 val baseDir = build.millSourcePath
-val cmdOptionVersion = "0.6.1-SNAPSHOT"
+val cmdOptionVersion = "0.7.0"
 
 object Deps {
   val junit = ivy"junit:junit:4.12"

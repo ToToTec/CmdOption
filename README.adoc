@@ -1,8 +1,8 @@
 = CmdOption - Command line parsing has never been easier
 :toc:
 :toc-placement: preamble
-:currentversion: 0.6.0
-:documentedVersion: 0.6.1-SNAPSHOT
+:currentversion: 0.7.0
+:documentedVersion: 0.7.0
 :githubUrl: https://github.com/ToToTec/CmdOption
 :wikiUrl:  {githubUrl}/wiki
 :gitterUrl: https://gitter.im/ToToTec/CmdOption
@@ -167,6 +167,7 @@ This can be useful in various situations including:
 If desired, you can change the prefix with `CmdlineParser.setReadArgsFromFilePrefix(String)`.
 The given string must be at least one character long.
 With an empty string or `null` you can disable that feature completely.
+
 
 === Aggregation of short options
 
@@ -718,7 +719,7 @@ Have a look at some other projects I'm involved with:
 
 == ChangeLog
 
-=== CmdOption NEXT
+=== CmdOption 0.7.0 - 2020-03-13
 
 * Stop parsing options after a parameter was set with new method `CmdlineParser.setStopAcceptOptionsAfterParameterIsSet(boolean)`.
 * Improved the test suite
