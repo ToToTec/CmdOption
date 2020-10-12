@@ -12,7 +12,7 @@ val baseDir = build.millSourcePath
 val cmdOptionVersion = "0.7.0"
 
 object Deps {
-  val junit = ivy"junit:junit:4.13"
+  val junit = ivy"junit:junit:4.13.1"
   val junitInterface = ivy"com.novocode:junit-interface:0.11"
   val lambdatest = ivy"de.tototec:de.tobiasroeser.lambdatest:0.7.0"
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.25"
