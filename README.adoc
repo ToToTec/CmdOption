@@ -650,9 +650,10 @@ You can also support me via https://github.com/sponsors/lefou[GitHub Sponsors].
 
 == Building CmdOption from Source
 
-=== Building with Maven
+=== Building with Mill Build Tool
 
 CmdOption is build with the https://github.com/lihaoyi/mill[Mill build tool]. You also need GNU Gettext installed.
+If you don't have it installed, you can use the `millw` script in this repo, which transparently wraps the mill tool after automatically downloading the right mill version.
 
 .Build CmdOption from source
 ----
