@@ -720,6 +720,11 @@ Have a look at some other projects I'm involved with:
 
 == ChangeLog
 
+=== CmdOption main branch
+
+* Removed deprecated API
+
+
 === CmdOption 0.7.0 - 2020-03-13
 
 * Stop parsing options after a parameter was set with new method `CmdlineParser.setStopAcceptOptionsAfterParameterIsSet(boolean)`.
