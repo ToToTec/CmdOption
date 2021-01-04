@@ -27,6 +27,7 @@ Generated output and validation/error messages can be localized.
 This document shows usage, configuration options and some advanced topics.
 Please also visit the {wikiUrl}[project wiki] for more examples and user provided content.
 
+
 == Download
 
 CmdOption is available from http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22de.tototec%22%20AND%20a%3A%22de.tototec.cmdoption%22[Maven central repository].
@@ -641,7 +642,7 @@ if not stated otherwise.
 If you found a bug or have a feature request, please open a {githubUrl}/issues[new issue on GitHub].
 We also accept pull requests.
 
-You can also use our {gitterUrl}[Chat on Gitter.im] for discussions and questions.
+You can also use our {githubUrl}/discussions[Discussions board on Github] and the {gitterUrl}[Chat on Gitter.im] for discussions and questions.
 
 If you want to show appreciation for the project, please "star" it on {githubUrl}[GitHub].
 That helps me setting my priorities.
