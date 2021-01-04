@@ -1,6 +1,7 @@
 package de.tototec.cmdoption;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,6 +12,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -213,14 +215,6 @@ public class CmdlineParser {
 	 */
 	public void setDebugModeAllowed(final boolean debugAllowed) {
 		this.debugAllowed = debugAllowed;
-	}
-
-	/**
-	 * @deprecated Use {@link #setUsageFormatter(UsageFormatter2)} instead.
-	 */
-	@Deprecated
-	public void setUsageFormatter(final UsageFormatter usageFormatter) {
-		this.usageFormatter = new WrappingUsageFormatter(usageFormatter);
 	}
 
 	public void setUsageFormatter(final UsageFormatter2 usageFormatter) {
@@ -1128,11 +1122,19 @@ public class CmdlineParser {
 	 */
 	@Deprecated
 	public void usage(final StringBuilder output) {
-		new WrappingUsageFormatter(usageFormatter).format(output, getCmdlineModel());
+		output.append(usageText());
 	}
 
 	public void usage(final PrintStream output) {
 		usageFormatter.format(output, getCmdlineModel());
+	}
+
+	public String usageText() {
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final PrintStream ps = new PrintStream(baos);
+		usage(ps);
+		ps.flush();
+		return new String(baos.toByteArray(), Charset.forName("UTF-8"));
 	}
 
 	public CmdlineModel getCmdlineModel() {
