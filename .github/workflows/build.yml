@@ -17,6 +17,8 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
 
+      - run: sudo apt-get install gettext
+
       - run: ./millw -i "{__.compile,__.test}"
 
       - run: ./millw -i -j 0 __.publishLocal $(pwd)/testRepo
