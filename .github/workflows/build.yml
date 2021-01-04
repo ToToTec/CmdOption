@@ -21,4 +21,4 @@ jobs:
 
       - run: ./millw -i "{__.compile,__.test}"
 
-      - run: ./millw -i -j 0 __.publishLocal $(pwd)/testRepo
+      - run: ./millw -i __.publishLocal $(pwd)/testRepo
