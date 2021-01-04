@@ -16,7 +16,7 @@ Documentation of CmdOption {documentedVersion}.
 
 == Overview
 
-CmdOption is a simple annotation-driven command line parser toolkit for Java 5 applications.
+CmdOption is a simple annotation-driven command line parser toolkit for Java 6 applications.
 Everything you need is (at least one) simple configuration object.
 Each field and method annotated with an `@CmdOption` annotation will be processed.
 Based on this config, CmdOption is able to parse any commandline, guaranteeing the declared specification.
