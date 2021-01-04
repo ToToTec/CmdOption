@@ -1122,14 +1122,14 @@ public class CmdlineParser {
 	 */
 	@Deprecated
 	public void usage(final StringBuilder output) {
-		output.append(usageText());
+		output.append(usageString());
 	}
 
 	public void usage(final PrintStream output) {
 		usageFormatter.format(output, getCmdlineModel());
 	}
 
-	public String usageText() {
+	public String usageString() {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		final PrintStream ps = new PrintStream(baos);
 		usage(ps);
