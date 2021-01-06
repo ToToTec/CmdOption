@@ -122,6 +122,12 @@ public class CmdlineParser {
 
 	private boolean stopAcceptOptionAfterParameterIsSet = false;
 
+	/**
+	 * The constructor is only intended for internal use. It's used to parse sub-commands.
+	 * @param parent The parent parser.
+	 * @param commandName The command name.
+	 * @param commandObject The target object holding the parsed options.
+	 */
 	protected CmdlineParser(final CmdlineParser parent, final String commandName, final Object commandObject) {
 		this.parent = parent;
 		debugAllowed = parent.debugAllowed;
