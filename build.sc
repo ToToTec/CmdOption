@@ -142,7 +142,8 @@ object cmdoption extends MavenModule with GettextJavaModule with OsgiBundleModul
     override def ivyDeps = Agg(
       Deps.junit,
       Deps.junitInterface,
-      Deps.lambdatest
+      Deps.lambdatest,
+      Deps.slf4j
     )
   override def javacOptions = Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8")
   }
