@@ -41,39 +41,30 @@ public class ArgPlaceholderTest extends FreeSpec {
 
 	{
 		test("description placeholder without any args", () -> {
-			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			final PrintStream ps = new PrintStream(baos);
 			final CmdlineParser cp = new CmdlineParser(new Config7());
 			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
-			cp.usage(ps);
-			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-			expectEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
+			final String usage =cp.usageString();
+			expectEquals(usage, "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a  A\n\n"
 					+ "Parameter:\n"
 					+ "  1  B\n");
 		});
 		test("description unused placeholder with args", () -> {
-			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			final PrintStream ps = new PrintStream(baos);
 			final CmdlineParser cp = new CmdlineParser(new Config8());
 			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
-			cp.usage(ps);
-			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-			expectEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
+			final String usage =cp.usageString();
+			expectEquals(usage, "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a 1  A\n\n"
 					+ "Parameter:\n"
 					+ "  1 2  B with args\n");
 		});
 		test("description used placeholder with args", () -> {
-			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			final PrintStream ps = new PrintStream(baos);
 			final CmdlineParser cp = new CmdlineParser(new Config9());
 			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
-			cp.usage(ps);
-			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-			expectEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
+			final String usage =cp.usageString();
+			expectEquals(usage, "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a 1  A with arg 1\n\n"
 					+ "Parameter:\n"
@@ -81,8 +72,6 @@ public class ArgPlaceholderTest extends FreeSpec {
 		});
 
 		test("description used placeholder with args and translation", () -> {
-			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			final PrintStream ps = new PrintStream(baos);
 			final CmdlineParser cp = new CmdlineParser(new Config9());
 			cp.setUsageFormatter(new DefaultUsageFormatter2(true, 80));
 
@@ -119,8 +108,7 @@ public class ArgPlaceholderTest extends FreeSpec {
 				}
 			};
 			cp.setResourceBundle(rb);
-			cp.usage(ps);
-			final String usage = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+			final String usage =cp.usageString();
 			expectEquals(usage.toString(), "Usage: <main class> [options] [parameter]\n\n"
 					+ "Options:\n"
 					+ "  -a one  A with arg one\n\n"
