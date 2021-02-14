@@ -7,7 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 
-import de.tobiasroeser.lambdatest.junit.FreeSpec;
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
 public class ParserTest extends FreeSpec {
 

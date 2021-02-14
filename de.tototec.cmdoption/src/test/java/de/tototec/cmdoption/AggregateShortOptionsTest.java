@@ -4,7 +4,7 @@ import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 import static de.tobiasroeser.lambdatest.Expect.expectFalse;
 import static de.tobiasroeser.lambdatest.Expect.expectTrue;
 
-import de.tobiasroeser.lambdatest.junit.FreeSpec;
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
 public class AggregateShortOptionsTest extends FreeSpec {
 

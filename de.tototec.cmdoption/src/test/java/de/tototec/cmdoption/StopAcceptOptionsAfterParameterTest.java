@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.tobiasroeser.lambdatest.junit.FreeSpec;
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
 public class StopAcceptOptionsAfterParameterTest extends FreeSpec {
 

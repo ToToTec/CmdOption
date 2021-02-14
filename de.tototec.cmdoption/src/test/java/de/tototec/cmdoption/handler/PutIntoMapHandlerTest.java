@@ -5,7 +5,7 @@ import static de.tobiasroeser.lambdatest.Expect.expectEquals;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import de.tobiasroeser.lambdatest.junit.FreeSpec;
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 import de.tototec.cmdoption.CmdOption;
 import de.tototec.cmdoption.CmdlineParser;
 

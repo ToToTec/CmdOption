@@ -2,7 +2,7 @@ package de.tototec.cmdoption;
 
 import java.net.URL;
 
-import de.tobiasroeser.lambdatest.junit.FreeSpec;
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
 public class ModelValidationTest extends FreeSpec {
 

@@ -2,7 +2,7 @@ package de.tototec.cmdoption;
 
 import static de.tobiasroeser.lambdatest.Expect.*;
 
-import de.tobiasroeser.lambdatest.junit.FreeSpec;
+import de.tobiasroeser.lambdatest.testng.FreeSpec;
 
 public class DelegateCommandTest extends FreeSpec {
 
