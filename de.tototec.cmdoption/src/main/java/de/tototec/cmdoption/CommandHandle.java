@@ -1,8 +1,11 @@
 package de.tototec.cmdoption;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import de.tototec.cmdoption.internal.FList;
 
 public class CommandHandle {
 
@@ -60,4 +63,14 @@ public class CommandHandle {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() +
+				"(names=" + FList.mkString(names, ",") +
+				",description=" + description +
+				",cmdlineParser=" + cmdlineParser +
+				",object=" + object +
+				",hidden=" + hidden +
+				")";
+	}
 }

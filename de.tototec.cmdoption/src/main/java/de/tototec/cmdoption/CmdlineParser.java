@@ -213,6 +213,12 @@ public class CmdlineParser {
 	 */
 	public void setDebugMode(final boolean debugMode) {
 		this.debugMode = debugMode;
+		FList.foreach(commands, new Procedure1<CommandHandle>() {
+			@Override
+			public void apply(CommandHandle c) {
+				c.getCmdlineParser().setDebugMode(debugMode);
+			}
+		});
 	}
 
 	/**
@@ -262,7 +268,14 @@ public class CmdlineParser {
 				prefix + "Options: " +
 				FList.mkString(options, "\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
 				prefix + "Commands: " +
-				FList.mkString(commands, "\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
+				FList.mkString(
+						FList.map(commands, new F1<CommandHandle, String>() {
+							@Override
+							public String apply(CommandHandle c) {
+								return c.toString() + "\n" + c.getCmdlineParser().debugState(prefix + "  | ");
+							}
+						}),
+						"\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
 				prefix + "ResourceBundle: " + resourceBundle + "\n" +
 				prefix + "Locale: " + (resourceBundle == null ? null : resourceBundle.getLocale()) + "\n" +
 				prefix + "CmdOptionHandlers: " +
@@ -407,7 +420,7 @@ public class CmdlineParser {
 
 			} else if (debugAllowed && param.equals("--CMDOPTION_DEBUG")) {
 				if (!debugMode) {
-					debugMode = true;
+					setDebugMode(true);
 					debug("Enabled debug mode\n" + debugState(""));
 				}
 				continue;
@@ -757,24 +770,14 @@ public class CmdlineParser {
 	public void addObject(final Object... objects) {
 		for (final Object object : objects) {
 			if (object.getClass().getAnnotation(CmdCommand.class) != null) {
-				final CommandHandle command = scanCommand(object);
-				for (final String name : command.getNames()) {
-					if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
-						final PreparedI18n msg = i18n.preparetr("Duplicate command/option name \"{0}\" found in: {1}",
-								name,
-								object);
-						throw new CmdlineParserException(msg.notr(), msg.tr());
-					}
-					quickCommandMap.put(name, command);
-				}
-				commands.add(command);
+				scanCommand(object);
 			} else {
 				scanOptions(object);
 			}
 		}
 	}
 
-	protected CommandHandle scanCommand(final Object object) {
+	protected void scanCommand(final Object object) {
 		final CmdCommand commandAnno = object.getClass().getAnnotation(CmdCommand.class);
 		final String[] names = commandAnno.names();
 
@@ -785,8 +788,19 @@ public class CmdlineParser {
 
 		final CmdlineParser subCmdlineParser = new CmdlineParser(this, names[0], object);
 		// TODO: set programm name
-		return new CommandHandle(names, commandAnno.description(), subCmdlineParser, object,
+		final CommandHandle command = new CommandHandle(names, commandAnno.description(), subCmdlineParser, object,
 				commandAnno.hidden());
+
+		for (final String name : command.getNames()) {
+			if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
+				final PreparedI18n msg = i18n.preparetr("Duplicate command/option name \"{0}\" found in: {1}",
+						name,
+						object);
+				throw new CmdlineParserException(msg.notr(), msg.tr());
+			}
+			quickCommandMap.put(name, command);
+		}
+		commands.add(command);
 	}
 
 	/**
@@ -984,8 +998,10 @@ public class CmdlineParser {
 
 		for (final AccessibleObject element : elements) {
 
-			if (element instanceof Field && element.getAnnotation(CmdOptionDelegate.class) != null) {
-				debug("Found delegate object at: {0}", element);
+			final CmdOptionDelegate delegateAnno = element.getAnnotation(CmdOptionDelegate.class);
+
+			if (element instanceof Field && delegateAnno != null) {
+				debug("Found delegate object at: {0} with mode: ", element);
 				try {
 					final boolean origAccessibleFlag = element.isAccessible();
 					final Object delegate;
@@ -1001,7 +1017,14 @@ public class CmdlineParser {
 						}
 					}
 					if (delegate != null) {
-						scanOptions(delegate);
+						switch (delegateAnno.value()) {
+							case EMBED_OPTIONS:
+								scanOptions(delegate);
+								break;
+							case FIND_COMMAND:
+								scanCommand(delegate);
+								break;
+						}
 					}
 				} catch (final IllegalArgumentException e) {
 					debug("Could not scan delegate object at: {0}", element);
