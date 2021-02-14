@@ -4,7 +4,7 @@ import mill.define.{Source, Target}
 import mill.scalalib._
 import mill.scalalib.publish._
 
-import $ivy.`de.tototec::de.tobiasroeser.mill.osgi:0.2.0`
+import $ivy.`de.tototec::de.tobiasroeser.mill.osgi_mill0.9:0.3.2`
 import de.tobiasroeser.mill.osgi._
 
 
