@@ -268,13 +268,17 @@ You can access the parsed command through the methods `getParsedCommandName()` o
 
 It is possible, to define a *default command*, that is implicitly assumed when the user does not use a command explicitly.
 When the commandline parser detects an else unknown option or parameter it will try to parse the rest of the command line as if the default command was issued.
-You can set the default commend with `setDefaultCommandName()` or `setDefaultCommandClass()` of class `CmdlineParser`.
+You can set the default command with `setDefaultCommandName()` or `setDefaultCommandClass()` of class `CmdlineParser`.
 
 == Composition
 
 The command line parser supports more that one config object. Each object annotated with `@CmdCommand` is treated as command, all other can contain options for the main program.
 
-To use the same class (or even object) for common or shared options, e.g. to add a `--verbose` option to all commands, you can annotate the relevant field with `@CmdOptionDelegate`.
+To use the same class (or even object) for common or shared options, e.g. to add a `--verbose` option to all commands, you can annotate the relevant field with `@CmdOptionDelegate`. `@CmdOptionDelegate` support three modes:
+
+* `OPTIONS` - Scans for options in the class / object references by the field. This was the only mode until CmdOption 0.7.0
+* `COMMAND` - Scans for a `@CmdCommand` annotated class in the field, hence you can express (sub-)commands.
+* `COMMAND_OR_OPTIONS` - Same as `OPTIONS` and `COMMAND` combined.
 
 == Customizing the output
 
@@ -284,6 +288,7 @@ The class `CmdlineParser` has various methods to customize the behaviour and the
 * *setAboutLine(String)* - Additional text displayed in the usage output.
 * *usage()* - Format and print the usage display to STDOUT.
 * *usage(PrintStream)* - Format and print the usage display to the given `PrintStream`.
+* *usageString()*  - Format and returns the usage help as `String`.
 * *setUsageFormatter(UsageFormatter2)* - Register a custom `UsageFormatter2` that is used to format the usage display. If not changed, the `DefaultUsageFormatter2` is used. Please note, that `DefaultUsageFormatter2` already has some configuration options on it's own which you should try first, before writing you own usage formatter implementation.
 
 * *usage(StringBuilder)* - _DEPRECATED._ Just for backwards compatibility.
