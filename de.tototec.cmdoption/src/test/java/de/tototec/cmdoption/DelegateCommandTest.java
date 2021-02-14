@@ -13,7 +13,18 @@ public class DelegateCommandTest extends FreeSpec {
 	}
 
 	class Config {
-		@CmdOptionDelegate(CmdOptionDelegate.Mode.FIND_COMMAND)
+		@CmdOptionDelegate(CmdOptionDelegate.Mode.COMMAND)
+		private Cmd cmd = new Cmd();
+	}
+
+
+	class ConfigWithoutCmd {
+		@CmdOptionDelegate(CmdOptionDelegate.Mode.OPTIONS)
+		private Cmd cmd = new Cmd();
+	}
+
+	class ConfigWithCmd {
+		@CmdOptionDelegate(CmdOptionDelegate.Mode.COMMAND_OR_OPTIONS)
 		private Cmd cmd = new Cmd();
 	}
 
@@ -36,7 +47,26 @@ public class DelegateCommandTest extends FreeSpec {
 			expectEquals(cp.getParsedCommandName(), "cmd");
 			expectTrue(config.cmd.a);
 			expectEquals(cp.getParsedCommandObject(), config.cmd);
+		});
 
+		test("Parse delegate options from command", () -> {
+			final ConfigWithoutCmd config = new ConfigWithoutCmd();
+			expectFalse(config.cmd.a);
+			final CmdlineParser cp = new CmdlineParser(config);
+			cp.parse("-a");
+			expectEquals(cp.getParsedCommandName(), null);
+			expectTrue(config.cmd.a);
+			expectEquals(cp.getParsedCommandObject(), null);
+		});
+
+		test("Parse embedded with explicit command", () -> {
+			final ConfigWithCmd config = new ConfigWithCmd();
+			expectFalse(config.cmd.a);
+			final CmdlineParser cp = new CmdlineParser(config);
+			cp.parse("cmd", "-a");
+			expectEquals(cp.getParsedCommandName(), "cmd");
+			expectTrue(config.cmd.a);
+			expectEquals(cp.getParsedCommandObject(), config.cmd);
 		});
 	}
 
