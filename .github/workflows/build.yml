@@ -6,6 +6,7 @@ env:
 jobs: 
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest]
         java-version: [8, 11]
