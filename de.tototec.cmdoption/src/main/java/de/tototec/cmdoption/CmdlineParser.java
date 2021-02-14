@@ -140,7 +140,7 @@ public class CmdlineParser {
 
 		// TODO: should we set the commands description as about line?
 
-		scanOptions(commandObject);
+		addOptions(commandObject);
 	}
 
 	/**
@@ -769,16 +769,19 @@ public class CmdlineParser {
 	 */
 	public void addObject(final Object... objects) {
 		for (final Object object : objects) {
-			if (object.getClass().getAnnotation(CmdCommand.class) != null) {
-				scanCommand(object);
-			} else {
-				scanOptions(object);
+			boolean commandAdded = addCommand(object);
+			if(!commandAdded) {
+				addOptions(object);
 			}
 		}
 	}
 
-	protected void scanCommand(final Object object) {
+	protected boolean addCommand(final Object object) {
 		final CmdCommand commandAnno = object.getClass().getAnnotation(CmdCommand.class);
+		if(commandAnno == null) {
+			return false;
+		}
+
 		final String[] names = commandAnno.names();
 
 		if (names == null || names.length == 0) {
@@ -801,6 +804,7 @@ public class CmdlineParser {
 			quickCommandMap.put(name, command);
 		}
 		commands.add(command);
+		return true;
 	}
 
 	/**
@@ -937,7 +941,7 @@ public class CmdlineParser {
 		return null;
 	}
 
-	protected void scanOptions(final Object object) {
+	protected void addOptions(final Object object) {
 		final Class<?> class1 = object.getClass();
 
 		final List<Field> fields = new LinkedList<Field>();
@@ -1018,11 +1022,17 @@ public class CmdlineParser {
 					}
 					if (delegate != null) {
 						switch (delegateAnno.value()) {
-							case EMBED_OPTIONS:
-								scanOptions(delegate);
+							case OPTIONS:
+								addOptions(delegate);
 								break;
-							case FIND_COMMAND:
-								scanCommand(delegate);
+							case COMMAND:
+								addCommand(delegate);
+								break;
+							case COMMAND_OR_OPTIONS:
+								boolean commandAdded = addCommand(delegate);
+								if(!commandAdded) {
+									addOptions(delegate);
+								}
 								break;
 						}
 					}

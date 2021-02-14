@@ -16,9 +16,13 @@ import java.lang.annotation.Target;
 public @interface CmdOptionDelegate {
 
 	enum Mode {
-		EMBED_OPTIONS,
-		FIND_COMMAND
+		/** Scan for options. */
+		OPTIONS,
+		/** Scan for command. */
+		COMMAND,
+		/** Scan for command and options. */
+		COMMAND_OR_OPTIONS
 	}
 
-	Mode value() default Mode.EMBED_OPTIONS;
+	Mode value() default Mode.OPTIONS;
 }
