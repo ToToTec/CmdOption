@@ -1,5 +1,8 @@
 on: [push, pull_request]
 
+env:
+  PUBLISH_BRANCH: refs/heads/main
+
 jobs: 
   build:
     strategy:
