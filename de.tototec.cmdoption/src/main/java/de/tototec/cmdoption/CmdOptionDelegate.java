@@ -11,7 +11,18 @@ import java.lang.annotation.Target;
  * annotations.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD })
+@Target({ElementType.FIELD})
 @Documented
 public @interface CmdOptionDelegate {
+
+	enum Mode {
+		/** Scan for options. */
+		OPTIONS,
+		/** Scan for command. */
+		COMMAND,
+		/** Scan for command and options. */
+		COMMAND_OR_OPTIONS
+	}
+
+	Mode value() default Mode.OPTIONS;
 }

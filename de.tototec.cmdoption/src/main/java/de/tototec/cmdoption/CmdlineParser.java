@@ -140,7 +140,7 @@ public class CmdlineParser {
 
 		// TODO: should we set the commands description as about line?
 
-		scanOptions(commandObject);
+		addOptions(commandObject);
 	}
 
 	/**
@@ -213,6 +213,12 @@ public class CmdlineParser {
 	 */
 	public void setDebugMode(final boolean debugMode) {
 		this.debugMode = debugMode;
+		FList.foreach(commands, new Procedure1<CommandHandle>() {
+			@Override
+			public void apply(CommandHandle c) {
+				c.getCmdlineParser().setDebugMode(debugMode);
+			}
+		});
 	}
 
 	/**
@@ -262,7 +268,14 @@ public class CmdlineParser {
 				prefix + "Options: " +
 				FList.mkString(options, "\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
 				prefix + "Commands: " +
-				FList.mkString(commands, "\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
+				FList.mkString(
+						FList.map(commands, new F1<CommandHandle, String>() {
+							@Override
+							public String apply(CommandHandle c) {
+								return c.toString() + "\n" + c.getCmdlineParser().debugState(prefix + "  | ");
+							}
+						}),
+						"\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
 				prefix + "ResourceBundle: " + resourceBundle + "\n" +
 				prefix + "Locale: " + (resourceBundle == null ? null : resourceBundle.getLocale()) + "\n" +
 				prefix + "CmdOptionHandlers: " +
@@ -407,7 +420,7 @@ public class CmdlineParser {
 
 			} else if (debugAllowed && param.equals("--CMDOPTION_DEBUG")) {
 				if (!debugMode) {
-					debugMode = true;
+					setDebugMode(true);
 					debug("Enabled debug mode\n" + debugState(""));
 				}
 				continue;
@@ -756,26 +769,19 @@ public class CmdlineParser {
 	 */
 	public void addObject(final Object... objects) {
 		for (final Object object : objects) {
-			if (object.getClass().getAnnotation(CmdCommand.class) != null) {
-				final CommandHandle command = scanCommand(object);
-				for (final String name : command.getNames()) {
-					if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
-						final PreparedI18n msg = i18n.preparetr("Duplicate command/option name \"{0}\" found in: {1}",
-								name,
-								object);
-						throw new CmdlineParserException(msg.notr(), msg.tr());
-					}
-					quickCommandMap.put(name, command);
-				}
-				commands.add(command);
-			} else {
-				scanOptions(object);
+			boolean commandAdded = addCommand(object);
+			if(!commandAdded) {
+				addOptions(object);
 			}
 		}
 	}
 
-	protected CommandHandle scanCommand(final Object object) {
+	protected boolean addCommand(final Object object) {
 		final CmdCommand commandAnno = object.getClass().getAnnotation(CmdCommand.class);
+		if(commandAnno == null) {
+			return false;
+		}
+
 		final String[] names = commandAnno.names();
 
 		if (names == null || names.length == 0) {
@@ -785,8 +791,20 @@ public class CmdlineParser {
 
 		final CmdlineParser subCmdlineParser = new CmdlineParser(this, names[0], object);
 		// TODO: set programm name
-		return new CommandHandle(names, commandAnno.description(), subCmdlineParser, object,
+		final CommandHandle command = new CommandHandle(names, commandAnno.description(), subCmdlineParser, object,
 				commandAnno.hidden());
+
+		for (final String name : command.getNames()) {
+			if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
+				final PreparedI18n msg = i18n.preparetr("Duplicate command/option name \"{0}\" found in: {1}",
+						name,
+						object);
+				throw new CmdlineParserException(msg.notr(), msg.tr());
+			}
+			quickCommandMap.put(name, command);
+		}
+		commands.add(command);
+		return true;
 	}
 
 	/**
@@ -923,7 +941,7 @@ public class CmdlineParser {
 		return null;
 	}
 
-	protected void scanOptions(final Object object) {
+	protected void addOptions(final Object object) {
 		final Class<?> class1 = object.getClass();
 
 		final List<Field> fields = new LinkedList<Field>();
@@ -984,8 +1002,10 @@ public class CmdlineParser {
 
 		for (final AccessibleObject element : elements) {
 
-			if (element instanceof Field && element.getAnnotation(CmdOptionDelegate.class) != null) {
-				debug("Found delegate object at: {0}", element);
+			final CmdOptionDelegate delegateAnno = element.getAnnotation(CmdOptionDelegate.class);
+
+			if (element instanceof Field && delegateAnno != null) {
+				debug("Found delegate object at: {0} with mode: ", element);
 				try {
 					final boolean origAccessibleFlag = element.isAccessible();
 					final Object delegate;
@@ -1001,7 +1021,20 @@ public class CmdlineParser {
 						}
 					}
 					if (delegate != null) {
-						scanOptions(delegate);
+						switch (delegateAnno.value()) {
+							case OPTIONS:
+								addOptions(delegate);
+								break;
+							case COMMAND:
+								addCommand(delegate);
+								break;
+							case COMMAND_OR_OPTIONS:
+								boolean commandAdded = addCommand(delegate);
+								if(!commandAdded) {
+									addOptions(delegate);
+								}
+								break;
+						}
 					}
 				} catch (final IllegalArgumentException e) {
 					debug("Could not scan delegate object at: {0}", element);
