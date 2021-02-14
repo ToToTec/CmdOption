@@ -1,9 +1,11 @@
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version_mill0.9:0.1.1`
+import $ivy.`de.tototec::de.tobiasroeser.mill.osgi_mill0.9:0.3.2`
+
 import cmdoption.{generateProperties, generatePropertiesPackage, millSourcePath, sources}
 import mill._
 import mill.define.{Source, Target}
 import mill.scalalib._
 import mill.scalalib.publish._
-import $ivy.`de.tototec::de.tobiasroeser.mill.osgi_mill0.9:0.3.2`
 import de.tobiasroeser.mill.osgi._
 import mill.api.Loose
 
@@ -108,7 +110,7 @@ object cmdoption extends MavenModule with GettextJavaModule with OsgiBundleModul
   override def millSourcePath = super.millSourcePath / os.up / "de.tototec.cmdoption"
   val namespace = "de.tototec.cmdoption"
   override def artifactName = namespace
-  override def publishVersion = cmdOptionVersion
+  override def publishVersion = de.tobiasroeser.mill.vcs.version.VcsVersion.vcsState().format()
   def pomSettings = T {
     PomSettings(
       description = "CmdOption is a simple annotation-driven command line parser toolkit for Java 5 applications that is configured through annotations",
