@@ -15,7 +15,7 @@ val cmdOptionVersion = "0.7.0"
 
 object Deps {
   val testngMill = ivy"com.lihaoyi:mill-contrib-testng_2.13:${mill.BuildInfo.millVersion}"
-  val lambdatest = ivy"de.tototec:de.tobiasroeser.lambdatest:0.7.0"
+  val lambdatest = ivy"de.tototec:de.tobiasroeser.lambdatest:0.7.1"
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.30"
 }
 
