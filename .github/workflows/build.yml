@@ -1,9 +1,6 @@
 on: [push, pull_request]
 
-env:
-  PUBLISH_BRANCH: refs/heads/main
-
-jobs: 
+jobs:
   build:
     strategy:
       fail-fast: false
@@ -28,6 +25,7 @@ jobs:
       - run: ./millw -i __.publishLocal $(pwd)/testRepo
 
   publish:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -42,12 +40,10 @@ jobs:
       - run: sudo apt-get install gettext
 
       - name: Setup GPG secrets
-        if: github.ref == env.PUBLISH_BRANCH && github.event_name == 'push'
         run: |
           gpg --version
           cat <(echo "${{ secrets.GPG_SECRET_KEY }}") | base64 --decode | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
 
       - name: Publish to Maven Central
-        if: github.ref == env.PUBLISH_BRANCH && github.event_name == 'push'
         run: ./millw -i mill.scalalib.PublishModule/publishAll --sonatypeCreds "${{ secrets.SONATYPE_CREDS }}" --gpgArgs "--passphrase=${{ secrets.GPG_SECRET_KEY_PASS}},--batch,--yes,-a,-b,--pinentry-mode,loopback" --publishArtifacts __.publishArtifacts --readTimeout 600000 --awaitTimeout 600000 --release true --signed true
