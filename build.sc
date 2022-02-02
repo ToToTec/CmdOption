@@ -1,5 +1,5 @@
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.3`
-import $ivy.`de.tototec::de.tobiasroeser.mill.osgi_mill0.9:0.4.0`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
+import $ivy.`de.tototec::de.tobiasroeser.mill.osgi::0.4.0`
 
 import cmdoption.{generateProperties, generatePropertiesPackage, millSourcePath, sources}
 import mill._
