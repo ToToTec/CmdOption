@@ -75,7 +75,7 @@ public class AggregateShortOptionsTest extends FreeSpec {
 			expectEquals(config.file, "file.txt");
 		});
 
-		test("Comnbining short options with missing args should fail", () -> {
+		test("Combining short options with missing args should fail", () -> {
 			final Config config = new Config();
 			final CmdlineParser cp = new CmdlineParser(config);
 			cp.setAggregateShortOptionsWithPrefix("-");
@@ -85,7 +85,7 @@ public class AggregateShortOptionsTest extends FreeSpec {
 					});
 		});
 
-		test("Comnbining unknown short options should fail", () -> {
+		test("Combining unknown short options should fail", () -> {
 			final Config config = new Config();
 			final CmdlineParser cp = new CmdlineParser(config);
 			cp.setAggregateShortOptionsWithPrefix("-");
@@ -95,7 +95,7 @@ public class AggregateShortOptionsTest extends FreeSpec {
 			});
 		});
 
-		test("Comnbining unknown short options should result in combined options parsed as main parameter", () -> {
+		test("Combining unknown short options should result in combined options parsed as main parameter", () -> {
 			final Config config = new Config();
 			final Param param = new Param();
 			final CmdlineParser cp = new CmdlineParser(config, param);

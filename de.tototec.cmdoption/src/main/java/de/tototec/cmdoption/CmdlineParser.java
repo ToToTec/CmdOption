@@ -493,7 +493,7 @@ public class CmdlineParser {
 
 				// Found an aggregated short option
 
-				// if true, the match is not a valid option aggrgation and
+				// if true, the match is not a valid option aggregation and
 				// should later be handled as normal parameter
 				boolean failed = false;
 
