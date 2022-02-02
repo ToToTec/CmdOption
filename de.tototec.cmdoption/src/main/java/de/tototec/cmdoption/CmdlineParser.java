@@ -297,7 +297,7 @@ public class CmdlineParser {
 	 *            If true, the given cmdline is first checked for applied help
 	 *            options. In such a case, no other validation errors will be
 	 *            thrown.
-	 * @param cmdline0
+	 * @param cmdline
 	 *            The commandline argument to be parsed.
 	 *
 	 * @throws CmdlineParserException
