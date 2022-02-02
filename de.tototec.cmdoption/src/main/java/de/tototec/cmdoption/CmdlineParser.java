@@ -297,13 +297,13 @@ public class CmdlineParser {
 	 *            If true, the given cmdline is first checked for applied help
 	 *            options. In such a case, no other validation errors will be
 	 *            thrown.
-	 * @param cmdline
+	 * @param cmdline0
 	 *            The commandline argument to be parsed.
 	 *
 	 * @throws CmdlineParserException
 	 *             If any errors were detected.
 	 */
-	public void parse(final boolean dryrun, final boolean detectHelpAndSkipValidation, String... cmdline) {
+	public void parse(final boolean dryrun, final boolean detectHelpAndSkipValidation, final String... cmdline) {
 		if (log.isDebugEnabled()) {
 			log.debug("About to start parsing. dryrun: " + dryrun + ", detectHelpAndSkipValidation: "
 					+ detectHelpAndSkipValidation + ", state: " + debugState("  "));
@@ -315,51 +315,55 @@ public class CmdlineParser {
 			throw new CmdlineParserException(msg.notr(), msg.tr());
 		}
 
-		// Avoid null access
-		cmdline = cmdline == null ? new String[] {} : cmdline;
-
-		if (argsFromFilePrefix.isDefined()) {
-			cmdline = FList.flatMap(cmdline, new F1<String, List<String>>() {
-				public List<String> apply(final String arg) {
-					if (arg.startsWith(argsFromFilePrefix.get())) {
-						debug("Expanding {0} into argument list", arg);
-						final File file = new File(arg.substring(1));
-						if (file.exists() && file.isFile()) {
-							try {
-								final BufferedReader reader = new BufferedReader(new FileReader(file));
-								final List<String> args = new LinkedList<String>();
-								String line;
-								while ((line = reader.readLine()) != null) {
-									// if (line.trim().length() > 0) {
-									args.add(line);
-									// }
-								}
-								reader.close();
-								return args;
-							} catch (final FileNotFoundException e) {
-								final PreparedI18n msg = i18n.preparetr("File referenced via {0} does not exist.", arg);
-								throw new CmdlineParserException(msg.notr(), e, msg.tr());
-							} catch (final IOException e) {
-								final PreparedI18n msg = i18n.preparetr("File referenced via {0} could not be read.",
-										arg);
-								throw new CmdlineParserException(msg.notr(), e, msg.tr());
-							}
-						} else {
-							final PreparedI18n msg = i18n.preparetr("File referenced via {0} does not exist.", arg);
-							throw new CmdlineParserException(msg.notr(), msg.tr());
-						}
-					} else {
-						return Arrays.asList(arg);
-					}
-				}
-			}).toArray(new String[0]);
-
-		}
+		final String[] cmdline0;
+		if(cmdline == null) {
+			cmdline0 = new String[]{};
+		} else {
+            // explode @-prefix args by reading them from file
+            if (argsFromFilePrefix.isDefined()) {
+                cmdline0 = FList.flatMap(cmdline, new F1<String, List<String>>() {
+                    public List<String> apply(final String arg) {
+                        if (arg.startsWith(argsFromFilePrefix.get())) {
+                            debug("Expanding {0} into argument list", arg);
+                            final File file = new File(arg.substring(1));
+                            if (file.exists() && file.isFile()) {
+                                try {
+                                    final BufferedReader reader = new BufferedReader(new FileReader(file));
+                                    final List<String> args = new LinkedList<String>();
+                                    String line;
+                                    while ((line = reader.readLine()) != null) {
+                                        // if (line.trim().length() > 0) {
+                                        args.add(line);
+                                        // }
+                                    }
+                                    reader.close();
+                                    return args;
+                                } catch (final FileNotFoundException e) {
+                                    final PreparedI18n msg = i18n.preparetr("File referenced via {0} does not exist.", arg);
+                                    throw new CmdlineParserException(msg.notr(), e, msg.tr());
+                                } catch (final IOException e) {
+                                    final PreparedI18n msg = i18n.preparetr("File referenced via {0} could not be read.",
+                                            arg);
+                                    throw new CmdlineParserException(msg.notr(), e, msg.tr());
+                                }
+                            } else {
+                                final PreparedI18n msg = i18n.preparetr("File referenced via {0} does not exist.", arg);
+                                throw new CmdlineParserException(msg.notr(), msg.tr());
+                            }
+                        } else {
+                            return Arrays.asList(arg);
+                        }
+                    }
+                }).toArray(new String[0]);
+            } else {
+                cmdline0 = cmdline;
+            }
+        }
 
 		if (!dryrun) {
 			debug("Parsing...");
 			// Check without applying anything
-			parse(true, detectHelpAndSkipValidation, cmdline);
+			parse(true, detectHelpAndSkipValidation, cmdline0);
 		}
 
 		if (dryrun) {
@@ -403,7 +407,7 @@ public class CmdlineParser {
 		}
 
 		int index = -1;
-		String[] rest = cmdline;
+		String[] rest = cmdline0;
 
 		while (rest.length > index + 1) {
 			if (index >= 0) {
@@ -486,6 +490,8 @@ public class CmdlineParser {
 				break;
 			}
 
+			// until here no single option and no command
+
 			if (parseOptions
 					&& aggregateShortOptionsWithPrefix.isDefined()
 					&& param.startsWith(aggregatePrefix)
@@ -529,7 +535,7 @@ public class CmdlineParser {
 					}
 				}
 				if (!failed) {
-					// re-interate parsing with the modified command line
+					// re-iterate parsing with the modified command line
 					// (backtracking)
 					final String[] newRest = Arrays.copyOfRange(rest, procCount, rest.length);
 					rewritten.addAll(Arrays.asList(newRest));
