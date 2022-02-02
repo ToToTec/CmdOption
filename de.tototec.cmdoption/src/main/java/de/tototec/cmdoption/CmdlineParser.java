@@ -52,9 +52,9 @@ import de.tototec.cmdoption.internal.Procedure1;
 /**
  * CmdOption main entry point to configure the parser, parse the command line
  * and provide help.
- *
+ * <p>
  * The central method to parse a command line is {@link #parse(String...)}.
- *
+ * <p>
  * The command line will be parsed and validated based on configuration objects
  * which are annotated with CmdOption-specific annotations, which are:
  * <ul>
@@ -62,12 +62,11 @@ import de.tototec.cmdoption.internal.Procedure1;
  * <li>{@link CmdCommand}
  * <li>{@link CmdOptionDelegate}
  * </ul>
- *
+ * <p>
  * Each parsed option will be directly applied to the corresponding method or
  * field. The configuration objects are typically provided as constructor
  * arguments, but it is also possible to use the {@link #addObject(Object...)}
  * method to add additional configuration objects.
- *
  */
 public class CmdlineParser {
 
@@ -124,8 +123,9 @@ public class CmdlineParser {
 
 	/**
 	 * The constructor is only intended for internal use. It's used to parse sub-commands.
-	 * @param parent The parent parser.
-	 * @param commandName The command name.
+	 *
+	 * @param parent        The parent parser.
+	 * @param commandName   The command name.
 	 * @param commandObject The target object holding the parsed options.
 	 */
 	protected CmdlineParser(final CmdlineParser parent, final String commandName, final Object commandObject) {
@@ -151,8 +151,7 @@ public class CmdlineParser {
 	 * {@link #addObject(Object...)} method after you registered the desired set of
 	 * handlers.
 	 *
-	 * @param objects
-	 *            The configuration objects containing supported annotations.
+	 * @param objects The configuration objects containing supported annotations.
 	 */
 	public CmdlineParser(final Object... objects) {
 		parent = null;
@@ -173,16 +172,16 @@ public class CmdlineParser {
 
 	public List<CmdOptionHandler> defaultHandlers() {
 		return Arrays.asList(
-				new BooleanOptionHandler(),
-				new BooleanHandler(),
-				new StringFieldHandler(),
-				new PutIntoMapHandler(),
-				new AddToCollectionHandler(),
-				new StringMethodHandler(),
-				new LongHandler(),
-				new IntegerHandler(),
-				new ByteHandler(),
-				new EnumHandler());
+			new BooleanOptionHandler(),
+			new BooleanHandler(),
+			new StringFieldHandler(),
+			new PutIntoMapHandler(),
+			new AddToCollectionHandler(),
+			new StringMethodHandler(),
+			new LongHandler(),
+			new IntegerHandler(),
+			new ByteHandler(),
+			new EnumHandler());
 	}
 
 	private void debug(final String msg, final Object... args) {
@@ -251,7 +250,7 @@ public class CmdlineParser {
 		final CmdCommand anno = defaultCommandClass.getAnnotation(CmdCommand.class);
 		if (anno == null) {
 			throw new IllegalArgumentException(
-					"Given class is not annotated with @" + CmdCommand.class.getSimpleName());
+				"Given class is not annotated with @" + CmdCommand.class.getSimpleName());
 		}
 		if (anno.names() == null || anno.names().length == 0 || anno.names()[0].length() == 0) {
 			throw new IllegalArgumentException("Given default command class has no valid name");
@@ -265,100 +264,95 @@ public class CmdlineParser {
 
 	private String debugState(final String prefix) {
 		return prefix + "Parameter: " + parameter.orNull() + "\n" +
-				prefix + "Options: " +
-				FList.mkString(options, "\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
-				prefix + "Commands: " +
-				FList.mkString(
-						FList.map(commands, new F1<CommandHandle, String>() {
-							@Override
-							public String apply(CommandHandle c) {
-								return c.toString() + "\n" + c.getCmdlineParser().debugState(prefix + "  | ");
-							}
-						}),
-						"\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
-				prefix + "ResourceBundle: " + resourceBundle + "\n" +
-				prefix + "Locale: " + (resourceBundle == null ? null : resourceBundle.getLocale()) + "\n" +
-				prefix + "CmdOptionHandlers: " +
-				FList.mkString(handlerRegistry.entrySet(), "\n" + prefix + "  ", "\n" + prefix + "  ", "");
+			prefix + "Options: " +
+			FList.mkString(options, "\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
+			prefix + "Commands: " +
+			FList.mkString(
+				FList.map(commands, new F1<CommandHandle, String>() {
+					@Override
+					public String apply(CommandHandle c) {
+						return c.toString() + "\n" + c.getCmdlineParser().debugState(prefix + "  | ");
+					}
+				}),
+				"\n" + prefix + "  ", ",\n" + prefix + "  ", "") + "\n" +
+			prefix + "ResourceBundle: " + resourceBundle + "\n" +
+			prefix + "Locale: " + (resourceBundle == null ? null : resourceBundle.getLocale()) + "\n" +
+			prefix + "CmdOptionHandlers: " +
+			FList.mkString(handlerRegistry.entrySet(), "\n" + prefix + "  ", "\n" + prefix + "  ", "");
 	}
 
 	/**
 	 * Parses the given commandline arguments.
-	 *
+	 * <p>
 	 * If no error were detected and not in dryrun-mode, the result is applied to
 	 * the config object(s).
-	 *
+	 * <p>
 	 * If any errors where detected, they will be thrown as
 	 * {@link CmdlineParserException}.
 	 *
-	 * @param dryrun
-	 *            If true, only checks for errors.
-	 * @param detectHelpAndSkipValidation
-	 *            If true, the given cmdline is first checked for applied help
-	 *            options. In such a case, no other validation errors will be
-	 *            thrown.
-	 * @param cmdline
-	 *            The commandline argument to be parsed.
-	 *
-	 * @throws CmdlineParserException
-	 *             If any errors were detected.
+	 * @param dryrun                      If true, only checks for errors.
+	 * @param detectHelpAndSkipValidation If true, the given cmdline is first checked for applied help
+	 *                                    options. In such a case, no other validation errors will be
+	 *                                    thrown.
+	 * @param cmdline                     The commandline argument to be parsed.
+	 * @throws CmdlineParserException If any errors were detected.
 	 */
 	public void parse(final boolean dryrun, final boolean detectHelpAndSkipValidation, final String... cmdline) {
 		if (log.isDebugEnabled()) {
 			log.debug("About to start parsing. dryrun: " + dryrun + ", detectHelpAndSkipValidation: "
-					+ detectHelpAndSkipValidation + ", state: " + debugState("  "));
+				+ detectHelpAndSkipValidation + ", state: " + debugState("  "));
 		}
 
 		if (defaultCommandName != null && !quickCommandMap.containsKey(defaultCommandName)) {
 			final PreparedI18n msg = i18n.preparetr("Default command \"{0}\" is not a known command.",
-					defaultCommandName);
+				defaultCommandName);
 			throw new CmdlineParserException(msg.notr(), msg.tr());
 		}
 
 		final String[] cmdline0;
-		if(cmdline == null) {
+		if (cmdline == null) {
 			cmdline0 = new String[]{};
 		} else {
-            // explode @-prefix args by reading them from file
-            if (argsFromFilePrefix.isDefined()) {
-                cmdline0 = FList.flatMap(cmdline, new F1<String, List<String>>() {
-                    public List<String> apply(final String arg) {
-                        if (arg.startsWith(argsFromFilePrefix.get())) {
-                            debug("Expanding {0} into argument list", arg);
-                            final File file = new File(arg.substring(1));
-                            if (file.exists() && file.isFile()) {
-                                try {
-                                    final BufferedReader reader = new BufferedReader(new FileReader(file));
-                                    final List<String> args = new LinkedList<String>();
-                                    String line;
-                                    while ((line = reader.readLine()) != null) {
-                                        // if (line.trim().length() > 0) {
-                                        args.add(line);
-                                        // }
-                                    }
-                                    reader.close();
-                                    return args;
-                                } catch (final FileNotFoundException e) {
-                                    final PreparedI18n msg = i18n.preparetr("File referenced via {0} does not exist.", arg);
-                                    throw new CmdlineParserException(msg.notr(), e, msg.tr());
-                                } catch (final IOException e) {
-                                    final PreparedI18n msg = i18n.preparetr("File referenced via {0} could not be read.",
-                                            arg);
-                                    throw new CmdlineParserException(msg.notr(), e, msg.tr());
-                                }
-                            } else {
-                                final PreparedI18n msg = i18n.preparetr("File referenced via {0} does not exist.", arg);
-                                throw new CmdlineParserException(msg.notr(), msg.tr());
-                            }
-                        } else {
-                            return Arrays.asList(arg);
-                        }
-                    }
-                }).toArray(new String[0]);
-            } else {
-                cmdline0 = cmdline;
-            }
-        }
+			// explode @-prefix args by reading them from file
+			if (argsFromFilePrefix.isDefined()) {
+				cmdline0 = FList.flatMap(cmdline, new F1<String, List<String>>() {
+					public List<String> apply(final String arg) {
+						if (arg.startsWith(argsFromFilePrefix.get())) {
+							debug("Expanding {0} into argument list", arg);
+							final File file = new File(arg.substring(1));
+							if (file.exists() && file.isFile()) {
+								try {
+									final BufferedReader reader = new BufferedReader(new FileReader(file));
+									final List<String> args = new LinkedList<String>();
+									String line;
+									while ((line = reader.readLine()) != null) {
+										// if (line.trim().length() > 0) {
+										args.add(line);
+										// }
+									}
+									reader.close();
+									return args;
+								} catch (final FileNotFoundException e) {
+									final PreparedI18n msg = i18n.preparetr("File referenced via {0} does not exist.", arg);
+									throw new CmdlineParserException(msg.notr(), e, msg.tr());
+								} catch (final IOException e) {
+									final PreparedI18n msg = i18n.preparetr("File referenced via {0} could not be read.",
+										arg);
+									throw new CmdlineParserException(msg.notr(), e, msg.tr());
+								}
+							} else {
+								final PreparedI18n msg = i18n.preparetr("File referenced via {0} does not exist.", arg);
+								throw new CmdlineParserException(msg.notr(), msg.tr());
+							}
+						} else {
+							return Arrays.asList(arg);
+						}
+					}
+				}).toArray(new String[0]);
+			} else {
+				cmdline0 = cmdline;
+			}
+		}
 
 		if (!dryrun) {
 			debug("Parsing...");
@@ -439,19 +433,19 @@ public class CmdlineParser {
 
 				if (rest.length <= index + optionHandle.getArgsCount()) {
 					final PreparedI18n msg = i18n.preparetr(
-							"Missing argument(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}.",
-							FList.mkString(
-									Arrays.asList(optionHandle.getArgs()).subList(rest.length - index - 1,
-											optionHandle.getArgsCount()),
-									", "),
-							param, optionHandle
+						"Missing argument(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}.",
+						FList.mkString(
+							Arrays.asList(optionHandle.getArgs()).subList(rest.length - index - 1,
+								optionHandle.getArgsCount()),
+							", "),
+						param, optionHandle
 							.getArgsCount(),
-							rest.length - index - 1);
+						rest.length - index - 1);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				// slurp next cmdline arguments into option arguments
 				final String[] optionArgs = Arrays.copyOfRange(rest, index + 1,
-						index + 1 + optionHandle.getArgsCount());
+					index + 1 + optionHandle.getArgsCount());
 				index += optionHandle.getArgsCount();
 
 				final AccessibleObject element = optionHandle.getElement();
@@ -472,7 +466,7 @@ public class CmdlineParser {
 						throw new CmdlineParserException(e.getMessage(), e, e.getLocalizedMessage());
 					} catch (final Exception e) {
 						final PreparedI18n msg = i18n.preparetr("Could not apply parameters {0} to field/method {1}",
-								Arrays.toString(optionArgs), element);
+							Arrays.toString(optionArgs), element);
 						throw new CmdlineParserException(msg.notr(), e, msg.tr());
 					}
 				}
@@ -485,7 +479,7 @@ public class CmdlineParser {
 				}
 				// Delegate parsing of the rest of the cmdline to the command
 				commandHandle.getCmdlineParser().parse(dryrun, detectHelpAndSkipValidation,
-						Arrays.copyOfRange(rest, index + 1, rest.length));
+					Arrays.copyOfRange(rest, index + 1, rest.length));
 				// Stop parsing
 				break;
 			}
@@ -493,9 +487,9 @@ public class CmdlineParser {
 			// until here no single option and no command
 
 			if (parseOptions
-					&& aggregateShortOptionsWithPrefix.isDefined()
-					&& param.startsWith(aggregatePrefix)
-					&& param.length() > aggregatePrefixSize + 1) {
+				&& aggregateShortOptionsWithPrefix.isDefined()
+				&& param.startsWith(aggregatePrefix)
+				&& param.length() > aggregatePrefixSize + 1) {
 
 				// Found an aggregated short option
 
@@ -517,13 +511,13 @@ public class CmdlineParser {
 					if (rest.length < procCount + oh.getArgsCount()) {
 						// FIXME: missing args detected
 						final PreparedI18n msg = i18n.preparetr(
-								"Missing argument(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}.",
-								FList.mkString(
-										Arrays.asList(oh.getArgs()).subList(rest.length - procCount,
-												oh.getArgsCount()),
-										", "),
-								aggregatePrefix + c, oh.getArgsCount(),
-								rest.length - procCount);
+							"Missing argument(s): {0}. Option \"{1}\" requires {2} arguments, but you gave {3}.",
+							FList.mkString(
+								Arrays.asList(oh.getArgs()).subList(rest.length - procCount,
+									oh.getArgsCount()),
+								", "),
+							aggregatePrefix + c, oh.getArgsCount(),
+							rest.length - procCount);
 						throw new CmdlineParserException(msg.notr(), msg.tr());
 					}
 					// add as standalone short option
@@ -546,7 +540,7 @@ public class CmdlineParser {
 			}
 
 			if (parameter.isEmpty() && defaultCommandName != null
-					&& quickCommandMap.containsKey(defaultCommandName)) {
+				&& quickCommandMap.containsKey(defaultCommandName)) {
 				// Assume a default command inserted here
 				debug("Unsupported option '" + param + "' found, assuming default command: " + defaultCommandName);
 				final CommandHandle commandHandle = quickCommandMap.get(defaultCommandName);
@@ -556,7 +550,7 @@ public class CmdlineParser {
 				}
 				// Delegate parsing of the rest of the cmdline to the command
 				commandHandle.getCmdlineParser().parse(dryrun, detectHelpAndSkipValidation,
-						Arrays.copyOfRange(rest, index, rest.length));
+					Arrays.copyOfRange(rest, index, rest.length));
 				// Stop parsing
 				break;
 
@@ -565,7 +559,7 @@ public class CmdlineParser {
 				// Found a parameter
 				optionCount.put(paramHandle, optionCount.get(paramHandle) + 1);
 
-				if(stopAcceptOptionAfterParameterIsSet && parseOptions) {
+				if (stopAcceptOptionAfterParameterIsSet && parseOptions) {
 					debug("Found a parameter and stopAcceptOptionAfterParameterIsSet is enabled. Disabling parsing subsequent options.");
 					parseOptions = false;
 				}
@@ -573,10 +567,10 @@ public class CmdlineParser {
 				if (rest.length <= index + paramHandle.getArgsCount() - 1) {
 					final int countOfGivenParams = rest.length - index;
 					final PreparedI18n msg = i18n.preparetr(
-							"Missing arguments: {0} Parameter requires {1} arguments, but you gave {2}.",
-							Arrays.asList(paramHandle.getArgs()).subList(countOfGivenParams,
-									paramHandle.getArgsCount()),
-							paramHandle.getArgsCount(), countOfGivenParams);
+						"Missing arguments: {0} Parameter requires {1} arguments, but you gave {2}.",
+						Arrays.asList(paramHandle.getArgs()).subList(countOfGivenParams,
+							paramHandle.getArgsCount()),
+						paramHandle.getArgsCount(), countOfGivenParams);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				// slurp next cmdline arguments into option arguments
@@ -603,7 +597,7 @@ public class CmdlineParser {
 						throw new CmdlineParserException(e.getMessage(), e, e.getLocalizedMessage());
 					} catch (final Exception e) {
 						final PreparedI18n msg = i18n.preparetr("Could not apply parameters {0} to field/method {1}",
-								Arrays.toString(optionArgs), element);
+							Arrays.toString(optionArgs), element);
 						throw new CmdlineParserException(msg.notr(), e, msg.tr());
 					}
 				}
@@ -628,7 +622,7 @@ public class CmdlineParser {
 							rangeMsg = i18n.preparetr("exactly {0}", option.getMinCount());
 						} else {
 							rangeMsg = i18n.preparetr("between {0} and {1}",
-									option.getMinCount(), option.getMaxCount());
+								option.getMinCount(), option.getMaxCount());
 						}
 					}
 					final String msg;
@@ -636,12 +630,12 @@ public class CmdlineParser {
 					final Object[] msgArgsTr;
 					if (option.getNames() == null || option.getNames().length == 0) {
 						msg = I18n.marktr("Main parameter \"{0}\" was given {1} times, but must be given {2} times");
-						msgArgs = new Object[] { FList.mkString(option.getArgs(), " "), count, rangeMsg.notr() };
-						msgArgsTr = new Object[] { FList.mkString(option.getArgs(), " "), count, rangeMsg.tr() };
+						msgArgs = new Object[]{FList.mkString(option.getArgs(), " "), count, rangeMsg.notr()};
+						msgArgsTr = new Object[]{FList.mkString(option.getArgs(), " "), count, rangeMsg.tr()};
 					} else {
 						msg = I18n.marktr("Option \"{0}\" was given {1} times, but must be given {2} times");
-						msgArgs = new Object[] { option.getNames()[0], count, rangeMsg.notr() };
-						msgArgsTr = new Object[] { option.getNames()[0], count, rangeMsg.tr() };
+						msgArgs = new Object[]{option.getNames()[0], count, rangeMsg.notr()};
+						msgArgsTr = new Object[]{option.getNames()[0], count, rangeMsg.tr()};
 					}
 					throw new CmdlineParserException(MessageFormat.format(msg, msgArgs), i18n.tr(msg, msgArgsTr));
 				}
@@ -666,8 +660,8 @@ public class CmdlineParser {
 								// required option was not called, this is an
 								// error
 								final PreparedI18n msg = i18n.preparetr(
-										"When using option \"{0}\" also option \"{1}\" must be given.",
-										calledOption.getNames()[0], required);
+									"When using option \"{0}\" also option \"{1}\" must be given.",
+									calledOption.getNames()[0], required);
 								throw new CmdlineParserException(msg.notr(), msg.tr());
 							}
 						}
@@ -686,8 +680,8 @@ public class CmdlineParser {
 								// conflicting option was called, this is an
 								// conflict
 								final PreparedI18n msg = i18n.preparetr(
-										"Options \"{0}\" and \"{1}\" cannot be used at the same time.",
-										calledOption.getNames()[0], conflict);
+									"Options \"{0}\" and \"{1}\" cannot be used at the same time.",
+									calledOption.getNames()[0], conflict);
 								throw new CmdlineParserException(msg.notr(), msg.tr());
 							}
 						}
@@ -717,12 +711,10 @@ public class CmdlineParser {
 	 * requested handler type.
 	 *
 	 * @return The found {@link CmdOptionHandler} or <code>null</code>.
-	 *
-	 * @throws CmdlineParserException
-	 *             in case an error occured.
+	 * @throws CmdlineParserException in case an error occured.
 	 */
 	protected CmdOptionHandler findHandler(final AccessibleObject element, final int argsCount,
-			final Class<? extends CmdOptionHandler> cmdOptionHandlerType) {
+										   final Class<? extends CmdOptionHandler> cmdOptionHandlerType) {
 		CmdOptionHandler handler = null;
 		if (cmdOptionHandlerType != null && !cmdOptionHandlerType.equals(CmdOptionHandler.class)) {
 			// requested a specific handler
@@ -762,21 +754,18 @@ public class CmdlineParser {
 	/**
 	 * Add an additional configuration object containing CmdOption-specific
 	 * annotations to the configuration.
-	 *
+	 * <p>
 	 * Classed annotated with {@link CmdCommand} are registered as commands, and all
 	 * found options and parameters are registered to the command.
 	 *
 	 * @param objects
-	 *
-	 * @throws CmdlineParserException
-	 *             if the given objects contain configutation errors or are
-	 *             inconsistent.
-	 *
+	 * @throws CmdlineParserException if the given objects contain configutation errors or are
+	 *                                inconsistent.
 	 */
 	public void addObject(final Object... objects) {
 		for (final Object object : objects) {
 			boolean commandAdded = addCommand(object);
-			if(!commandAdded) {
+			if (!commandAdded) {
 				addOptions(object);
 			}
 		}
@@ -784,7 +773,7 @@ public class CmdlineParser {
 
 	protected boolean addCommand(final Object object) {
 		final CmdCommand commandAnno = object.getClass().getAnnotation(CmdCommand.class);
-		if(commandAnno == null) {
+		if (commandAnno == null) {
 			return false;
 		}
 
@@ -798,13 +787,13 @@ public class CmdlineParser {
 		final CmdlineParser subCmdlineParser = new CmdlineParser(this, names[0], object);
 		// TODO: set programm name
 		final CommandHandle command = new CommandHandle(names, commandAnno.description(), subCmdlineParser, object,
-				commandAnno.hidden());
+			commandAnno.hidden());
 
 		for (final String name : command.getNames()) {
 			if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
 				final PreparedI18n msg = i18n.preparetr("Duplicate command/option name \"{0}\" found in: {1}",
-						name,
-						object);
+					name,
+					object);
 				throw new CmdlineParserException(msg.notr(), msg.tr());
 			}
 			quickCommandMap.put(name, command);
@@ -817,9 +806,7 @@ public class CmdlineParser {
 	 * Check validity of the given configutaion classes. You should call this method
 	 * from a unit test to detect errors and inconsistencies in your configuration.
 	 *
-	 * @throws CmdlineParserException
-	 *             if the configutation is not valid.
-	 *
+	 * @throws CmdlineParserException if the configutation is not valid.
 	 * @since 0.6.0
 	 */
 	public void validate() {
@@ -832,9 +819,7 @@ public class CmdlineParser {
 	/**
 	 * Do a consistency check for the given cmdoption model (all annotated opitons).
 	 *
-	 * @throws CmdlineParserException
-	 *             if the configutation is not valid.
-	 *
+	 * @throws CmdlineParserException if the configutation is not valid.
 	 */
 	protected void validateOptions() {
 		int noNameCount = 0;
@@ -851,8 +836,8 @@ public class CmdlineParser {
 
 			if (optionHandle.getMaxCount() >= 0 && optionHandle.getMaxCount() < optionHandle.getMinCount()) {
 				final PreparedI18n msg = i18n.preparetr(
-						"The option \"{0}\" has inconsistent min..max count configuration (min={1}, max={2}).",
-						optionName, optionHandle.getMinCount(), optionHandle.getMaxCount());
+					"The option \"{0}\" has inconsistent min..max count configuration (min={1}, max={2}).",
+					optionName, optionHandle.getMinCount(), optionHandle.getMaxCount());
 				throw new CmdlineParserException(msg.notr(), msg.tr());
 			}
 
@@ -860,22 +845,22 @@ public class CmdlineParser {
 				if (quickOptionMap.get(reqOptionName) == null) {
 					// required option does not exists
 					final PreparedI18n msg = i18n.preparetr(
-							"The option \"{0}\" requires the unknown/missing option \"{1}\".", optionName,
-							reqOptionName);
+						"The option \"{0}\" requires the unknown/missing option \"{1}\".", optionName,
+						reqOptionName);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 			}
 			for (final String conflictOptionName : optionHandle.getConflictsWith()) {
 				if (Arrays.asList(optionHandle.getNames()).contains(conflictOptionName)) {
 					final PreparedI18n msg = i18n.preparetr("Option \"{0}\" is configured to conflicts with itself.",
-							optionName);
+						optionName);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 				if (quickOptionMap.get(conflictOptionName) == null) {
 					// required option does not exists
 					final PreparedI18n msg = i18n.preparetr(
-							"The option \"{0}\" conflicts with a unknown/missing option \"{1}\".",
-							optionName, conflictOptionName);
+						"The option \"{0}\" conflicts with a unknown/missing option \"{1}\".",
+						optionName, conflictOptionName);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 
 				}
@@ -970,7 +955,7 @@ public class CmdlineParser {
 					privateMethods.add(method);
 				} else if (isPublicOrProtected(method)) {
 					if (!containsMethod(otherPackageNonPrivateMethods, method)
-							&& !containsMethod(currentPackageNonPrivateMethods, method)) {
+						&& !containsMethod(currentPackageNonPrivateMethods, method)) {
 						currentPackageNonPrivateMethods.add(method);
 					}
 				} else if (isPackagePrivate(method)) {
@@ -987,7 +972,7 @@ public class CmdlineParser {
 			final Package pack = parentClass.getPackage();
 			parentClass = parentClass.getSuperclass();
 			if ((pack == null && parentClass.getPackage() != null) ||
-					(pack != null && !pack.equals(parentClass.getPackage()))) {
+				(pack != null && !pack.equals(parentClass.getPackage()))) {
 				otherPackageNonPrivateMethods.addAll(currentPackageNonPrivateMethods);
 				currentPackageNonPrivateMethods.clear();
 			}
@@ -1036,7 +1021,7 @@ public class CmdlineParser {
 								break;
 							case COMMAND_OR_OPTIONS:
 								boolean commandAdded = addCommand(delegate);
-								if(!commandAdded) {
+								if (!commandAdded) {
 									addOptions(delegate);
 								}
 								break;
@@ -1065,9 +1050,9 @@ public class CmdlineParser {
 			final CmdOptionHandler handler = findHandler(element, anno.args().length, anno.handler());
 			if (handler == null) {
 				final PreparedI18n msg = i18n.preparetr(
-						"No suitable handler found for option(s): {0} ({1} argument(s))",
-						FList.mkString(anno.names(), ","),
-						anno.args().length);
+					"No suitable handler found for option(s): {0} ({1} argument(s))",
+					FList.mkString(anno.names(), ","),
+					anno.args().length);
 				throw new CmdlineParserException(msg.notr(), msg.tr());
 			}
 
@@ -1075,8 +1060,8 @@ public class CmdlineParser {
 				// No names means this is the ONLY parameter
 				if (parameter.isDefined()) {
 					final PreparedI18n msg = i18n.preparetr(
-							"More than one parameter definition found. First definition: {0} Second definition: {1}",
-							parameter.get().getElement(), element);
+						"More than one parameter definition found. First definition: {0} Second definition: {1}",
+						parameter.get().getElement(), element);
 					throw new CmdlineParserException(msg.notr(), msg.tr());
 				}
 
@@ -1088,10 +1073,10 @@ public class CmdlineParser {
 				}
 
 				final OptionHandle paramHandle = new OptionHandle(
-						new String[] {}, anno.description(), handler,
-						object, element, anno.args(), anno.minCount(), anno.maxCount(),
-						false /* cannot be a help option */,
-						anno.hidden(), anno.requires(), anno.conflictsWith());
+					new String[]{}, anno.description(), handler,
+					object, element, anno.args(), anno.minCount(), anno.maxCount(),
+					false /* cannot be a help option */,
+					anno.hidden(), anno.requires(), anno.conflictsWith());
 
 				if (paramHandle.getArgsCount() <= 0) {
 					final PreparedI18n msg = i18n.preparetr("Parameter definition must support at least on argument.");
@@ -1102,17 +1087,17 @@ public class CmdlineParser {
 			} else {
 				if (anno.maxCount() == 0) {
 					debug("Warning: Found annotation for option [{0}] with maxCount=0. This is interpreted as unconstrained.",
-							FList.mkString(names, ","));
+						FList.mkString(names, ","));
 				}
 
 				final OptionHandle option = new OptionHandle(names, anno.description(), handler, object,
-						element, anno.args(), anno.minCount(), anno.maxCount(), anno.isHelp(), anno.hidden(),
-						anno.requires(), anno.conflictsWith());
+					element, anno.args(), anno.minCount(), anno.maxCount(), anno.isHelp(), anno.hidden(),
+					anno.requires(), anno.conflictsWith());
 
 				for (final String name : names) {
 					if (quickCommandMap.containsKey(name) || quickOptionMap.containsKey(name)) {
 						final PreparedI18n msg = i18n.preparetr("Duplicate command/option name \"{0}\" found in: {1}",
-								name, element);
+							name, element);
 						throw new CmdlineParserException(msg.notr(), msg.tr());
 					}
 					quickOptionMap.put(name, option);
@@ -1154,7 +1139,7 @@ public class CmdlineParser {
 		}
 
 		throw new IllegalArgumentException("Given command is not known or does not have a @"
-				+ CmdCommand.class.getSimpleName() + "-annotation");
+			+ CmdCommand.class.getSimpleName() + "-annotation");
 	}
 
 	public void usage() {
@@ -1162,8 +1147,8 @@ public class CmdlineParser {
 	}
 
 	/**
-	 * @deprecated Use {@link #usage(PrintStream)} instead.
 	 * @param output
+	 * @deprecated Use {@link #usage(PrintStream)} instead.
 	 */
 	@Deprecated
 	public void usage(final StringBuilder output) {
@@ -1213,10 +1198,10 @@ public class CmdlineParser {
 		try {
 			this.resourceBundle = ResourceBundle.getBundle(resourceBundleName, locale, classloader);
 			debug("Loaded a ResourceBundle with name \"{0}\" using classloader \"{1}\". Locale: {2}",
-					resourceBundleName, classloader, resourceBundle.getLocale());
+				resourceBundleName, classloader, resourceBundle.getLocale());
 		} catch (final MissingResourceException e) {
 			debug("Could not load a ResourceBundle with name \"{0}\" using classloader \"{1}\" for locale {2}",
-					resourceBundleName, classloader, Locale.getDefault());
+				resourceBundleName, classloader, Locale.getDefault());
 			// no resource bundle found
 			this.resourceBundle = null;
 		}
@@ -1231,12 +1216,11 @@ public class CmdlineParser {
 	 * contains more commandline parameters. If not changed, this is by default the
 	 * <code>"@"</code> sign. You can also disable this feature by setting
 	 * <code>null</code> or the empty string.
-	 *
+	 * <p>
 	 * The file contains additional arguments, each one on a new line.
 	 *
-	 * @param prefix
-	 *            The prefix to mark an argument as arguments-file or
-	 *            <code>null</code> to disable the feature.
+	 * @param prefix The prefix to mark an argument as arguments-file or
+	 *               <code>null</code> to disable the feature.
 	 */
 	public void setReadArgsFromFilePrefix(final String prefix) {
 		if (prefix == null || prefix.trim().isEmpty()) {
