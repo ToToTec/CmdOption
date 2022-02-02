@@ -119,6 +119,8 @@ public class CmdlineParser {
 
 	private Optional<String> aggregateShortOptionsWithPrefix = Optional.none();
 
+	private Optional<String> shortOptionsWithArgsPrefix = Optional.none();
+
 	private boolean stopAcceptOptionAfterParameterIsSet = false;
 
 	/**
@@ -400,6 +402,22 @@ public class CmdlineParser {
 			}
 		}
 
+		final String optionWithArgPrefix = shortOptionsWithArgsPrefix.getOrElse(new F0<String>() {
+			public String apply() {
+				return "";
+			}
+		});
+		final LinkedHashMap<String, OptionHandle> optionWithArgMap = new LinkedHashMap<String, OptionHandle>();
+		final int optionWithArgPrefixSize = optionWithArgPrefix.length();
+		if (shortOptionsWithArgsPrefix.isDefined()) {
+			final int expectedSize = 1 + optionWithArgPrefixSize;
+			for (final Entry<String, OptionHandle> oh : quickOptionMap.entrySet()) {
+				if (oh.getKey().startsWith(optionWithArgPrefix) && oh.getKey().length() == expectedSize && oh.getValue().getArgsCount() == 1) {
+					optionWithArgMap.put(oh.getKey().substring(optionWithArgPrefixSize), oh.getValue());
+				}
+			}
+		}
+
 		int index = -1;
 		String[] rest = cmdline0;
 
@@ -532,6 +550,35 @@ public class CmdlineParser {
 					// re-iterate parsing with the modified command line
 					// (backtracking)
 					final String[] newRest = Arrays.copyOfRange(rest, procCount, rest.length);
+					rewritten.addAll(Arrays.asList(newRest));
+					rest = rewritten.toArray(new String[0]);
+					index = -1;
+					continue;
+				}
+			}
+
+//            System.err.println("try to find option-with-arg: " + param);
+			if (parseOptions
+				&& shortOptionsWithArgsPrefix.isDefined()
+				&& param.startsWith(optionWithArgPrefix)
+				&& param.length() > optionWithArgPrefixSize + 1) {
+//                System.err.println("found option-with-arg: " + param);
+
+				// Found a potential short option with arg without space
+
+				final String option = param.substring(optionWithArgPrefixSize, optionWithArgPrefixSize + 1);
+				final String arg = param.substring(optionWithArgPrefixSize + 1);
+
+				// rewrite the cmdline
+				final List<String> rewritten = new LinkedList<String>();
+				final OptionHandle oh = optionWithArgMap.get(option);
+				if (oh != null && oh.getArgsCount() == 1) {
+					// add as standalone arg
+					rewritten.add(optionWithArgPrefix + option);
+					rewritten.add(arg);
+					// re-iterate parsing with the modified command line
+					// (backtracking)
+					final String[] newRest = Arrays.copyOfRange(rest, 1, rest.length);
 					rewritten.addAll(Arrays.asList(newRest));
 					rest = rewritten.toArray(new String[0]);
 					index = -1;
@@ -1235,6 +1282,14 @@ public class CmdlineParser {
 			aggregateShortOptionsWithPrefix = Optional.none();
 		} else {
 			aggregateShortOptionsWithPrefix = Optional.some(prefix.trim());
+		}
+	}
+
+	public void setShortOptionWithArgsPrefix(final String prefix) {
+		if (prefix == null || prefix.trim().isEmpty()) {
+			shortOptionsWithArgsPrefix = Optional.none();
+		} else {
+			shortOptionsWithArgsPrefix = Optional.some(prefix.trim());
 		}
 	}
 

@@ -221,6 +221,37 @@ public class Main {
 
 As you can see, aggregated short options can also have any number of arguments.
 
+=== Short options support argument without a space
+
+If you prefer to set short options with a single argument without any delimiter or space, you can enable that by setting `CmdlineParser.setShortOptionsWithArgsPrefix(String)`.
+You need to give the string, that denotes the start of short options (this is probably a `-`).
+To disable, set `null` or the empty string.
+
+.Example for short options that support their single-arg without a delimiter
+[source,java]
+----
+import de.tototec.cmdoption.CmdOption;
+import de.tototec.cmdoption.CmdlineParser;
+
+public class Config {
+  @CmdOption(names = { "-D", "--define" }, args = { "PROPERTY=VALUE" }, maxCount = -1)
+  List<String> defines = new LinkedList<String>();
+}
+
+public class Main {
+  public static void main(String[] args) {
+    final Config config = new Config();
+    final CmdlineParser cp = new CmdlineParser(config);
+    cp.setShortOptionsWithArgsPrefix("-"); // <1>
+    // demo of parsing aggregated options
+    cp.parse(new String[] { "-DTEST=true" });
+    assert config.defines.get(0).equals("TEST=true");
+  }
+}
+----
+
+WARNING: Enabled both features together with short option aggregation might result in surprising results. Option aggregation will be parsed first.
+
 === Stop parsing options after the first parameter was found
 
 Sometime, you want to parse options only if they come before the first parameter.
