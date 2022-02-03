@@ -1,7 +1,6 @@
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
 import $ivy.`de.tototec::de.tobiasroeser.mill.osgi::0.4.0`
 
-import cmdoption.{generateProperties, generatePropertiesPackage, millSourcePath, sources}
 import mill._
 import mill.define.{Source, Target}
 import mill.scalalib._
@@ -11,13 +10,14 @@ import mill.api.Loose
 
 
 val baseDir = build.millSourcePath
-val cmdOptionVersion = "0.7.0"
 
 object Deps {
-  val testNgMill = ivy"com.lihaoyi:mill-contrib-testng:${mill.BuildInfo.millVersion}"
-  val testNg = ivy"org.testng:testng:7.5"
-  val lambdatest = ivy"de.tototec:de.tobiasroeser.lambdatest:0.7.1"
-  val slf4j = ivy"org.slf4j:slf4j-api:1.7.30"
+  val slf4j = ivy"org.slf4j:slf4j-api:1.7.35"
+  object Test {
+    val testNgMill = ivy"com.lihaoyi:mill-contrib-testng:${mill.BuildInfo.millVersion}"
+    val testNg = ivy"org.testng:testng:7.5"
+    val lambdatest = ivy"de.tototec:de.tobiasroeser.lambdatest:0.7.1"
+  }
 }
 
 trait GettextJavaModule extends JavaModule {
@@ -142,9 +142,9 @@ object cmdoption extends MavenModule with GettextJavaModule with OsgiBundleModul
   object test extends Tests with TestModule.TestNg {
     override def forkArgs = super.forkArgs() ++ Seq("-Dmill.testng.printProgress=0")
     override def ivyDeps = Agg(
-      Deps.lambdatest,
-      Deps.testNg,
-      Deps.testNgMill
+      Deps.Test.lambdatest,
+      Deps.Test.testNg,
+      Deps.Test.testNgMill
     )
     override def runIvyDeps: Target[Loose.Agg[Dep]] = super.runIvyDeps() ++ Agg(Deps.slf4j)
     override def javacOptions = Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8")
