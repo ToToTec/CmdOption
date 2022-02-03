@@ -762,6 +762,13 @@ Have a look at some other projects I'm involved with:
 * Removed deprecated API
 
 
+=== CmdOption 0.7.1 - 2022-02-03
+
+* Added option to `@CmdOptionDelegate` to detect commands
+* Support for short options with one argument to provide the arg without a space
+* Added `CmdlineParser.setShortOptionsWithArgsPrefix(String)` to configure 1-arg short option behavior
+* Internal improvements and tooling updates
+
 === CmdOption 0.7.0 - 2020-03-13
 
 * Stop parsing options after a parameter was set with new method `CmdlineParser.setStopAcceptOptionsAfterParameterIsSet(boolean)`.
