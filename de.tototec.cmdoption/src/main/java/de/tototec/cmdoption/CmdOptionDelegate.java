@@ -24,5 +24,9 @@ public @interface CmdOptionDelegate {
 		COMMAND_OR_OPTIONS
 	}
 
+	/**
+	 * The mode to configure how {@link CmdCommand}-annotated classes should be handled.
+	 * @since CmdOption 0.7.0
+	 */
 	Mode value() default Mode.OPTIONS;
 }

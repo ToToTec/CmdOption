@@ -240,6 +240,12 @@ public class CmdlineParser {
 	//
 	// }
 
+	/**
+	 * If set to <code>true</code>, the parser will no longer parse options once it has seen a parameter.
+	 *
+	 * @param stopAcceptOptionAfterParameterIsSet
+	 * @since 0.7.0
+	 */
 	public void setStopAcceptOptionsAfterParameterIsSet(boolean stopAcceptOptionAfterParameterIsSet) {
 		this.stopAcceptOptionAfterParameterIsSet = stopAcceptOptionAfterParameterIsSet;
 	}
@@ -1267,7 +1273,8 @@ public class CmdlineParser {
 	 * The file contains additional arguments, each one on a new line.
 	 *
 	 * @param prefix The prefix to mark an argument as arguments-file or
-	 *               <code>null</code> to disable the feature.
+	 *               <code>null</code> to disable the feature. Typically a <code>"@"</code>
+	 * @since CmdOption 0.4.0
 	 */
 	public void setReadArgsFromFilePrefix(final String prefix) {
 		if (prefix == null || prefix.trim().isEmpty()) {
@@ -1277,6 +1284,13 @@ public class CmdlineParser {
 		}
 	}
 
+	/**
+	 * Set the prefix of short options, that should be aggregated.
+	 *
+	 * @param prefix The prefix, typically a <code>"-"</code>.
+	 *               If <code>null</code> or the empty string, this short option aggregation is disabled
+	 * @since CmdOption 0.5.0
+	 */
 	public void setAggregateShortOptionsWithPrefix(final String prefix) {
 		if (prefix == null || prefix.trim().isEmpty()) {
 			aggregateShortOptionsWithPrefix = Optional.none();
@@ -1285,6 +1299,12 @@ public class CmdlineParser {
 		}
 	}
 
+	/**
+	 * If used to set a non-empty string, this enables the feature to give the argument of a short options without a space.
+	 *
+	 * @param prefix The prefix denoting a short options that accepts its argument without a space, typically a <code>"-"</code>
+	 * @since CmdOption 0.7.1
+	 */
 	public void setShortOptionWithArgsPrefix(final String prefix) {
 		if (prefix == null || prefix.trim().isEmpty()) {
 			shortOptionsWithArgsPrefix = Optional.none();
