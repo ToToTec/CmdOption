@@ -5,11 +5,9 @@
 :documentedVersion: 0.7.1
 :githubUrl: https://github.com/ToToTec/CmdOption
 :wikiUrl:  {githubUrl}/wiki
-:gitterUrl: https://gitter.im/ToToTec/CmdOption
 
 image:{githubUrl}/workflows/.github/workflows/build.yml/badge.svg["Build Status", link={githubUrl}/actions]
 image:https://www.codacy.com/project/badge/e3f730346034401281fa8e3fe4802afd["Codacy Badge", link="https://www.codacy.com/p/3189/dashboard"]
-image:https://badges.gitter.im/Join%20Chat.svg["Gitter", link="https://gitter.im/ToToTec/CmdOption"]
 
 
 Documentation of CmdOption {documentedVersion}.
@@ -622,8 +620,8 @@ When used, CmdOption will display detailed information about the found configura
 This might help to understand issues further.
 In most cases, this will help you to resolve your issues. Of course, you can disable this functionality with `CmdlineParser.setDebugModeAllowed(false)`.
 
-If you have issues you can not solve, do not hessitate to https://github.com/ToToTec/CmdOption/issues/new[open a support ticket] or search for other (open) issues in the {githubUrl}/issues[CmdOption ticket system].
-You can also start a chat in our {gitterUrl}[Gitter room].
+If you have issues you can not solve, do not hessitate to https://github.com/ToToTec/CmdOption/issues/new[open a support ticket] or search for other (open) issues in the {githubUrl}/issues[CmdOption ticket system]. For questions, ideas or just to get in contact, you can use {githubUrl}/discussions[Discussions].
+
 
 == Testing
 
@@ -680,7 +678,7 @@ if not stated otherwise.
 If you found a bug or have a feature request, please open a {githubUrl}/issues[new issue on GitHub].
 We also accept pull requests.
 
-You can also use our {githubUrl}/discussions[Discussions board on Github] and the {gitterUrl}[Chat on Gitter.im] for discussions and questions.
+You can also use our {githubUrl}/discussions[Discussions board on Github].
 
 If you want to show appreciation for the project, please "star" it on {githubUrl}[GitHub].
 That helps me setting my priorities.
