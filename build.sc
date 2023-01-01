@@ -1,4 +1,4 @@
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.0`
 import $ivy.`de.tototec::de.tobiasroeser.mill.osgi::0.4.0`
 
 import mill._
