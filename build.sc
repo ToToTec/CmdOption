@@ -12,7 +12,7 @@ import mill.api.Loose
 val baseDir = build.millSourcePath
 
 object Deps {
-  val slf4j = ivy"org.slf4j:slf4j-api:1.7.36"
+  val slf4j = ivy"org.slf4j:slf4j-api:2.0.6"
   object Test {
     val testNgMill = ivy"com.lihaoyi:mill-contrib-testng:${mill.BuildInfo.millVersion}"
     val testNg = ivy"org.testng:testng:7.5"
