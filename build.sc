@@ -15,7 +15,7 @@ object Deps {
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.36"
   object Test {
     val testNgMill = ivy"com.lihaoyi:mill-contrib-testng:${mill.BuildInfo.millVersion}"
-    val testNg = ivy"org.testng:testng:7.5"
+    val testNg = ivy"org.testng:testng:7.8.0"
     val lambdatest = ivy"de.tototec:de.tobiasroeser.lambdatest:0.8.0"
   }
 }
