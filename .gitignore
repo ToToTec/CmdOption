@@ -4,6 +4,7 @@
 target
 pom.xml
 /mvn-deploy-settings.xml
+/test-output/
 
 # Mill
 /out/
