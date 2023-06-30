@@ -9,12 +9,11 @@ import de.tobiasroeser.mill.osgi._
 import mill.api.Loose
 
 
-val baseDir = build.millSourcePath
+def baseDir = build.millSourcePath
 
 object Deps {
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.36"
   object Test {
-    val testNgMill = ivy"com.lihaoyi:mill-contrib-testng:${mill.BuildInfo.millVersion}"
     val testNg = ivy"org.testng:testng:7.5"
     val lambdatest = ivy"de.tototec:de.tobiasroeser.lambdatest:0.8.0"
   }
@@ -22,7 +21,7 @@ object Deps {
 
 trait GettextJavaModule extends JavaModule {
 
-  def poSource: Source = T.source(millSourcePath / "src" / "main" / "po")
+  def poSource: T[PathRef] = T.source(millSourcePath / "src" / "main" / "po")
 
   /**
    * Generates a message catalog (messages.pot) from sources.
@@ -104,12 +103,9 @@ trait GettextJavaModule extends JavaModule {
 
 }
 
-
-object cmdoption extends MavenModule with GettextJavaModule with OsgiBundleModule with PublishModule {
-  override def millSourcePath = super.millSourcePath / os.up / "de.tototec.cmdoption"
-  val namespace = "de.tototec.cmdoption"
-  override def artifactName = namespace
+trait PubSettings extends PublishModule {
   override def publishVersion = de.tobiasroeser.mill.vcs.version.VcsVersion.vcsState().format()
+
   def pomSettings = T {
     PomSettings(
       description = "CmdOption is a simple annotation-driven command line parser toolkit for Java 5 applications that is configured through annotations",
@@ -120,6 +116,13 @@ object cmdoption extends MavenModule with GettextJavaModule with OsgiBundleModul
       developers = Seq(Developer("TobiasRoeser", "Tobias Roeser", "https.//github.com/lefou"))
     )
   }
+
+}
+
+object cmdoption extends MavenModule with GettextJavaModule with OsgiBundleModule with PubSettings {
+  override def millSourcePath = super.millSourcePath / os.up / "de.tototec.cmdoption"
+  val namespace = "de.tototec.cmdoption"
+  override def artifactName = namespace
   override def javacOptions = Seq("-source", "1.6", "-target", "1.6", "-encoding", "UTF-8")
   override def compileIvyDeps = Agg(Deps.slf4j.optional(true))
   override def sources = T.sources(millSourcePath / "src" / "main" / "java")
@@ -139,12 +142,11 @@ object cmdoption extends MavenModule with GettextJavaModule with OsgiBundleModul
   )}
 
 
-  object test extends Tests with TestModule.TestNg {
+  object test extends MavenModuleTests with TestModule.TestNg {
     override def forkArgs = super.forkArgs() ++ Seq("-Dmill.testng.printProgress=0")
-    override def ivyDeps = Agg(
+    override def ivyDeps = super.ivyDeps() ++ Agg(
       Deps.Test.lambdatest,
-      Deps.Test.testNg,
-      Deps.Test.testNgMill
+      Deps.Test.testNg
     )
     override def runIvyDeps: Target[Loose.Agg[Dep]] = super.runIvyDeps() ++ Agg(Deps.slf4j)
     override def javacOptions = Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8")
