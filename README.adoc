@@ -6,9 +6,6 @@
 :githubUrl: https://github.com/ToToTec/CmdOption
 :wikiUrl:  {githubUrl}/wiki
 
-image:{githubUrl}/workflows/.github/workflows/build.yml/badge.svg["Build Status", link={githubUrl}/actions]
-image:https://www.codacy.com/project/badge/e3f730346034401281fa8e3fe4802afd["Codacy Badge", link="https://www.codacy.com/p/3189/dashboard"]
-
 
 Documentation of CmdOption {documentedVersion}.
 
