@@ -14,7 +14,7 @@ def baseDir = build.millSourcePath
 object Deps {
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.36"
   object Test {
-    val testNg = ivy"org.testng:testng:7.5"
+    val testNg = ivy"org.testng:testng:7.10.2"
     val lambdatest = ivy"de.tototec:de.tobiasroeser.lambdatest:0.8.0"
   }
 }
